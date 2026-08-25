@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OREGUARD ADAS · Mine Vehicle Safety Intelligence</title>
+  <meta name="description" content="Visibility-aware collision prevention for mine vehicles. See the risk before it arrives with the OREGUARD Advanced Driver-Assistance System." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;1,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink:    #161b20;
+      --muted:  #71808a;
+      --line:   #dfe5e8;
+      --paper:  #f4f7f8;
+      --white:  #ffffff;
+      --lime:   #10b981;
+      --amber:  #f59e0b;
+      --red:    #ef4444;
+      --dark:   #101419;
+      --dark2:  #141c21;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #ffffff;
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ════════════════════════════════════════
+       NAV BAR
+    ════════════════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6%;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-brand {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      text-decoration: none;
+    }
+
+    .nav-mark {
+      width: 34px;
+      height: 34px;
+      background: var(--lime);
+      color: #062b1d;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .nav-brand strong {
+      font: 700 18px 'Barlow Condensed';
+      letter-spacing: 1.5px;
+      color: var(--ink);
+    }
+
+    .nav-brand sub {
+      font: 600 9px 'JetBrains Mono';
+      letter-spacing: 1px;
+      color: #8a979d;
+      display: block;
+      vertical-align: bottom;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font: 500 11px 'JetBrains Mono';
+      letter-spacing: .8px;
+      color: #71808a;
+      transition: color .2s;
+    }
+
+    .nav-links a:hover { color: var(--ink); }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid #d0d7db;
+      color: var(--muted);
+      padding: 9px 18px;
+      font: 600 11px 'JetBrains Mono';
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+
+    .btn-ghost:hover { border-color: var(--ink); color: var(--ink); background: #f0f2f3; }
+
+    .btn-primary-sm {
+      background: #111827;
+      color: #fff;
+      border: 0;
+      padding: 10px 22px;
+      font: 700 11px 'Barlow Condensed';
+      letter-spacing: 1.2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color .2s, transform .2s, box-shadow .2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,.18);
+    }
+
+    .btn-primary-sm:hover { background: #1f2937; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.25); }
+
+    /* ════════════════════════════════════════
+       HERO SECTION
+    ════════════════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      padding-top: 64px; /* nav height */
+    }
+
+    /* LEFT HALF — Dark hero */
+    .hero-left {
+      width: 50%;
+      background: #101419;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 52px 7% 52px 8%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Diagonal stripe overlay bottom */
+    .hero-left::after {
+      content: "";
+      position: absolute;
+      inset: auto -10% -20% -10%;
+      height: 50%;
+      background: repeating-linear-gradient(
+        120deg,
+        transparent 0 42px,
+        #1b252a 43px 44px
+      );
+      opacity: 0.45;
+      transform: skewY(-8deg);
+      pointer-events: none;
+    }
+
+    /* Radar glow blob */
+    .hero-left::before {
+      content: "";
+      position: absolute;
+      bottom: -8%;
+      right: -10%;
+      width: 360px;
+      height: 360px;
+      background: radial-gradient(circle, rgba(16,185,129,.14) 0%, transparent 68%);
+      pointer-events: none;
+      animation: glow-pulse 3.8s ease-in-out infinite;
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% { transform: scale(1); opacity: .55; }
+      50% { transform: scale(1.14); opacity: 0.9; }
+    }
+
+    .hero-brand-row {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-brand-mark {
+      width: 36px;
+      height: 36px;
+      background: var(--lime);
+      color: #052c1e;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .hero-brand-row strong {
+      font: 700 20px/1 'Barlow Condensed';
+      letter-spacing: 1.4px;
+      color: #fff;
+      display: block;
+    }
+
+    .hero-brand-row span {
+      font: 600 9px 'JetBrains Mono';
+      letter-spacing: 1.2px;
+      color: #607880;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .hero-eyebrow {
+      font: 600 10px 'JetBrains Mono';
+      letter-spacing: 1.6px;
+      color: #607880;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-heading {
+      position: relative;
+      z-index: 2;
+      font: 700 clamp(52px, 6vw, 84px)/.86 'Barlow Condensed';
+      margin: 0 0 22px;
+    }
+
+    .hero-heading .h-white { color: #ffffff; display: block; }
+    .hero-heading .h-lime { color: var(--lime); display: block; font-style: italic; }
+
+    .hero-sub {
+      position: relative;
+      z-index: 2;
+      font-size: 14px;
+      color: #8a9eaa;
+      max-width: 380px;
+      line-height: 1.72;
+      margin-bottom: 0;
+    }
+
+    /* Status indicator row */
+    .hero-status {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .status-chip {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font: 10px 'JetBrains Mono';
+      color: #7a8c93;
+    }
+
+    .status-chip .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status-chip.ok .dot { background: var(--lime); box-shadow: 0 0 0 2px #123e30; animation: blink 2s infinite; }
+    .status-chip.warn .dot { background: var(--amber); }
+    .status-chip.info .dot { background: #2563eb; }
+
+    .hero-center {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 20px;
+      padding: 24px 0;
+    }
+
+    /* RIGHT HALF — Dark Live Telemetry HUD */
+    .hero-right {
+      flex: 1;
+      background: #101419;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 52px 8% 52px 4%;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-right::before {
+      content: "";
+      position: absolute;
+      top: 10%;
+      right: -10%;
+      width: 440px;
+      height: 440px;
+      background: radial-gradient(circle, rgba(16,185,129,.09) 0%, transparent 68%);
+      pointer-events: none;
+    }
+
+    /* Dark Metric Cards Grid */
+    .hud-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hud-card {
+      background: rgba(22, 29, 35, 0.85);
+      border: 1px solid #233038;
+      padding: 18px 20px;
+      border-radius: 4px;
+      transition: border-color .25s, transform .25s, background .25s;
+    }
+
+    .hud-card:hover {
+      border-color: rgba(16,185,129,.45);
+      background: rgba(26, 36, 44, 0.95);
+      transform: translateY(-2px);
+    }
+
+    .hud-label {
+      font: 600 9px 'JetBrains Mono';
+      letter-spacing: 1.2px;
+      color: #728994;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hud-value {
+      font: 700 34px 'Barlow Condensed';
+      color: #ffffff;
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      line-height: 1;
+    }
+
+    .hud-value .unit {
+      font-size: 14px;
+      color: #728994;
+      margin-bottom: 3px;
+    }
+
+    .hud-value .lime { color: var(--lime); }
+    .hud-value .amber { color: var(--amber); }
+    .hud-value .red { color: var(--red); }
+
+    .hud-bar-wrap {
+      margin-top: 12px;
+      height: 4px;
+      background: #172127;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .hud-bar {
+      height: 100%;
+      border-radius: 2px;
+      transition: width .8s ease;
+    }
+
+    .hud-bar.lime { background: var(--lime); }
+    .hud-bar.amber { background: var(--amber); }
+    .hud-bar.red { background: var(--red); }
+
+    .hud-sub {
+      font: 10px 'JetBrains Mono';
+      color: #728994;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Risk Status Card */
+    .hud-risk-card {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      padding: 20px 22px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hud-risk-card .label-col {
+      font: 600 9px 'JetBrains Mono';
+      letter-spacing: 1.2px;
+      color: #5aa68c;
+    }
+
+    .hud-risk-card h3 {
+      font: 700 28px 'Barlow Condensed';
+      color: var(--lime);
+      letter-spacing: .5px;
+      margin: 4px 0 2px;
+    }
+
+    .hud-risk-card p {
+      font: 11px 'JetBrains Mono';
+      color: #7fae9e;
+    }
+
+    .hud-score-pill {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: var(--lime);
+      font: 700 30px 'Barlow Condensed';
+      padding: 10px 20px;
+      border-radius: 3px;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .hud-score-pill span {
+      display: block;
+      font: 600 9px 'JetBrains Mono';
+      color: #5aa68c;
+      margin-top: 4px;
+    }
+
+    /* Hero CTA Row */
+    .hero-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .btn-hero-main {
+      background: var(--lime);
+      color: #052c1e;
+      border: 0;
+      padding: 15px 30px;
+      font: 700 13px 'Barlow Condensed';
+      letter-spacing: 1.4px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 3px;
+      transition: background-color .2s, transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 16px rgba(16,185,129,.3);
+    }
+
+    .btn-hero-main:hover {
+      background: #0ea570;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(16,185,129,.45);
+    }
+
+    .btn-hero-sec {
+      background: transparent;
+      border: 1px solid #2a3a44;
+      color: #9ab0ba;
+      padding: 15px 24px;
+      font: 600 11px 'JetBrains Mono';
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 3px;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+
+    .btn-hero-sec:hover {
+      border-color: #526f7e;
+      color: #fff;
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* ════════════════════════════════════════
+       TECH SPECS STRIP
+    ════════════════════════════════════════ */
+    .specs-strip {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 26px 8%;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      background: #f4f7f8;
+    }
+
+    .spec-item {
+      flex: 1 0 160px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 24px;
+      border-right: 1px solid var(--line);
+    }
+
+    .spec-item:first-child { padding-left: 0; }
+    .spec-item:last-child { border-right: 0; }
+
+    .spec-icon {
+      width: 34px;
+      height: 34px;
+      background: rgba(16,185,129,.1);
+      color: var(--lime);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .spec-title {
+      font: 700 18px 'Barlow Condensed';
+      color: var(--ink);
+      display: block;
+    }
+
+    .spec-desc {
+      font: 10px 'JetBrains Mono';
+      color: #71808a;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* ════════════════════════════════════════
+       HOW IT WORKS SECTION
+    ════════════════════════════════════════ */
+    .section-how {
+      padding: 100px 8%;
+      background: #ffffff;
+    }
+
+    .section-tag {
+      font: 600 10px 'JetBrains Mono';
+      letter-spacing: 1.6px;
+      color: #3d8068;
+      margin-bottom: 14px;
+    }
+
+    .section-heading {
+      font: 700 clamp(38px, 4vw, 60px)/.9 'Barlow Condensed';
+      color: var(--ink);
+      margin-bottom: 16px;
+      max-width: 620px;
+    }
+
+    .section-heading em { color: var(--lime); font-style: normal; }
+
+    .section-sub {
+      font-size: 13px;
+      color: #71808a;
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 64px;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2px;
+    }
+
+    .step-card {
+      background: #f9fbfc;
+      border: 1px solid var(--line);
+      padding: 34px 30px;
+      position: relative;
+      transition: border-color .3s, background .3s;
+    }
+
+    .step-card:hover {
+      border-color: rgba(16,185,129,.35);
+      background: #f0fdf8;
+    }
+
+    .step-num {
+      font: 700 52px 'Barlow Condensed';
+      color: rgba(16,185,129,.12);
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      line-height: 1;
+    }
+
+    .step-icon {
+      width: 42px;
+      height: 42px;
+      background: rgba(16,185,129,.1);
+      color: var(--lime);
+      display: grid;
+      place-items: center;
+      margin-bottom: 22px;
+    }
+
+    .step-title {
+      font: 700 18px 'Barlow Condensed';
+      color: var(--ink);
+      margin-bottom: 8px;
+      letter-spacing: .3px;
+    }
+
+    .step-desc {
+      font: 12px/1.65 'Inter';
+      color: #71808a;
+    }
+
+    /* ════════════════════════════════════════
+       SCENARIOS SECTION
+    ════════════════════════════════════════ */
+    .section-scenarios {
+      padding: 100px 8%;
+      background: #f4f7f8;
+    }
+
+    .scenarios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-top: 56px;
+    }
+
+    .scenario-card {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      padding: 28px 24px;
+      transition: all .25s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scenario-card::before {
+      content: "";
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .scenario-card.clear::before { background: var(--lime); }
+    .scenario-card.dust::before { background: var(--amber); }
+    .scenario-card.poor::before { background: #f97316; }
+    .scenario-card.emergency::before { background: var(--red); }
+
+    .scenario-card:hover { transform: translateY(-4px); border-color: rgba(0,0,0,.15); box-shadow: 0 8px 28px rgba(0,0,0,.08); }
+
+    .scenario-vis {
+      font: 700 44px 'Barlow Condensed';
+      margin-bottom: 4px;
+    }
+
+    .scenario-card.clear .scenario-vis { color: var(--lime); }
+    .scenario-card.dust .scenario-vis { color: var(--amber); }
+    .scenario-card.poor .scenario-vis { color: #f97316; }
+    .scenario-card.emergency .scenario-vis { color: var(--red); }
+
+    .scenario-name {
+      font: 700 14px 'Barlow Condensed';
+      color: var(--ink);
+      letter-spacing: .4px;
+      margin-bottom: 6px;
+    }
+
+    .scenario-detail {
+      font: 10px 'JetBrains Mono';
+      color: #849098;
+      line-height: 1.6;
+    }
+
+    /* ════════════════════════════════════════
+       FINAL CTA SECTION
+    ════════════════════════════════════════ */
+    .section-cta {
+      padding: 120px 8%;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: #f4f7f8;
+    }
+
+    .section-cta::before {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(16,185,129,.12) 0%, transparent 68%);
+      pointer-events: none;
+    }
+
+    .cta-tag {
+      font: 600 10px 'JetBrains Mono';
+      letter-spacing: 1.6px;
+      color: #3d8068;
+      margin-bottom: 14px;
+    }
+
+    .cta-heading {
+      font: 700 clamp(52px, 6vw, 96px)/.88 'Barlow Condensed';
+      color: var(--ink);
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-heading .lime { color: var(--lime); display: block; font-style: italic; }
+
+    .cta-sub {
+      font-size: 13px;
+      color: #71808a;
+      max-width: 440px;
+      margin: 0 auto 46px;
+      line-height: 1.72;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-cta-main {
+      background: #111827;
+      color: #ffffff;
+      border: 0;
+      padding: 18px 42px;
+      font: 700 14px 'Barlow Condensed';
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: 3px;
+      transition: background-color .2s, transform .25s, box-shadow .25s;
+      box-shadow: 0 4px 18px rgba(0,0,0,.22);
+    }
+
+    .btn-cta-main:hover {
+      background: #1f2937;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(0,0,0,.32);
+    }
+
+    .btn-cta-secondary {
+      background: #ffffff;
+      border: 1px solid #d0d7db;
+      color: #374151;
+      padding: 18px 36px;
+      font: 600 12px 'JetBrains Mono';
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 3px;
+      transition: border-color .2s, color .2s, background-color .2s, transform .25s;
+    }
+
+    .btn-cta-secondary:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+      background: #f3f4f6;
+      transform: translateY(-2px);
+    }
+
+    /* ════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 8%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+    }
+
+    .footer-mark {
+      width: 26px;
+      height: 26px;
+      background: var(--lime);
+      color: #063320;
+      display: grid;
+      place-items: center;
+    }
+
+    .footer-brand strong {
+      font: 700 14px 'Barlow Condensed';
+      letter-spacing: 1px;
+      color: var(--ink);
+    }
+
+    .footer-brand small {
+      font: 10px 'JetBrains Mono';
+      color: #9aacb2;
+      display: block;
+    }
+
+    .footer-copy {
+      font: 10px 'JetBrains Mono';
+      color: #a0b4ba;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font: 10px 'JetBrains Mono';
+      color: #93a8af;
+      text-decoration: none;
+      transition: color .2s;
+    }
+
+    .footer-links a:hover { color: var(--ink); }
+
+    /* ════════════════════════════════════════
+       UTILITIES & ANIMATIONS
+    ════════════════════════════════════════ */
+    @keyframes blink {
+      50% { opacity: .35; }
+    }
+
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-up {
+      opacity: 0;
+      animation: slide-up .7s ease forwards;
+    }
+
+    .delay-1 { animation-delay: .1s; }
+    .delay-2 { animation-delay: .22s; }
+    .delay-3 { animation-delay: .36s; }
+    .delay-4 { animation-delay: .52s; }
+    .delay-5 { animation-delay: .68s; }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .hero { flex-direction: column; }
+      .hero-left { width: 100%; padding: 60px 7%; min-height: auto; }
+      .hero-right { width: 100%; padding: 40px 7% 60px; }
+      .nav-links { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .metric-grid { grid-template-columns: 1fr; }
+      .specs-strip { flex-wrap: wrap; }
+      .spec-item { border-right: 0; border-bottom: 1px solid var(--line); padding: 14px 0; }
+      footer { flex-direction: column; gap: 14px; text-align: center; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════ NAV BAR ════════ -->
+  <nav>
+    <a href="landing.html" class="nav-brand">
+      <div class="nav-mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <div>
+        <strong>OREGUARD</strong>
+        <sub>ADAS CONTROL</sub>
+      </div>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#how-it-works">HOW IT WORKS</a></li>
+      <li><a href="#scenarios">SCENARIOS</a></li>
+      <li><a href="index.html">DASHBOARD</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <a href="login.html" class="btn-ghost">SIGN IN</a>
+      <a href="login.html" class="btn-primary-sm">GET STARTED</a>
+    </div>
+  </nav>
+
+  <!-- ════════ HERO ════════ -->
+  <section class="hero">
+
+    <!-- LEFT — Dark Brand Panel -->
+    <div class="hero-left">
+
+      <!-- Brand mark at top -->
+      <div class="hero-brand-row animate-up delay-1">
+        <div class="hero-brand-mark">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <div>
+          <strong>OREGUARD</strong>
+          <span>ADAS CONTROL</span>
+        </div>
+      </div>
+
+      <!-- Center: Headline + Sub + Action buttons -->
+      <div class="hero-center">
+        <p class="hero-eyebrow animate-up delay-2">MINE VEHICLE / SAFETY LAYER</p>
+
+        <h1 class="hero-heading animate-up delay-2">
+          <span class="h-white">See the risk</span>
+          <em class="h-lime">before it arrives.</em>
+        </h1>
+
+        <p class="hero-sub animate-up delay-3">
+          Visibility-aware protection for every movement below the surface. OREGUARD combines real-time sensor fusion with a dynamic risk engine to keep mine vehicle operators safe.
+        </p>
+
+        <div class="hero-cta-row animate-up delay-4">
+          <a href="index.html" class="btn-hero-main">
+            ENTER LIVE CONSOLE
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+          </a>
+          <a href="#scenarios" class="btn-hero-sec">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            EXPLORE SCENARIOS
+          </a>
+        </div>
+      </div>
+
+      <!-- Bottom status chips -->
+      <div class="hero-status animate-up delay-4">
+        <div class="status-chip ok">
+          <span class="dot"></span>
+          SYSTEM READY
+        </div>
+        <b style="color:#2d3c42;margin:0 4px">·</b>
+        <div class="status-chip ok">
+          <span class="dot"></span>
+          6 SENSORS ONLINE
+        </div>
+        <b style="color:#2d3c42;margin:0 4px">·</b>
+        <div class="status-chip info">
+          <span class="dot" style="background:#2563eb;box-shadow:none"></span>
+          ESP32 / MV-07 LINKED
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT — Dark Live Telemetry HUD -->
+    <div class="hero-right">
+      
+      <!-- 4 Live Metric Cards -->
+      <div class="hud-grid">
+        <div class="hud-card animate-up delay-2">
+          <div class="hud-label">
+            <span>OPTICAL VISIBILITY</span>
+            <span style="color:var(--lime)">● LIVE</span>
+          </div>
+          <div class="hud-value">
+            <span class="lime" id="hudVis">85</span>
+            <span class="unit">%</span>
+          </div>
+          <div class="hud-bar-wrap">
+            <div class="hud-bar lime" id="hudVisBar" style="width:85%"></div>
+          </div>
+          <div class="hud-sub" id="hudVisSub">
+            <span>●</span> Clear corridor detected
+          </div>
+        </div>
+
+        <div class="hud-card animate-up delay-3">
+          <div class="hud-label">
+            <span>NEAREST OBSTACLE</span>
+            <span style="color:#607880">CH-01</span>
+          </div>
+          <div class="hud-value">
+            <span class="lime" id="hudDist">4.20</span>
+            <span class="unit">m</span>
+          </div>
+          <div class="hud-bar-wrap">
+            <div class="hud-bar lime" id="hudDistBar" style="width:70%"></div>
+          </div>
+          <div class="hud-sub">
+            <span>●</span> Forward ultrasonic sweep
+          </div>
+        </div>
+
+        <div class="hud-card animate-up delay-4">
+          <div class="hud-label">
+            <span>VEHICLE SPEED</span>
+            <span style="color:#607880">MV-07</span>
+          </div>
+          <div class="hud-value">
+            <span class="lime" id="hudSpeed">8.2</span>
+            <span class="unit">m/s</span>
+          </div>
+          <div class="hud-bar-wrap">
+            <div class="hud-bar lime" id="hudSpeedBar" style="width:68%"></div>
+          </div>
+          <div class="hud-sub" id="hudSpeedSub">
+            <span>●</span> Nominal speed · unrestricted
+          </div>
+        </div>
+
+        <div class="hud-card animate-up delay-5">
+          <div class="hud-label">
+            <span>BRAKING BUFFER</span>
+            <span style="color:var(--amber)">DYNAMIC</span>
+          </div>
+          <div class="hud-value">
+            <span class="lime" id="hudBrake">1.8</span>
+            <span class="unit">m</span>
+          </div>
+          <div class="hud-bar-wrap">
+            <div class="hud-bar lime" id="hudBrakeBar" style="width:36%"></div>
+          </div>
+          <div class="hud-sub">
+            <span>●</span> Fog-weighted stopping margin
+          </div>
+        </div>
+      </div>
+
+      <!-- Risk Engine Output Card -->
+      <div class="hud-risk-card animate-up delay-3" id="hudRiskBox">
+        <div>
+          <div class="label-col">DYNAMIC RISK ENGINE / OUTPUT</div>
+          <h3 id="hudRiskLevel">SAFE CORRIDOR</h3>
+          <p id="hudRiskDesc">All 6 sensors reporting nominal · safety margins active</p>
+        </div>
+        <div class="hud-score-pill" id="hudScorePill">
+          <span id="hudScore">12</span>
+          <span>/ 100 RISK</span>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ════════ SPECS STRIP ════════ -->
+  <div class="specs-strip">
+    <div class="spec-item">
+      <div class="spec-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </div>
+      <div>
+        <strong class="spec-title">6 Sensors</strong>
+        <span class="spec-desc">360° obstacle coverage</span>
+      </div>
+    </div>
+
+    <div class="spec-item">
+      <div class="spec-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+      </div>
+      <div>
+        <strong class="spec-title">ESP32</strong>
+        <span class="spec-desc">Real-time MCU telemetry</span>
+      </div>
+    </div>
+
+    <div class="spec-item">
+      <div class="spec-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+        </svg>
+      </div>
+      <div>
+        <strong class="spec-title">Dynamic Risk</strong>
+        <span class="spec-desc">Visibility-weighted engine</span>
+      </div>
+    </div>
+
+    <div class="spec-item">
+      <div class="spec-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div>
+        <strong class="spec-title">Auto-Stop</strong>
+        <span class="spec-desc">Emergency brake override</span>
+      </div>
+    </div>
+
+    <div class="spec-item">
+      <div class="spec-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      <div>
+        <strong class="spec-title">Audit Log</strong>
+        <span class="spec-desc">Timestamped incident history</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ HOW IT WORKS ════════ -->
+  <section class="section-how" id="how-it-works">
+    <div class="section-tag">HOW IT WORKS</div>
+    <h2 class="section-heading">A safety layer built for the <em>underground</em></h2>
+    <p class="section-sub">
+      OREGUARD sits between the operator and the hazard — continuously measuring, computing, and intervening when conditions demand it.
+    </p>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/>
+          </svg>
+        </div>
+        <div class="step-title">Sensor Fusion</div>
+        <p class="step-desc">6 ultrasonic + LDR sensors stream data at 10 Hz to the ESP32 microcontroller. Forward, lateral, and rearward paths are all monitored simultaneously.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+        </div>
+        <div class="step-title">Visibility Analysis</div>
+        <p class="step-desc">An optical LDR pipeline quantifies ambient light attenuation to derive a real-time visibility percentage — the core input to the risk equation.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+          </svg>
+        </div>
+        <div class="step-title">Dynamic Risk Engine</div>
+        <p class="step-desc">Risk is not a fixed threshold. The lower the visibility, the earlier the system escalates — warning the driver sooner and triggering adaptive speed limits.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <div class="step-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="step-title">Operator Response</div>
+        <p class="step-desc">SAFE corridors allow full speed. WARNING triggers audio and visual alerts. HIGH RISK cuts speed. EMERGENCY engages the automatic brake and halts the vehicle.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ SCENARIOS ════════ -->
+  <section class="section-scenarios" id="scenarios">
+    <div class="section-tag">OPERATIONAL SCENARIOS</div>
+    <h2 class="section-heading">Every condition.<br><em>One system.</em></h2>
+    <p class="section-sub">OREGUARD is pre-calibrated for four common mine environment scenarios, each with a distinct risk profile and automatic response.</p>
+
+    <div class="scenarios-grid">
+      <div class="scenario-card clear" onclick="goToDashboard('clear')">
+        <div class="scenario-vis">85%</div>
+        <div class="scenario-name">NORMAL CLEAR</div>
+        <div class="scenario-detail">
+          Visibility 85% · Obstacle 4.2 m<br>
+          ↳ Risk LOW · Full speed permitted
+        </div>
+      </div>
+
+      <div class="scenario-card dust" onclick="goToDashboard('dust')">
+        <div class="scenario-vis">55%</div>
+        <div class="scenario-name">DUST DEGRADED</div>
+        <div class="scenario-detail">
+          Visibility 55% · Obstacle 2.8 m<br>
+          ↳ Risk WARNING · Speed advisory active
+        </div>
+      </div>
+
+      <div class="scenario-card poor" onclick="goToDashboard('poor')">
+        <div class="scenario-vis">35%</div>
+        <div class="scenario-name">POOR FOG</div>
+        <div class="scenario-detail">
+          Visibility 35% · Obstacle 1.8 m<br>
+          ↳ Risk HIGH · Speed cut applied
+        </div>
+      </div>
+
+      <div class="scenario-card emergency" onclick="goToDashboard('emergency')">
+        <div class="scenario-vis">18%</div>
+        <div class="scenario-name">EMERGENCY NEAR</div>
+        <div class="scenario-detail">
+          Visibility 18% · Obstacle 0.7 m<br>
+          ↳ EMERGENCY STOP · Vehicle immobilized
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FINAL CTA ════════ -->
+  <section class="section-cta">
+    <p class="cta-tag">START PROTECTING YOUR FLEET TODAY</p>
+    <h2 class="cta-heading">
+      Safety isn't reactive.
+      <em class="lime">Make it predictive.</em>
+    </h2>
+    <p class="cta-sub">
+      Deploy the OREGUARD ADAS system on your mine vehicle fleet. Sign in to access the full live safety console.
+    </p>
+    <div class="cta-buttons">
+      <a href="login.html" class="btn-cta-main">
+        GET STARTED — FREE
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+          <polyline points="10 17 15 12 10 7"/>
+          <line x1="15" y1="12" x2="3" y2="12"/>
+        </svg>
+      </a>
+      <a href="index.html" class="btn-cta-secondary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        VIEW LIVE DASHBOARD
+      </a>
+    </div>
+  </section>
+
+  <!-- ════════ FOOTER ════════ -->
+  <footer>
+    <a href="landing.html" class="footer-brand">
+      <div class="footer-mark">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <div>
+        <strong>OREGUARD</strong>
+        <small>ADAS CONTROL · MV-07 · PIT 03</small>
+      </div>
+    </a>
+
+    <div class="footer-links">
+      <a href="index.html">Dashboard</a>
+      <a href="login.html">Sign in</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#scenarios">Scenarios</a>
+    </div>
+
+    <div class="footer-copy">© 2025 OREGUARD · SIH Mine Safety Shield</div>
+  </footer>
+
+  <!-- ════════ LIVE SIMULATION FOR HERO CARDS ════════ -->
+  <script>
+    // Live Telemetry Simulation for Hero Section HUD
+    let hudTick = 0;
+    const baseVis = 85, baseDist = 4.20, baseSpeed = 8.2;
+
+    function updateHeroHUD() {
+      hudTick++;
+      const t = hudTick * 0.08;
+
+      const vis = Math.round(Math.max(15, Math.min(98, baseVis + Math.sin(t * 0.7) * 3.5 + (Math.random() - 0.5) * 1.5)));
+      const dist = parseFloat(Math.max(0.4, Math.min(6.0, baseDist + Math.sin(t * 1.2) * 0.25 + (Math.random() - 0.5) * 0.1)).toFixed(2));
+      const speed = parseFloat(Math.max(0, Math.min(12.0, baseSpeed + Math.sin(t * 0.5) * 0.3)).toFixed(1));
+
+      // Calculate risk
+      const visNorm = vis / 100;
+      const distNorm = dist / 6.0;
+      const spdNorm = speed / 12.0;
+      const visHazard = 1.0 - visNorm;
+      const proxHazard = Math.pow(1.0 - distNorm, 2.3);
+      const rawRisk = (visHazard * 0.35) + (proxHazard * 0.50) + (spdNorm * 0.15);
+      const score = Math.round(Math.min(100, Math.max(0, rawRisk * 1.8 * 100)));
+      const brk = parseFloat((1.2 + (speed * 0.18) + (1.0 - visNorm) * 1.5).toFixed(1));
+
+      // Update DOM
+      const elVis = document.getElementById('hudVis');
+      const elDist = document.getElementById('hudDist');
+      const elSpeed = document.getElementById('hudSpeed');
+      const elBrake = document.getElementById('hudBrake');
+      const elScore = document.getElementById('hudScore');
+
+      if (elVis) elVis.textContent = vis;
+      if (elDist) elDist.textContent = dist.toFixed(2);
+      if (elSpeed) elSpeed.textContent = speed.toFixed(1);
+      if (elBrake) elBrake.textContent = brk.toFixed(1);
+      if (elScore) elScore.textContent = score;
+
+      const barVis = document.getElementById('hudVisBar');
+      const barDist = document.getElementById('hudDistBar');
+      const barSpeed = document.getElementById('hudSpeedBar');
+      const barBrake = document.getElementById('hudBrakeBar');
+
+      if (barVis) barVis.style.width = `${vis}%`;
+      if (barDist) barDist.style.width = `${Math.min(100, (dist / 6.0) * 100)}%`;
+      if (barSpeed) barSpeed.style.width = `${Math.min(100, (speed / 12.0) * 100)}%`;
+      if (barBrake) barBrake.style.width = `${Math.min(100, (brk / 5.0) * 100)}%`;
+
+      // Status text updates
+      const subVis = document.getElementById('hudVisSub');
+      if (subVis) {
+        subVis.innerHTML = vis > 70 ? '<span>●</span> Clear corridor detected' : vis > 40 ? '<span>●</span> Moderate dust haze' : '<span>●</span> Dense fog active';
+      }
+
+      const riskLevel = document.getElementById('hudRiskLevel');
+      const riskDesc = document.getElementById('hudRiskDesc');
+      const riskBox = document.getElementById('hudRiskBox');
+
+      if (riskLevel && riskDesc && riskBox) {
+        if (score >= 80) {
+          riskLevel.textContent = 'EMERGENCY STOP';
+          riskLevel.style.color = 'var(--red)';
+          riskDesc.textContent = 'Proximity hazard in low visibility · vehicle halt';
+          riskBox.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+          riskBox.style.background = 'rgba(239, 68, 68, 0.1)';
+        } else if (score >= 50) {
+          riskLevel.textContent = 'HIGH RISK';
+          riskLevel.style.color = 'var(--amber)';
+          riskDesc.textContent = 'Adaptive speed reduction active';
+          riskBox.style.borderColor = 'rgba(245, 158, 11, 0.5)';
+          riskBox.style.background = 'rgba(245, 158, 11, 0.1)';
+        } else {
+          riskLevel.textContent = 'SAFE CORRIDOR';
+          riskLevel.style.color = 'var(--lime)';
+          riskDesc.textContent = 'All 6 sensors reporting nominal · safety margins active';
+          riskBox.style.borderColor = 'rgba(16, 185, 129, 0.35)';
+          riskBox.style.background = 'rgba(16, 185, 129, 0.08)';
+        }
+      }
+    }
+
+    // Tick every 750ms
+    setInterval(updateHeroHUD, 750);
+
+    // Navigate to dashboard with preset
+    function goToDashboard(preset) {
+      localStorage.setItem('oreguard_preset', preset);
+      window.location.href = 'index.html';
+    }
+
+    // Intersection Observer for scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.step-card, .scenario-card').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity .5s ease, transform .5s ease, border-color .25s, background .25s';
+      observer.observe(el);
+    });
+  </script>
+
+</body>
+</html>

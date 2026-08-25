@@ -1,0 +1,9 @@
+# Logs and temp files
+*.log
+scratch/
+__pycache__/
+*.pyc
+
+# Local server / environment
+.env
+node_modules/

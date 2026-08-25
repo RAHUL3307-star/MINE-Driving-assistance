@@ -1,0 +1,1634 @@
+.js"
+/*!********************!*\
+  !*** ./src/App.js ***!
+  \********************/
+(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ }
+
+.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Area.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Bar.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/XAxis.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/YAxis.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/chart/BarChart.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/chart/AreaChart.js");
+/* harmony import */ var react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! react/jsx-dev-runtime */ "./node_modules/react/jsx-dev-runtime.js");
+/* provided dependency */ var __react_refresh_utils__ = __webpack_require__(/*! ./node_modules/@pmmmwh/react-refresh-webpack-plugin/lib/runtime/RefreshUtils.js */ "./node_modules/@pmmmwh/react-refresh-webpack-plugin/lib/runtime/RefreshUtils.js");
+__webpack_require__.$Refresh$.runtime = __webpack_require__(/*! ./node_modules/react-refresh/runtime.js */ "./node_modules/react-refresh/runtime.js");
+
+var _jsxFileName = "/app/frontend/src/App.js",
+  _s = __webpack_require__.$Refresh$.signature(),
+  _s2 = __webpack_require__.$Refresh$.signature(),
+  _s3 = __webpack_require__.$Refresh$.signature(),
+  _s4 = __webpack_require__.$Refresh$.signature(),
+  _s5 = __webpack_require__.$Refresh$.signature(),
+  _s6 = __webpack_require__.$Refresh$.signature(),
+  _s7 = __webpack_require__.$Refresh$.signature();
+
+
+
+
+
+
+const BACKEND_URL = "https://mine-safety-shield.preview.emergentagent.com";
+const API = `${"https://mine-safety-shield.preview.emergentagent.com"}
+
+.4,
+    speed: 8.2
+  },
+  poor: {
+    label: "Poor Fog",
+    visibility: 35,
+    distance: 5.8,
+    speed: 4.4
+  }
+
+.8,
+    speed: 0
+  }
+};
+const initialEvents = [{
+  time: "14:32:08",
+  title: "Visibility degraded",
+  detail: "Visibility dropped below 40% threshold",
+  level: "WARNING"
+}
+
+.8 m",
+  level: "WARNING"
+}, {
+  time: "14:25:12",
+  title: "System check passed",
+  detail: "All 6 sensors reporting nominal",
+  level: "SAFE"
+}
+
+.4 m/s",
+  level: "SAFE"
+}];
+function Shell({
+  children,
+  mode,
+  setMode
+}
+
+.useLocation)();
+  const [mobile, setMobile] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  return /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+    className: "app-shell",
+    "x-file-name": "App",
+    "x-line-number": "12",
+    "x-column": "130",
+    "x-component": "div",
+    "x-id": "App_12_130",
+    "x-dynamic": "false",
+    children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("aside", {
+      className: mobile ? "sidebar open" : "sidebar",
+      "x-file-name": "App",
+      "x-line-number": "12",
+      "x-column": "157",
+      "x-component": "aside",
+      "x-id": "App_12_157",
+      "x-dynamic": "false",
+      children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+        className: "brand",
+        "x-file-name": "App",
+        "x-line-number": "12",
+        "x-column": "212",
+        "x-component": "div",
+        "x-id": "App_12_212",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+          className: "brand-mark",
+          "x-file-name": "App",
+          "x-line-number": "12",
+          "x-column": "235",
+          "x-component": "div",
+          "x-id": "App_12_235",
+          "x-dynamic": "false",
+          children: /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_21__["default"], {
+            size: 22,
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "263",
+            "x-component": "ShieldCheck",
+            "x-id": "App_12_263",
+            "x-dynamic": "false"
+          }
+
+.jsxDEV)("div", {
+          "x-file-name": "App",
+          "x-line-number": "12",
+          "x-column": "293",
+          "x-component": "div",
+          "x-id": "App_12_293",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("strong", {
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "298",
+            "x-component": "strong",
+            "x-id": "App_12_298",
+            "x-dynamic": "false",
+            children: "OREGUARD"
+          }
+
+.jsxDEV)("span", {
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "323",
+            "x-component": "span",
+            "x-id": "App_12_323",
+            "x-dynamic": "false",
+            children: "ADAS CONTROL"
+          }
+
+.jsxDEV)("button", {
+          className: "close-nav",
+          "data-testid": "close-navigation-button",
+          onClick: () => setMobile(false),
+          "x-file-name": "App",
+          "x-line-number": "12",
+          "x-column": "354",
+          "x-component": "button",
+          "x-id": "App_12_354",
+          "x-dynamic": "false",
+          children: /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_24__["default"], {
+            size: 18
+          }
+
+.jsxDEV)("div", {
+        className: "fleet-chip",
+        "data-testid": "vehicle-identity",
+        "x-file-name": "App",
+        "x-line-number": "12",
+        "x-column": "484",
+        "x-component": "div",
+        "x-id": "App_12_484",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+          className: "live-dot",
+          "x-file-name": "App",
+          "x-line-number": "12",
+          "x-column": "543",
+          "x-component": "span",
+          "x-id": "App_12_543",
+          "x-dynamic": "false"
+        }
+
+.jsxDEV)("b", {
+          "x-file-name": "App",
+          "x-line-number": "12",
+          "x-column": "585",
+          "x-component": "b",
+          "x-id": "App_12_585",
+          "x-dynamic": "false",
+          children: "\u2022"
+        }, void 0, false, {
+          fileName: _jsxFileName,
+          lineNumber: 12,
+          columnNumber: 586
+        }
+
+.jsxDEV)("nav", {
+        "x-file-name": "App",
+        "x-line-number": "12",
+        "x-column": "606",
+        "x-component": "nav",
+        "x-id": "App_12_606",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.NavLink, {
+          to: "/",
+          end: true,
+          className: location.pathname === "/" ? "active" : "",
+          "data-testid": "dashboard-navigation-link",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            size: 18,
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "725",
+            "x-component": "LayoutDashboard",
+            "x-id": "App_12_725",
+            "x-dynamic": "false"
+          }
+
+.jsxDEV)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.NavLink, {
+          to: "/analytics",
+          className: location.pathname === "/analytics" ? "active" : "",
+          "data-testid": "analytics-navigation-link",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_3__["default"], {
+            size: 18,
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "905",
+            "x-component": "BarChart3",
+            "x-id": "App_12_905",
+            "x-dynamic": "false"
+          }
+
+.jsxDEV)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.NavLink, {
+          to: "/settings",
+          className: location.pathname === "/settings" ? "active" : "",
+          "data-testid": "settings-navigation-link",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_20__["default"], {
+            size: 18
+          }
+
+.jsxDEV)("div", {
+        className: "sidebar-footer",
+        "x-file-name": "App",
+        "x-line-number": "12",
+        "x-column": "1133",
+        "x-component": "div",
+        "x-id": "App_12_1133",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+          className: "connection-row",
+          "x-file-name": "App",
+          "x-line-number": "12",
+          "x-column": "1165",
+          "x-component": "div",
+          "x-id": "App_12_1165",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+            className: "live-dot",
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "1197",
+            "x-component": "span",
+            "x-id": "App_12_1197",
+            "x-dynamic": "false"
+          }
+
+.jsxDEV)("span", {
+          "x-file-name": "App",
+          "x-line-number": "12",
+          "x-column": "1245",
+          "x-component": "span",
+          "x-id": "App_12_1245",
+          "x-dynamic": "false",
+          children: "Last sync \xB7 2 sec ago"
+        }
+
+.jsxDEV)("main", {
+      className: "main",
+      "x-file-name": "App",
+      "x-line-number": "12",
+      "x-column": "1293",
+      "x-component": "main",
+      "x-id": "App_12_1293",
+      "x-dynamic": "true",
+      "x-source-type": "prop",
+      "x-source-var": "children",
+      "x-source-editable": "false",
+      children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("header", {
+        className: "topbar",
+        "x-file-name": "App",
+        "x-line-number": "12",
+        "x-column": "1316",
+        "x-component": "header",
+        "x-id": "App_12_1316",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("button", {
+          className: "menu-button",
+          "data-testid": "open-navigation-button",
+          onClick: () => setMobile(true),
+          "x-file-name": "App",
+          "x-line-number": "12",
+          "x-column": "1343",
+          "x-component": "button",
+          "x-id": "App_12_1343",
+          "x-dynamic": "false",
+          children: /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_18__["default"], {
+            size: 22
+          }
+
+.jsxDEV)("div", {
+          "x-file-name": "App",
+          "x-line-number": "12",
+          "x-column": "1470",
+          "x-component": "div",
+          "x-id": "App_12_1470",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+            className: "eyebrow",
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "1475",
+            "x-component": "div",
+            "x-id": "App_12_1475",
+            "x-dynamic": "false",
+            children: "MINE VEHICLE / SAFETY LAYER"
+          }
+
+.jsxDEV)("h1", {
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "1533",
+            "x-component": "h1",
+            "x-id": "App_12_1533",
+            "x-dynamic": "true",
+            "x-source-type": "computed",
+            "x-source-editable": "false",
+            children: location.pathname === "/" ? "Live operations" : location.pathname === "/analytics" ? "Analytics & history" : "System settings"
+          }, void 0, false, {
+            fileName: _jsxFileName,
+            lineNumber: 12,
+            columnNumber: 1534
+          }
+
+.jsxDEV)("div", {
+          className: "top-actions",
+          "x-file-name": "App",
+          "x-line-number": "12",
+          "x-column": "1676",
+          "x-component": "div",
+          "x-id": "App_12_1676",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+            className: "mode-toggle",
+            "data-testid": "global-mode-toggle",
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "1705",
+            "x-component": "div",
+            "x-id": "App_12_1705",
+            "x-dynamic": "false",
+            children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("button", {
+              className: mode === "simulation" ? "selected" : "",
+              "data-testid": "simulation-mode-button",
+              onClick: () => setMode("simulation"),
+              "x-file-name": "App",
+              "x-line-number": "12",
+              "x-column": "1767",
+              "x-component": "button",
+              "x-id": "App_12_1767",
+              "x-dynamic": "false",
+              children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_7__["default"], {
+                size: 15,
+                "x-file-name": "App",
+                "x-line-number": "12",
+                "x-column": "1902",
+                "x-component": "Activity",
+                "x-id": "App_12_1902",
+                "x-dynamic": "false"
+              }
+
+.jsxDEV)("button", {
+              className: mode === "live" ? "selected" : "",
+              "data-testid": "live-mode-button",
+              onClick: () => setMode("live"),
+              "x-file-name": "App",
+              "x-line-number": "12",
+              "x-column": "1942",
+              "x-component": "button",
+              "x-id": "App_12_1942",
+              "x-dynamic": "false",
+              children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_19__["default"], {
+                size: 15,
+                "x-file-name": "App",
+                "x-line-number": "12",
+                "x-column": "2059",
+                "x-component": "Radio",
+                "x-id": "App_12_2059",
+                "x-dynamic": "false"
+              }
+
+.jsxDEV)("div", {
+            className: "connection-badge",
+            "data-testid": "connection-status",
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "2105",
+            "x-component": "div",
+            "x-id": "App_12_2105",
+            "x-dynamic": "true",
+            "x-source-type": "computed",
+            "x-source-editable": "false",
+            children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_23__["default"], {
+              size: 15,
+              "x-file-name": "App",
+              "x-line-number": "12",
+              "x-column": "2171",
+              "x-component": "Wifi",
+              "x-id": "App_12_2171",
+              "x-dynamic": "false"
+            }
+
+.useLocation];
+});
+_c = Shell;
+function Radar({
+  distance,
+  risk
+}
+
+.jsxDEV)("div", {
+    className: "radar-wrap",
+    "data-testid": "radar-monitor",
+    "x-file-name": "App",
+    "x-line-number": "14",
+    "x-column": "133",
+    "x-component": "div",
+    "x-id": "App_14_133",
+    "x-dynamic": "false",
+    children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+      className: "radar-grid",
+      "x-file-name": "App",
+      "x-line-number": "14",
+      "x-column": "189",
+      "x-component": "div",
+      "x-id": "App_14_189",
+      "x-dynamic": "true",
+      "x-source-type": "computed",
+      "x-source-editable": "false",
+      children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+        className: "ring ring-one",
+        "x-file-name": "App",
+        "x-line-number": "14",
+        "x-column": "217",
+        "x-component": "div",
+        "x-id": "App_14_217",
+        "x-dynamic": "false"
+      }
+
+.jsxDEV)("div", {
+        className: "ring ring-two",
+        "x-file-name": "App",
+        "x-line-number": "14",
+        "x-column": "249",
+        "x-component": "div",
+        "x-id": "App_14_249",
+        "x-dynamic": "false"
+      }, void 0, false, {
+        fileName: _jsxFileName,
+        lineNumber: 14,
+        columnNumber: 250
+      }
+
+.jsxDEV)("div", {
+        className: "ring ring-three",
+        "x-file-name": "App",
+        "x-line-number": "14",
+        "x-column": "281",
+        "x-component": "div",
+        "x-id": "App_14_281",
+        "x-dynamic": "false"
+      }, void 0, false, {
+        fileName: _jsxFileName,
+        lineNumber: 14,
+        columnNumber: 282
+      }
+
+.jsxDEV)("div", {
+        className: "crosshair",
+        "x-file-name": "App",
+        "x-line-number": "14",
+        "x-column": "315",
+        "x-component": "div",
+        "x-id": "App_14_315",
+        "x-dynamic": "false"
+      }, void 0, false, {
+        fileName: _jsxFileName,
+        lineNumber: 14,
+        columnNumber: 316
+      }
+
+.jsxDEV)("div", {
+        className: "sweep",
+        "x-file-name": "App",
+        "x-line-number": "14",
+        "x-column": "343",
+        "x-component": "div",
+        "x-id": "App_14_343",
+        "x-dynamic": "false"
+      }, void 0, false, {
+        fileName: _jsxFileName,
+        lineNumber: 14,
+        columnNumber: 344
+      }
+
+.slice(0, risk === "SAFE" ? 1 : risk === "WARNING" ? 2 : 4).map((p, i) => /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+        className: `obstacle ${risk.toLowerCase()}
+
+.x}%`,
+          top: `${p.y}%`
+        }
+
+.jsxDEV)("div", {
+        className: "vehicle",
+        "x-file-name": "App",
+        "x-line-number": "14",
+        "x-column": "555",
+        "x-component": "div",
+        "x-id": "App_14_555",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+          "x-file-name": "App",
+          "x-line-number": "14",
+          "x-column": "580",
+          "x-component": "span",
+          "x-id": "App_14_580",
+          "x-dynamic": "false",
+          children: "MV-07"
+        }
+
+.jsxDEV)("div", {
+          className: "vehicle-body",
+          "x-file-name": "App",
+          "x-line-number": "14",
+          "x-column": "598",
+          "x-component": "div",
+          "x-id": "App_14_598",
+          "x-dynamic": "false"
+        }, void 0, false, {
+          fileName: _jsxFileName,
+          lineNumber: 14,
+          columnNumber: 599
+        }
+
+.jsxDEV)("div", {
+      className: "radar-label",
+      "x-file-name": "App",
+      "x-line-number": "14",
+      "x-column": "641",
+      "x-component": "div",
+      "x-id": "App_14_641",
+      "x-dynamic": "false",
+      children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+        "x-file-name": "App",
+        "x-line-number": "14",
+        "x-column": "670",
+        "x-component": "span",
+        "x-id": "App_14_670",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("i", {
+          className: "legend safe",
+          "x-file-name": "App",
+          "x-line-number": "14",
+          "x-column": "676",
+          "x-component": "i",
+          "x-id": "App_14_676",
+          "x-dynamic": "false"
+        }
+
+.jsxDEV)("span", {
+        "x-file-name": "App",
+        "x-line-number": "14",
+        "x-column": "720",
+        "x-component": "span",
+        "x-id": "App_14_720",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("i", {
+          className: "legend warning",
+          "x-file-name": "App",
+          "x-line-number": "14",
+          "x-column": "726",
+          "x-component": "i",
+          "x-id": "App_14_726",
+          "x-dynamic": "false"
+        }
+
+.jsxDEV)("span", {
+        "x-file-name": "App",
+        "x-line-number": "14",
+        "x-column": "771",
+        "x-component": "span",
+        "x-id": "App_14_771",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("i", {
+          className: "legend critical",
+          "x-file-name": "App",
+          "x-line-number": "14",
+          "x-column": "777",
+          "x-component": "i",
+          "x-id": "App_14_777",
+          "x-dynamic": "false"
+        }
+
+.jsxDEV)("div", {
+      className: "radar-distance",
+      "x-file-name": "App",
+      "x-line-number": "14",
+      "x-column": "830",
+      "x-component": "div",
+      "x-id": "App_14_830",
+      "x-dynamic": "false",
+      children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+        "x-file-name": "App",
+        "x-line-number": "14",
+        "x-column": "862",
+        "x-component": "span",
+        "x-id": "App_14_862",
+        "x-dynamic": "false",
+        children: "NEAREST OBSTACLE"
+      }
+
+.jsxDEV)("strong", {
+        "x-file-name": "App",
+        "x-line-number": "14",
+        "x-column": "891",
+        "x-component": "strong",
+        "x-id": "App_14_891",
+        "x-dynamic": "true",
+        "x-source-type": "computed",
+        "x-source-editable": "false",
+        children: [distance.toFixed(1), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("small", {
+          "x-file-name": "App",
+          "x-line-number": "14",
+          "x-column": "920",
+          "x-component": "small",
+          "x-id": "App_14_920",
+          "x-dynamic": "false",
+          children: " m"
+        }
+
+.jsxDEV)("em", {
+        "x-file-name": "App",
+        "x-line-number": "14",
+        "x-column": "946",
+        "x-component": "em",
+        "x-id": "App_14_946",
+        "x-dynamic": "false",
+        children: "FRONT ARRAY \xB7 ULTRASONIC"
+      }, void 0, false, {
+        fileName: _jsxFileName,
+        lineNumber: 14,
+        columnNumber: 947
+      }
+
+.jsxDEV)("div", {
+    className: "gauge-card",
+    "data-testid": `telemetry-${label.toLowerCase().replaceAll(" ", "-")}
+
+.jsxDEV)("div", {
+      className: "gauge-head",
+      "x-file-name": "App",
+      "x-line-number": "16",
+      "x-column": "178",
+      "x-component": "div",
+      "x-id": "App_16_178",
+      "x-dynamic": "false",
+      children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+        "x-file-name": "App",
+        "x-line-number": "16",
+        "x-column": "206",
+        "x-component": "span",
+        "x-id": "App_16_206",
+        "x-dynamic": "true",
+        "x-source-type": "prop",
+        "x-source-var": "label",
+        "x-source-editable": "false",
+        children: label
+      }
+
+.jsxDEV)(Icon, {
+        size: 17,
+        "x-file-name": "App",
+        "x-line-number": "16",
+        "x-column": "226",
+        "x-component": "Icon",
+        "x-id": "App_16_226",
+        "x-dynamic": "false"
+      }, void 0, false, {
+        fileName: _jsxFileName,
+        lineNumber: 16,
+        columnNumber: 227
+      }
+
+.jsxDEV)("strong", {
+      "x-file-name": "App",
+      "x-line-number": "16",
+      "x-column": "249",
+      "x-component": "strong",
+      "x-id": "App_16_249",
+      "x-dynamic": "true",
+      "x-source-type": "prop",
+      "x-source-var": "value",
+      "x-source-editable": "false",
+      children: [value, /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("small", {
+        "x-file-name": "App",
+        "x-line-number": "16",
+        "x-column": "264",
+        "x-component": "small",
+        "x-id": "App_16_264",
+        "x-dynamic": "true",
+        "x-source-type": "prop",
+        "x-source-var": "unit",
+        "x-source-editable": "false",
+        children: unit
+      }
+
+.jsxDEV)("div", {
+      className: "gauge-line",
+      "x-file-name": "App",
+      "x-line-number": "16",
+      "x-column": "294",
+      "x-component": "div",
+      "x-id": "App_16_294",
+      "x-dynamic": "false",
+      children: /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+        className: tone,
+        style: {
+          width: `${Math.min(Number(value) * (unit === "%" ? 1 : 5), 100)}
+
+.jsxDEV)("em", {
+      "x-file-name": "App",
+      "x-line-number": "16",
+      "x-column": "431",
+      "x-component": "em",
+      "x-id": "App_16_431",
+      "x-dynamic": "true",
+      "x-source-type": "prop",
+      "x-source-var": "sub",
+      "x-source-editable": "false",
+      children: sub
+    }, void 0, false, {
+      fileName: _jsxFileName,
+      lineNumber: 16,
+      columnNumber: 432
+    }
+
+.useState)("poor");
+  const [estop, setEstop] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const [events, setEvents] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(initialEvents);
+  const [tick, setTick] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0);
+  const current = presets[scenario];
+  const risk = estop || scenario === "critical" ? "CRITICAL" : scenario === "poor" ? "WARNING" : "SAFE";
+  const score = estop ? 100 : scenario === "critical" ? 94 : scenario === "poor" ? 61 : 8;
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    const id = setInterval(() => setTick(t => t + 1), 2400);
+    return () => clearInterval(id);
+  }
+
+.useMemo)(() => Array.from({
+    length: 10
+  }
+
+.floor(i / 6)}:${String((18 + i * 2) % 60).padStart(2, "0")}
+
+.max(8, Math.min(96, score + Math.sin(i + tick / 4) * 14))
+  })), [score, tick]);
+  const setPreset = key => {
+    setScenario(key);
+    setEstop(false);
+    setEvents([{
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      }
+
+.label} scenario loaded`,
+      detail: "Visibility-aware risk engine recalibrated",
+      level: key === "clear" ? "SAFE" : key === "poor" ? "WARNING" : "CRITICAL"
+    }, ...events].slice(0, 5));
+  };
+  return /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+    className: "page",
+    "x-file-name": "App",
+    "x-line-number": "33",
+    "x-column": "9",
+    "x-component": "div",
+    "x-id": "App_33_9",
+    "x-dynamic": "false",
+    children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("section", {
+      className: "scenario-bar",
+      "data-testid": "scenario-controls",
+      "x-file-name": "App",
+      "x-line-number": "34",
+      "x-column": "4",
+      "x-component": "section",
+      "x-id": "App_34_4",
+      "x-dynamic": "false",
+      children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+        "x-file-name": "App",
+        "x-line-number": "34",
+        "x-column": "70",
+        "x-component": "div",
+        "x-id": "App_34_70",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+          className: "section-label",
+          "x-file-name": "App",
+          "x-line-number": "34",
+          "x-column": "75",
+          "x-component": "span",
+          "x-id": "App_34_75",
+          "x-dynamic": "false",
+          children: "DEMO SCENARIO"
+        }
+
+.jsxDEV)("strong", {
+          "x-file-name": "App",
+          "x-line-number": "34",
+          "x-column": "127",
+          "x-component": "strong",
+          "x-id": "App_34_127",
+          "x-dynamic": "false",
+          children: "Visibility conditions"
+        }
+
+.jsxDEV)("div", {
+        className: "scenario-buttons",
+        "x-file-name": "App",
+        "x-line-number": "34",
+        "x-column": "171",
+        "x-component": "div",
+        "x-id": "App_34_171",
+        "x-dynamic": "true",
+        "x-source-type": "computed",
+        "x-source-editable": "false",
+        children: Object.entries(presets).map(([key, item]) => /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("button", {
+          className: scenario === key ? `scenario active ${key}
+
+.jsxDEV)("span", {
+            className: `scenario-dot ${key}
+
+.label, /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("small", {
+            "x-file-name": "App",
+            "x-line-number": "34",
+            "x-column": "461",
+            "x-component": "small",
+            "x-id": "App_34_461",
+            "x-dynamic": "true",
+            "x-source-type": "unknown",
+            "x-source-var": "item",
+            "x-source-path": "visibility",
+            "x-source-editable": "false",
+            children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+              "data-ve-dynamic": "true",
+              "x-excluded": "true",
+              style: {
+                display: "contents"
+              }
+
+.visibility
+            }, void 0, false), "%"]
+          }, void 0, true, {
+            fileName: _jsxFileName,
+            lineNumber: 34,
+            columnNumber: 462
+          }
+
+.jsxDEV)("div", {
+        className: "scenario-note",
+        "x-file-name": "App",
+        "x-line-number": "34",
+        "x-column": "511",
+        "x-component": "div",
+        "x-id": "App_34_511",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_22__["default"], {
+          size: 15,
+          "x-file-name": "App",
+          "x-line-number": "34",
+          "x-column": "542",
+          "x-component": "SlidersHorizontal",
+          "x-id": "App_34_542",
+          "x-dynamic": "false"
+        }
+
+.jsxDEV)("div", {
+      className: "dashboard-grid",
+      "x-file-name": "App",
+      "x-line-number": "35",
+      "x-column": "4",
+      "x-component": "div",
+      "x-id": "App_35_4",
+      "x-dynamic": "false",
+      children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("section", {
+        className: `risk-panel ${risk.toLowerCase()}
+
+.jsxDEV)("div", {
+          className: "panel-top",
+          "x-file-name": "App",
+          "x-line-number": "35",
+          "x-column": "124",
+          "x-component": "div",
+          "x-id": "App_35_124",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+            className: "section-label",
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "151",
+            "x-component": "span",
+            "x-id": "App_35_151",
+            "x-dynamic": "false",
+            children: "RISK ENGINE / REAL-TIME"
+          }
+
+.jsxDEV)("span", {
+            className: "pulse-label",
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "213",
+            "x-component": "span",
+            "x-id": "App_35_213",
+            "x-dynamic": "true",
+            "x-source-type": "computed",
+            "x-source-editable": "false",
+            children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("i", {
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "243",
+              "x-component": "i",
+              "x-id": "App_35_243",
+              "x-dynamic": "false"
+            }
+
+.jsxDEV)("div", {
+          className: "risk-display",
+          "x-file-name": "App",
+          "x-line-number": "35",
+          "x-column": "307",
+          "x-component": "div",
+          "x-id": "App_35_307",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+            className: "risk-icon",
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "337",
+            "x-component": "div",
+            "x-id": "App_35_337",
+            "x-dynamic": "true",
+            "x-source-type": "computed",
+            "x-source-editable": "false",
+            children: risk === "SAFE" ? /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_4__["default"], {
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "383",
+              "x-component": "CheckCircle2",
+              "x-id": "App_35_383",
+              "x-dynamic": "false"
+            }
+
+.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_6__["default"], {
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "422",
+              "x-component": "AlertTriangle",
+              "x-id": "App_35_422",
+              "x-dynamic": "false"
+            }
+
+.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_6__["default"], {
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "441",
+              "x-component": "TriangleAlert",
+              "x-id": "App_35_441",
+              "x-dynamic": "false"
+            }
+
+.jsxDEV)("div", {
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "464",
+            "x-component": "div",
+            "x-id": "App_35_464",
+            "x-dynamic": "false",
+            children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "469",
+              "x-component": "span",
+              "x-id": "App_35_469",
+              "x-dynamic": "false",
+              children: "CURRENT RISK LEVEL"
+            }
+
+.jsxDEV)("h2", {
+              "data-testid": "risk-level",
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "500",
+              "x-component": "h2",
+              "x-id": "App_35_500",
+              "x-dynamic": "true",
+              "x-source-type": "computed",
+              "x-source-editable": "false",
+              children: estop ? "EMERGENCY STOP" : risk
+            }, void 0, false, {
+              fileName: _jsxFileName,
+              lineNumber: 35,
+              columnNumber: 501
+            }
+
+.jsxDEV)("p", {
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "567",
+              "x-component": "p",
+              "x-id": "App_35_567",
+              "x-dynamic": "true",
+              "x-source-type": "computed",
+              "x-source-editable": "false",
+              children: estop ? "Vehicle immobilized · manual reset required" : risk === "SAFE" ? "Clear path · standard operating conditions" : risk === "WARNING" ? "Reduced visibility · adaptive speed applied" : "Immediate hazard · intervention engaged"
+            }, void 0, false, {
+              fileName: _jsxFileName,
+              lineNumber: 35,
+              columnNumber: 568
+            }
+
+.jsxDEV)("div", {
+          className: "risk-score",
+          "x-file-name": "App",
+          "x-line-number": "35",
+          "x-column": "819",
+          "x-component": "div",
+          "x-id": "App_35_819",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "847",
+            "x-component": "div",
+            "x-id": "App_35_847",
+            "x-dynamic": "false",
+            children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "852",
+              "x-component": "span",
+              "x-id": "App_35_852",
+              "x-dynamic": "false",
+              children: "RISK SCORE"
+            }
+
+.jsxDEV)("strong", {
+              "data-testid": "risk-score",
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "875",
+              "x-component": "strong",
+              "x-id": "App_35_875",
+              "x-dynamic": "true",
+              "x-source-type": "unknown",
+              "x-source-var": "score",
+              "x-source-editable": "false",
+              children: [score, /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("small", {
+                "x-file-name": "App",
+                "x-line-number": "35",
+                "x-column": "915",
+                "x-component": "small",
+                "x-id": "App_35_915",
+                "x-dynamic": "false",
+                children: "/100"
+              }
+
+.jsxDEV)("div", {
+            className: "score-track",
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "949",
+            "x-component": "div",
+            "x-id": "App_35_949",
+            "x-dynamic": "false",
+            children: /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+              style: {
+                width: `${score}
+
+.jsxDEV)("button", {
+          className: `estop-button ${estop ? "engaged" : ""}
+
+.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_5__["default"], {
+            size: 22,
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "1158",
+            "x-component": "CircleStop",
+            "x-id": "App_35_1158",
+            "x-dynamic": "false"
+          }
+
+.jsxDEV)("small", {
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "1232",
+            "x-component": "small",
+            "x-id": "App_35_1232",
+            "x-dynamic": "true",
+            "x-source-type": "computed",
+            "x-source-editable": "false",
+            children: estop ? "INTERLOCKED" : "MANUAL OVERRIDE"
+          }
+
+.jsxDEV)("section", {
+        className: "radar-panel",
+        "x-file-name": "App",
+        "x-line-number": "35",
+        "x-column": "1309",
+        "x-component": "section",
+        "x-id": "App_35_1309",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+          className: "panel-heading",
+          "x-file-name": "App",
+          "x-line-number": "35",
+          "x-column": "1342",
+          "x-component": "div",
+          "x-id": "App_35_1342",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "1373",
+            "x-component": "div",
+            "x-id": "App_35_1373",
+            "x-dynamic": "false",
+            children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+              className: "section-label",
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "1378",
+              "x-component": "span",
+              "x-id": "App_35_1378",
+              "x-dynamic": "false",
+              children: "PROXIMITY MONITOR"
+            }
+
+.jsxDEV)("h3", {
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "1434",
+              "x-component": "h3",
+              "x-id": "App_35_1434",
+              "x-dynamic": "false",
+              children: "Forward radar field"
+            }, void 0, false, {
+              fileName: _jsxFileName,
+              lineNumber: 35,
+              columnNumber: 1435
+            }
+
+.jsxDEV)("span", {
+            className: "sensor-status",
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "1468",
+            "x-component": "span",
+            "x-id": "App_35_1468",
+            "x-dynamic": "false",
+            children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("i", {
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "1500",
+              "x-component": "i",
+              "x-id": "App_35_1500",
+              "x-dynamic": "false"
+            }
+
+.jsxDEV)(Radar, {
+          distance: current.distance,
+          risk: risk,
+          "x-file-name": "App",
+          "x-line-number": "35",
+          "x-column": "1534",
+          "x-component": "Radar",
+          "x-id": "App_35_1534",
+          "x-dynamic": "false"
+        }, void 0, false, {
+          fileName: _jsxFileName,
+          lineNumber: 35,
+          columnNumber: 1535
+        }
+
+.jsxDEV)("div", {
+      className: "gauge-grid",
+      "x-file-name": "App",
+      "x-line-number": "36",
+      "x-column": "4",
+      "x-component": "div",
+      "x-id": "App_36_4",
+      "x-dynamic": "false",
+      children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(Gauge, {
+        label: "Visibility",
+        value: current.visibility,
+        unit: "%",
+        icon: lucide_react__WEBPACK_IMPORTED_MODULE_10__["default"],
+        tone: scenario === "clear" ? "lime" : "amber",
+        sub: current.label.toUpperCase(),
+        "x-file-name": "App",
+        "x-line-number": "36",
+        "x-column": "32",
+        "x-component": "Gauge",
+        "x-id": "App_36_32",
+        "x-dynamic": "false"
+      }
+
+.jsxDEV)(Gauge, {
+        label: "Obstacle distance",
+        value: current.distance,
+        unit: "m",
+        icon: lucide_react__WEBPACK_IMPORTED_MODULE_6__["default"],
+        tone: risk === "CRITICAL" ? "red" : "amber",
+        sub: "FRONT ARRAY \xB7 0.1m ACCURACY",
+        "x-file-name": "App",
+        "x-line-number": "36",
+        "x-column": "192",
+        "x-component": "Gauge",
+        "x-id": "App_36_192",
+        "x-dynamic": "false"
+      }, void 0, false, {
+        fileName: _jsxFileName,
+        lineNumber: 36,
+        columnNumber: 193
+      }
+
+.jsxDEV)(Gauge, {
+        label: "Vehicle speed",
+        value: current.speed,
+        unit: "m/s",
+        icon: lucide_react__WEBPACK_IMPORTED_MODULE_11__["default"],
+        tone: "lime",
+        sub: risk === "SAFE" ? "NOMINAL SPEED" : "ADAPTIVE LIMIT ACTIVE",
+        "x-file-name": "App",
+        "x-line-number": "36",
+        "x-column": "360",
+        "x-component": "Gauge",
+        "x-id": "App_36_360",
+        "x-dynamic": "false"
+      }, void 0, false, {
+        fileName: _jsxFileName,
+        lineNumber: 36,
+        columnNumber: 361
+      }
+
+.jsxDEV)(Gauge, {
+        label: "Brake readiness",
+        value: risk === "CRITICAL" ? 100 : risk === "WARNING" ? 72 : 18,
+        unit: "%",
+        icon: lucide_react__WEBPACK_IMPORTED_MODULE_5__["default"],
+        tone: risk === "CRITICAL" ? "red" : "amber",
+        sub: risk === "CRITICAL" ? "FULL PRESSURE READY" : "STANDBY",
+        "x-file-name": "App",
+        "x-line-number": "36",
+        "x-column": "518",
+        "x-component": "Gauge",
+        "x-id": "App_36_518",
+        "x-dynamic": "false"
+      }, void 0, false, {
+        fileName: _jsxFileName,
+        lineNumber: 36,
+        columnNumber: 519
+      }
+
+.jsxDEV)("div", {
+      className: "lower-grid",
+      "x-file-name": "App",
+      "x-line-number": "37",
+      "x-column": "4",
+      "x-component": "div",
+      "x-id": "App_37_4",
+      "x-dynamic": "false",
+      children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("section", {
+        className: "events-panel",
+        "x-file-name": "App",
+        "x-line-number": "37",
+        "x-column": "32",
+        "x-component": "section",
+        "x-id": "App_37_32",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+          className: "panel-heading",
+          "x-file-name": "App",
+          "x-line-number": "37",
+          "x-column": "66",
+          "x-component": "div",
+          "x-id": "App_37_66",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+            "x-file-name": "App",
+            "x-line-number": "37",
+            "x-column": "97",
+            "x-component": "div",
+            "x-id": "App_37_97",
+            "x-dynamic": "false",
+            children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+              className: "section-label",
+              "x-file-name": "App",
+              "x-line-number": "37",
+              "x-column": "102",
+              "x-component": "span",
+              "x-id": "App_37_102",
+              "x-dynamic": "false",
+              children: "EVENT LOG"
+            }
+
+.jsxDEV)("h3", {
+              "x-file-name": "App",
+              "x-line-number": "37",
+              "x-column": "150",
+              "x-component": "h3",
+              "x-id": "App_37_150",
+              "x-dynamic": "false",
+              children: "Recent warnings"
+            }, void 0, false, {
+              fileName: _jsxFileName,
+              lineNumber: 37,
+              columnNumber: 151
+            }
+
+.jsxDEV)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.NavLink, {
+            to: "/analytics",
+            className: "text-link",
+            "data-testid": "view-history-link",
+            children: ["View history ", /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_9__["default"], {
+              size: 15
+            }
+
+.jsxDEV)("div", {
+          className: "events",
+          "x-file-name": "App",
+          "x-line-number": "37",
+          "x-column": "313",
+          "x-component": "div",
+          "x-id": "App_37_313",
+          "x-dynamic": "true",
+          "x-source-type": "computed",
+          "x-source-editable": "false",
+          children: events.map((event, i) => /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+            className: "event-row",
+            "data-testid": `warning-event-${i}
+
+.jsxDEV)("span", {
+              className: `event-icon ${event.level.toLowerCase()}
+
+.level === "SAFE" ? /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_4__["default"], {
+                size: 16,
+                "x-file-name": "App",
+                "x-line-number": "37",
+                "x-column": "538",
+                "x-component": "CheckCircle2",
+                "x-id": "App_37_538",
+                "x-dynamic": "true",
+                "x-source-type": "external",
+                "x-source-var": "events",
+                "x-source-editable": "false",
+                "x-array-var": "events",
+                "x-array-item-param": "event"
+              }
+
+.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_8__["default"], {
+                size: 16,
+                "x-file-name": "App",
+                "x-line-number": "37",
+                "x-column": "566",
+                "x-component": "Bell",
+                "x-id": "App_37_566",
+                "x-dynamic": "true",
+                "x-source-type": "external",
+                "x-source-var": "events",
+                "x-source-editable": "false",
+                "x-array-var": "events",
+                "x-array-item-param": "event"
+              }
+
+.jsxDEV)("div", {
+              "x-file-name": "App",
+              "x-line-number": "37",
+              "x-column": "591",
+              "x-component": "div",
+              "x-id": "App_37_591",
+              "x-dynamic": "false",
+              children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("strong", {
+                "x-file-name": "App",
+                "x-line-number": "37",
+                "x-column": "596",
+                "x-component": "strong",
+                "x-id": "App_37_596",
+                "x-dynamic": "true",
+                "x-source-type": "static-imported",
+                "x-source-var": "events",
+                "x-source-path": "title",
+                "x-source-editable": "false",
+                "x-array-var": "events",
+                "x-array-item-param": "event",
+                children: event.title
+              }
+
+.jsxDEV)("p", {
+                "x-file-name": "App",
+                "x-line-number": "37",
+                "x-column": "626",
+                "x-component": "p",
+                "x-id": "App_37_626",
+                "x-dynamic": "true",
+                "x-source-type": "static-imported",
+                "x-source-var": "events",
+                "x-source-path": "detail",
+                "x-source-editable": "false",
+                "x-array-var": "events",
+                "x-array-item-param": "event",
+                children: event.detail
+              }, void 0, false, {
+                fileName: _jsxFileName,
+                lineNumber: 37,
+                columnNumber: 627
+              }
+
+.jsxDEV)("time", {
+              "x-file-name": "App",
+              "x-line-number": "37",
+              "x-column": "653",
+              "x-component": "time",
+              "x-id": "App_37_653",
+              "x-dynamic": "true",
+              "x-source-type": "static-imported",
+              "x-source-var": "events",
+              "x-source-path": "time",
+              "x-source-editable": "false",
+              "x-array-var": "events",
+              "x-array-item-param": "event",
+              children: event.time
+            }
+
+.time}-${i}`, true, {
+            fileName: _jsxFileName,
+            lineNumber: 37,
+            columnNumber: 364
+          }
+
+.jsxDEV)("section", {
+        className: "mini-chart-panel",
+        "x-file-name": "App",
+        "x-line-number": "37",
+        "x-column": "702",
+        "x-component": "section",
+        "x-id": "App_37_702",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+          className: "panel-heading",
+          "x-file-name": "App",
+          "x-line-number": "37",
+          "x-column": "740",
+          "x-component": "div",
+          "x-id": "App_37_740",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+            "x-file-name": "App",
+            "x-line-number": "37",
+            "x-column": "771",
+            "x-component": "div",
+            "x-id": "App_37_771",
+            "x-dynamic": "false",
+            children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+              className: "section-label",
+              "x-file-name": "App",
+              "x-line-number": "37",
+              "x-column": "776",
+              "x-component": "span",
+              "x-id": "App_37_776",
+              "x-dynamic": "false",
+              children: "LAST 30 MINUTES"
+            }
+
+.jsxDEV)("h3", {
+              "x-file-name": "App",
+              "x-line-number": "37",
+              "x-column": "830",
+              "x-component": "h3",
+              "x-id": "App_37_830",
+              "x-dynamic": "false",
+              children: "Risk trend"
+            }, void 0, false, {
+              fileName: _jsxFileName,
+              lineNumber: 37,
+              columnNumber: 831
+            }
+
+.jsxDEV)("span", {
+            className: `trend-value ${risk.toLowerCase()}
+
+.jsxDEV)("div", {
+          className: "chart",
+          "x-file-name": "App",
+          "x-line-number": "37",
+          "x-column": "957",
+          "x-component": "div",
+          "x-id": "App_37_957",
+          "x-dynamic": "false",
+          children: /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(recharts__WEBPACK_IMPORTED_MODULE_26__.ResponsiveContainer, {
+            width: "100%",
+            height: 170,
+            "x-file-name": "App",
+            "x-line-number": "37",
+            "x-column": "980",
+            "x-component": "ResponsiveContainer",
+            "x-id": "App_37_980",
+            "x-dynamic": "false",
+            children: /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(recharts__WEBPACK_IMPORTED_MODULE_33__.AreaChart, {
+              data: chartData,
+              "x-file-name": "App",
+              "x-line-number": "37",
+              "x-column": "1027",
+              "x-component": "AreaChart",
+              "x-id": "App_37_1027",
+              "x-dynamic": "false",
+              children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("defs", {
+                "x-file-name": "App",
+                "x-line-number": "37",
+                "x-column": "1055",
+                "x-component": "defs",
+                "x-id": "App_37_1055",
+                "x-dynamic": "false",
+                children: /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("linearGradient", {
+                  id: "riskFill",
+                  x1: "0",
+                  y1: "0",
+                  x2: "0",
+                  y2: "1",
+                  "x-file-name": "App",
+                  "x-line-number": "37",
+                  "x-column": "1061",
+                  "x-component": "linearGradient",
+                  "x-id": "App_37_1061",
+                  "x-dynamic": "false",
+                  children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("stop", {
+                    offset: "5%",
+                    stopColor: risk === "CRITICAL" ? "#ef4444" : "#f59e0b",
+                    stopOpacity: 0.3,
+                    "x-file-name": "App",
+                    "x-line-number": "37",
+                    "x-column": "1119",
+                    "x-component": "stop",
+                    "x-id": "App_37_1119",
+                    "x-dynamic": "false"
+                  }
+
+.jsxDEV)("stop", {
+                    offset: "95%",
+                    stopColor: "#f59e0b",
+                    stopOpacity: 0,
+                    "x-file-name": "App",
+                    "x-line-number": "37",
+                    "x-column": "1212",
+                    "x-component": "stop",
+                    "x-id": "App_37_1212",
+                    "x-dynamic": "false"
+                  }
+
+.jsxDEV)(recharts__WEBPACK_IMPORTED_MODULE_27__.CartesianGrid, {
+                strokeDasharray: "3 3",
+                stroke: "#dfe4e8",
+                vertical: false,
+                "x-file-name": "App",
+                "x-line-number": "37",
+                "x-column": "1292",
+                "x-component": "CartesianGrid",
+                "x-id": "App_37_1292",
+                "x-dynamic": "false"
+              }
+
+.jsxDEV)(recharts__WEBPACK_IMPORTED_MODULE_30__.XAxis, {
+                dataKey: "time",
+                hide: true,
+                "x-file-name": "App",
+                "x-line-number": "37",
+                "x-column": "1364",
+                "x-component": "XAxis",
+                "x-id": "App_37_1364",
+                "x-dynamic": "false"
+              }
+
+.jsxDEV)(recharts__WEBPACK_IMPORTED_MODULE_31__.YAxis, {
+                hide: true,
+                domain: [0, 100],
+                "x-file-name": "App",
+                "x-line-number": "37",
+                "x-column": "1392",
+                "x-component": "YAxis",
+                "x-id": "App_37_1392",
+                "x-dynamic": "false"
+              }
+
+.jsxDEV)(recharts__WEBPACK_IMPORTED_MODULE_25__.Tooltip, {
+                contentStyle: {
+                  border: "1px solid #dfe4e8",
+                  borderRadius: 2,
+                  fontSize: 11
+                }
+
+.jsxDEV)(recharts__WEBPACK_IMPORTED_MODULE_28__.Area, {
+                type: "monotone",
+                dataKey: "risk",
+                stroke: risk === "CRITICAL" ? "#ef4444" : "#f59e0b",
+                fill: "url(#riskFill)",
+                strokeWidth: 2,
+                dot: false,
+                "x-file-name": "App",
+                "x-line-number": "37",
+                "x-column": "1511",
+                "x-component": "Area",
+                "x-id": "App_37_1511",
+                "x-dynamic": "false"
+              }
+

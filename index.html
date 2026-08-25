@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OREGUARD | Mine Vehicle ADAS & Safety Layer</title>
+  <meta name="description" content="Visibility-aware collision prevention system for underground and surface mine vehicles." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ════════════════════ AUTH SCREEN ════════════════════ -->
+  <div id="loginScreen" class="login-page" style="display: none;">
+    <aside class="login-aside">
+      <div class="login-brand">
+        <div class="brand-mark">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <div>
+          <strong>OREGUARD</strong>
+          <span>ADAS CONTROL</span>
+        </div>
+      </div>
+      <div class="login-message">
+        <h1>Visibility-aware protection for <em>every movement</em> below the surface.</h1>
+        <p>Dynamic driver assistance that automatically recalculates risk thresholds based on real-time atmospheric visibility and obstacle proximity.</p>
+        <div class="login-signal">
+          <span>ESP32 TELEMETRY</span><b>•</b><span>MV-07 READY</span><b>•</b><span>SIH 2025</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="login-main">
+      <div class="login-box">
+        <div class="login-heading">
+          <div class="login-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          </div>
+          <h2>Sign in to console</h2>
+          <p>Access the MV-07 mine vehicle safety cockpit</p>
+        </div>
+
+        <div class="auth-tabs">
+          <button type="button" class="active" id="btnTabSignIn" onclick="setAuthTab('signin')">OPERATOR LOGIN</button>
+          <button type="button" id="btnTabJury" onclick="setAuthTab('jury')">SIH JURY DEMO</button>
+        </div>
+
+        <form id="authForm" onsubmit="handleAuthSubmit(event)">
+          <div id="authError" class="login-error" style="display: none;"></div>
+
+          <div>
+            <label for="operatorEmail">Operator ID / Email</label>
+            <input type="text" id="operatorEmail" placeholder="operator-402@oreguard.mine" value="operator-402@oreguard.mine" required />
+          </div>
+
+          <div>
+            <label for="operatorPass">Passcode / PIN</label>
+            <input type="password" id="operatorPass" value="••••••••" required />
+          </div>
+
+          <button type="submit" class="login-button" id="authSubmitBtn">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            <span>ENTER SAFETY CONSOLE</span>
+          </button>
+        </form>
+
+        <div class="social-divider">OR DEMO ACCESS</div>
+        <div class="social-buttons">
+          <button type="button" onclick="quickLogin('Rahul Sharma (OP-402)')"><b>🚛</b> Driver Mode</button>
+          <button type="button" onclick="quickLogin('SIH Jury Evaluator')"><b>🏆</b> SIH Jury Pass</button>
+        </div>
+
+        <p class="login-footnote">
+          <span class="live-dot"></span> Encrypted operator session · MV-07
+        </p>
+      </div>
+    </main>
+  </div>
+
+  <!-- ════════════════════ MAIN APP SHELL ════════════════════ -->
+  <div id="appShell" class="app-shell">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <div>
+          <strong>OREGUARD</strong>
+          <span>ADAS CONTROL</span>
+        </div>
+        <button class="close-nav" onclick="toggleMobileNav(false)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="fleet-chip" data-testid="vehicle-identity">
+        <span class="live-dot"></span>VEHICLE MV-07 <b>•</b> PIT 03
+      </div>
+
+      <nav>
+        <a href="#dashboard" id="nav-dashboard" class="active" onclick="navigateTo('dashboard')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          Live dashboard
+        </a>
+        <a href="#analytics" id="nav-analytics" onclick="navigateTo('analytics')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+          Analytics & history
+        </a>
+        <a href="#settings" id="nav-settings" onclick="navigateTo('settings')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          System settings
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="connection-row">ESP32 / MV-07</div>
+        <div><span class="live-dot"></span> 6 SENSORS ONLINE</div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <button class="menu-button" onclick="toggleMobileNav(true)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+          </button>
+          <div>
+            <div class="eyebrow">MINE VEHICLE / SAFETY LAYER</div>
+            <h1 id="topbarTitle">Live operations</h1>
+          </div>
+        </div>
+
+        <div class="top-actions">
+          <div class="mode-toggle" data-testid="global-mode-toggle">
+            <button type="button" id="btnModeAuto" class="selected" onclick="setFeedMode('auto')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg>
+              Auto Telemetry
+            </button>
+            <button type="button" id="btnModeManual" onclick="setFeedMode('manual')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+              Manual Sliders
+            </button>
+          </div>
+          <div class="connection-badge">
+            <span class="live-dot"></span> ESP32 connected
+          </div>
+        </div>
+      </header>
+
+      <!-- ════════ VIEW 1: LIVE DASHBOARD ════════ -->
+      <main class="page view-section active" id="view-dashboard">
+        
+        <!-- Scenario Bar -->
+        <div class="scenario-bar">
+          <div>
+            <span class="section-label">DEMO SCENARIO</span>
+            <strong>Visibility & obstacle condition</strong>
+          </div>
+          <div class="scenario-buttons">
+            <button class="scenario active" id="scen-clear" onclick="setScenarioPreset('clear')">
+              <span class="scenario-dot"></span>
+              <span>Normal clear</span>
+              <small>85% vis · 4.2m</small>
+            </button>
+            <button class="scenario" id="scen-dust" onclick="setScenarioPreset('dust')">
+              <span class="scenario-dot poor"></span>
+              <span>Dust degraded</span>
+              <small>55% vis · 2.8m</small>
+            </button>
+            <button class="scenario" id="scen-poor" onclick="setScenarioPreset('poor')">
+              <span class="scenario-dot poor"></span>
+              <span>Poor fog</span>
+              <small>35% vis · 1.8m</small>
+            </button>
+            <button class="scenario" id="scen-emergency" onclick="setScenarioPreset('emergency')">
+              <span class="scenario-dot critical"></span>
+              <span>Emergency near</span>
+              <small>18% vis · 0.7m</small>
+            </button>
+          </div>
+          <div class="scenario-note" id="scenarioNote">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span id="scenarioNoteText">Clear visibility · nominal speed permitted</span>
+          </div>
+        </div>
+
+        <!-- Dashboard Main Grid -->
+        <div class="dashboard-grid">
+          
+          <!-- Left: Risk Status Panel -->
+          <div class="risk-panel safe" id="riskPanel">
+            <div class="panel-top">
+              <div>
+                <span class="section-label">CURRENT RISK LEVEL</span>
+              </div>
+              <div class="pulse-label">
+                <i></i> RISK ENGINE / REAL-TIME
+              </div>
+            </div>
+
+            <div class="risk-display">
+              <div class="risk-icon" id="riskIconBox">
+                <svg id="riskIconSvg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+              </div>
+              <div>
+                <h2 id="riskLevelHeading">LOW RISK</h2>
+                <p id="riskDetailText">All 6 sensors reporting nominal. Standard safety margins active.</p>
+              </div>
+            </div>
+
+            <div class="risk-score">
+              <div>
+                <span>RISK SCORE</span>
+                <strong id="riskScoreNum">12<small>/100</small></strong>
+              </div>
+              <div class="score-track">
+                <span id="scoreTrackBar" style="width: 12%;"></span>
+              </div>
+            </div>
+
+            <button class="estop-button" id="estopBtn" onclick="toggleEmergencyBrake()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span id="estopBtnText">RESET EMERGENCY STOP</span>
+              <small id="estopSubText">MANUAL OVERRIDE</small>
+            </button>
+          </div>
+
+          <!-- Right: Active Radar Monitor Panel -->
+          <div class="radar-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="section-label">ACTIVE SENSOR RADAR</span>
+                <h3>Forward ultrasonic & optical sweep</h3>
+              </div>
+              <div class="sensor-status">
+                <i></i> 6 SENSORS ONLINE
+              </div>
+            </div>
+
+            <div class="radar-wrap" data-testid="radar-monitor">
+              <div class="radar-grid">
+                <div class="crosshair"></div>
+                <div class="sweep"></div>
+                
+                <!-- Vehicle Center Icon -->
+                <div class="vehicle">
+                  <span>MV-07</span>
+                  <div class="vehicle-body"></div>
+                </div>
+
+                <!-- Dynamic Obstacle Blip -->
+                <div class="obstacle" id="radarObstacle" style="left: 50%; top: 22%;"></div>
+              </div>
+
+              <div class="radar-label">
+                <div><span class="legend"></span> SAFE</div>
+                <div><span class="legend warning"></span> WARNING</div>
+                <div><span class="legend critical"></span> CRITICAL</div>
+              </div>
+
+              <div class="radar-distance">
+                <span>NEAREST OBSTACLE</span>
+                <strong id="radarDistVal">4.20<small>m</small></strong>
+                <em id="radarSectorVal">FORWARD CONE</em>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Telemetry Gauges (4x Row) -->
+        <div class="gauge-grid">
+          <div class="gauge-card" data-testid="telemetry-visibility">
+            <div class="gauge-head">
+              <span>VISIBILITY</span>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <strong><span id="gaugeVisNum">85</span><small>%</small></strong>
+            <div class="gauge-line"><span class="lime" id="gaugeVisBar" style="width: 85%;"></span></div>
+            <em id="gaugeVisSub">Clear conditions</em>
+          </div>
+
+          <div class="gauge-card" data-testid="telemetry-obstacle">
+            <div class="gauge-head">
+              <span>NEAREST OBSTACLE</span>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/></svg>
+            </div>
+            <strong><span id="gaugeDistNum">4.20</span><small>m</small></strong>
+            <div class="gauge-line"><span class="lime" id="gaugeDistBar" style="width: 70%;"></span></div>
+            <em id="gaugeDistSub">Front sector 01</em>
+          </div>
+
+          <div class="gauge-card" data-testid="telemetry-speed">
+            <div class="gauge-head">
+              <span>VEHICLE SPEED</span>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 22v-4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M22 12h-4"/><path d="m19.07 4.93-2.83 2.83"/></svg>
+            </div>
+            <strong><span id="gaugeSpeedNum">8.2</span><small>m/s</small></strong>
+            <div class="gauge-line"><span class="lime" id="gaugeSpeedBar" style="width: 65%;"></span></div>
+            <em id="gaugeSpeedSub">Nominal speed</em>
+          </div>
+
+          <div class="gauge-card" data-testid="telemetry-braking">
+            <div class="gauge-head">
+              <span>DYNAMIC BRAKING DISTANCE</span>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
+            </div>
+            <strong><span id="gaugeBrakeNum">1.8</span><small>m</small></strong>
+            <div class="gauge-line"><span class="lime" id="gaugeBrakeBar" style="width: 30%;"></span></div>
+            <em id="gaugeBrakeSub">Calculated buffer</em>
+          </div>
+        </div>
+
+        <!-- Lower Grid: Recent Incidents & Risk Trend Chart -->
+        <div class="lower-grid">
+          
+          <!-- Recent Incidents Log -->
+          <div class="events-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="section-label">RECENT INCIDENTS</span>
+                <h3>Safety events feed</h3>
+              </div>
+              <a class="text-link" onclick="navigateTo('analytics')">
+                View history →
+              </a>
+            </div>
+
+            <div class="events" id="eventsList">
+              <div class="event-row">
+                <div class="event-icon warning">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div>
+                  <strong>Visibility degraded</strong>
+                  <p>Visibility dropped below 40% threshold</p>
+                </div>
+                <time>14:32:08</time>
+              </div>
+
+              <div class="event-row">
+                <div class="event-icon warning">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div>
+                  <strong>Obstacle detected</strong>
+                  <p>Obstacle detected at 1.8 m</p>
+                </div>
+                <time>14:28:41</time>
+              </div>
+
+              <div class="event-row">
+                <div class="event-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <div>
+                  <strong>System check passed</strong>
+                  <p>All 6 sensors reporting nominal</p>
+                </div>
+                <time>14:25:12</time>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Risk Trend Canvas Chart -->
+          <div class="mini-chart-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="section-label">RISK TREND</span>
+                <h3>Real-time score timeline</h3>
+              </div>
+              <span class="trend-value" id="trendValueLabel">STABLE · 12</span>
+            </div>
+
+            <div class="chart">
+              <canvas id="miniTrendCanvas" width="500" height="160"></canvas>
+            </div>
+
+            <div class="chart-caption">
+              <span>T-60s</span>
+              <span>NOW</span>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
+      <!-- ════════ VIEW 2: ANALYTICS & HISTORY ════════ -->
+      <main class="page view-section" id="view-analytics">
+        <div class="analytics-summary">
+          <div>
+            <span class="section-label">TELEMETRY ARCHIVE</span>
+            <h2>Safety performance & telemetry history</h2>
+            <p>Aggregated telemetry signals captured from the current demonstration session.</p>
+          </div>
+          <button class="outline-button" onclick="exportHistoryCSV()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export CSV Log
+          </button>
+        </div>
+
+        <div class="stat-strip">
+          <div>
+            <span>SAFE DRIVING CYCLES</span>
+            <strong class="positive">98.4<small>%</small></strong>
+            <em>Nominal corridor travel</em>
+          </div>
+          <div>
+            <span>WARNING ALERTS</span>
+            <strong>14</strong>
+            <em>Advisory slowdowns</em>
+          </div>
+          <div>
+            <span>EMERGENCY STOPS</span>
+            <strong>2</strong>
+            <em>Autonomous interventions</em>
+          </div>
+          <div>
+            <span>MEAN VISIBILITY</span>
+            <strong>68<small>%</small></strong>
+            <em>Optical sensor mean</em>
+          </div>
+        </div>
+
+        <div class="analytics-grid">
+          <div class="chart-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="section-label">CORRELATION</span>
+                <h3>Risk score vs visibility</h3>
+              </div>
+              <div class="chart-legend">
+                <span><i class="legend"></i> Visibility %</span>
+                <span><i class="legend warning"></i> Risk Score</span>
+              </div>
+            </div>
+            <div class="chart" style="height: 200px;">
+              <canvas id="chartAnalyticsRisk" width="550" height="200"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="section-label">INTERVENTION DISTRIBUTIONS</span>
+                <h3>Speed & distance profile</h3>
+              </div>
+              <span class="mini-tag">100Hz POLLING</span>
+            </div>
+            <div class="chart" style="height: 200px;">
+              <canvas id="chartAnalyticsSpeed" width="550" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Table -->
+        <div class="history-table">
+          <div class="panel-heading">
+            <div>
+              <span class="section-label">INCIDENT LOGS</span>
+              <h3>Timestamped audit records</h3>
+            </div>
+            <div class="filter-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              Filter: All Severity
+            </div>
+          </div>
+
+          <div class="table-head">
+            <div>TIME</div>
+            <div>INCIDENT</div>
+            <div>DISTANCE</div>
+            <div>VISIBILITY</div>
+            <div>STATUS</div>
+          </div>
+
+          <div id="historyTableRows">
+            <!-- Dynamic rows populated by app.js -->
+          </div>
+        </div>
+      </main>
+
+      <!-- ════════ VIEW 3: SYSTEM SETTINGS ════════ -->
+      <main class="page view-section" id="view-settings">
+        <div class="settings-intro">
+          <span class="section-label">CONFIGURATION</span>
+          <h2>System settings & risk calibration</h2>
+          <p>Manage sensor thresholds, risk behavior, and hardware connection preferences.</p>
+        </div>
+
+        <div class="settings-layout">
+          
+          <!-- Risk Engine Thresholds -->
+          <div class="settings-section">
+            <div class="settings-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <div>
+                <h3>Risk engine thresholds</h3>
+                <p>Adjust how quickly the safety layer responds to changing conditions.</p>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <span>
+                Low visibility threshold
+                <small>Trigger adaptive speed governor</small>
+              </span>
+              <input type="range" id="cfgVisThreshold" min="10" max="70" value="40" oninput="document.getElementById('lblVisThresh').textContent = this.value + '%'" />
+              <b id="lblVisThresh">40%</b>
+            </div>
+
+            <div class="setting-row">
+              <span>
+                Emergency stop distance
+                <small>Distance to trigger full auto-brake</small>
+              </span>
+              <input type="range" id="cfgDistThreshold" min="0.4" max="2.5" step="0.1" value="1.2" oninput="document.getElementById('lblDistThresh').textContent = this.value + 'm'" />
+              <b id="lblDistThresh">1.2m</b>
+            </div>
+
+            <div class="setting-row">
+              <span>
+                Dynamic escalation factor
+                <small>Fog risk amplifier multiplier</small>
+              </span>
+              <input type="range" id="cfgMultiplier" min="1.0" max="2.5" step="0.1" value="1.8" oninput="document.getElementById('lblMultThresh').textContent = this.value + 'x'" />
+              <b id="lblMultThresh">1.8x</b>
+            </div>
+
+            <button class="save-button" onclick="saveSettings()">Save Configuration</button>
+          </div>
+
+          <!-- Hardware & Sensor Node -->
+          <div class="settings-section">
+            <div class="settings-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <div>
+                <h3>Hardware telemetry node</h3>
+                <p>Configure the telemetry source for this vehicle.</p>
+              </div>
+            </div>
+
+            <div class="connection-card">
+              <div class="connection-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+              </div>
+              <div>
+                <strong>ESP32 Primary Microcontroller Node</strong>
+                <span>Node ID: MV-07-ESP32-CORE</span>
+              </div>
+              <div class="connected-pill">● ACTIVE</div>
+            </div>
+
+            <div class="setting-row">
+              <span>
+                Auto-reconnect on packet drop
+                <small>Restore telemetry when signal returns</small>
+              </span>
+              <button class="switch on" id="switchAutoReconnect" onclick="this.classList.toggle('on')"><span></span></button>
+            </div>
+
+            <div class="setting-row">
+              <span>
+                Acoustic ADAS Warning Tone
+                <small>Web Audio collision radar beeper</small>
+              </span>
+              <button class="switch on" id="switchAudio" onclick="toggleAudioSwitch(this)"><span></span></button>
+            </div>
+
+            <button class="outline-button" style="width: 100%; margin-top: 22px; justify-content: center;" onclick="resetCalibration()">
+              Recalibrate Optical Zero
+            </button>
+          </div>
+
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Floating Sign Out Button -->
+  <button type="button" class="signout-button" id="floatingSignout" onclick="signOut()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    <span>Sign out</span>
+  </button>
+
+  <script src="app.js"></script>
+</body>
+</html>

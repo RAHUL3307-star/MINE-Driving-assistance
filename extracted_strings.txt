@@ -1,0 +1,111 @@
+ 6 SENSORS ONLINE
+ ? 1 : risk === 
+ ENTER SAFETY CONSOLE
+ Risk adapts to conditions
+./node_modules/d3-shape/src/symbol/asterisk.js
+./node_modules/lucide-react/dist/esm/icons/history.js
+./node_modules/lucide-react/dist/esm/icons/shield-check.js
+./node_modules/lucide-react/dist/esm/icons/triangle-alert.js
+/analytics
+A history only accepts one active listener
+Adjust how quickly the safety layer responds to changing conditions.
+AlertTriangle
+All 6 sensors reporting nominal
+All sensors stable
+Analytics
+Analytics & history
+CURRENT RISK LEVEL
+Clear visibility
+Configure the telemetry source for this vehicle.
+DEMO SCENARIO
+DetermineComponentFrameRoot
+Distance to trigger emergency intervention
+EMERGENCY INTERVENTIONS
+EMERGENCY STOP
+ENTER SAFETY CONSOLE
+ESP32 / MV-07
+ESP32 connected
+Emergency stop
+Emergency stops
+Facebook login is a demo placeholder until OAuth credentials are connected
+Found a route id collision on id 
+Google login is a demo placeholder until OAuth credentials are connected
+HIGH RISK
+History
+LOW RISK
+Low visibility threshold 
+MINE VEHICLE / SAFETY LAYER
+Manage sensor thresholds, risk behavior, and hardware connection preferences.
+NEAREST OBSTACLE
+NOMINAL SPEED
+Obstacle detected
+Obstacle distance
+Poor visibility
+RESET EMERGENCY STOP
+RISK ENGINE / REAL-TIME
+RISK SCORE
+Reduced visibility · adaptive speed applied
+Restore telemetry when signal returns
+Risk engine thresholds
+Risk score
+Risk score vs visibility
+Risk trend
+Safety performance
+See the risk
+ShieldCheck
+Sign in to access the MV-07 safety console.
+Speed reduced
+Telemetry signals captured from the current demonstration session.
+TriangleAlert
+VEHICLE MV-07 
+VISIBILITY-AWARE MODEL
+Vehicle immobilized · manual reset required
+Vehicle speed
+View history 
+Visibility
+Visibility %
+Visibility conditions
+Visibility degraded
+Visibility dropped below 40% threshold
+Visibility level requiring adaptive speed
+Visibility-aware protection for every movement below the surface.
+Visibility-aware risk engine recalibrated
+Visibility-triggered
+Warning history
+analytics-grid
+analytics-navigation-link
+analytics-summary
+emergency-stop-button
+history
+history-filter
+history-row-${i}
+history-table
+https://mine-safety-shield.preview.emergentagent.com
+npx react-codemod rename-unsafe-lifecycles
+obstacle ${risk.toLowerCase()}
+relative pathnames are not supported in hash history.push(${JSON.stringify(to)})
+relative pathnames are not supported in memory history: ${JSON.stringify(to)}
+risk-display
+risk-icon
+risk-level
+risk-panel ${risk.toLowerCase()}
+risk-score
+risk-status-panel
+riskFill
+sensor-status
+shield-check
+speed
+telemetry-${label.toLowerCase().replaceAll(
+time,event,severity\n14:32:08,Visibility degraded,WARNING\n14:28:41,Obstacle detected,WARNING\n
+trend-value ${risk.toLowerCase()}
+triangle-alert
+unstable_HistoryRouter
+url(#riskFill)
+vehicle
+vehicle-body
+vehicle-identity
+view-history-link
+visibility
+visibility-threshold-input
+visibilitychange
+window.history.pushState

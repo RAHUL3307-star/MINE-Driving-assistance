@@ -1,0 +1,532 @@
+=== SNIPPET FOR: ENTER SAFETY CONSOLE ===
+"54",
+            "x-column": "1421",
+            "x-component": "button",
+            "x-id": "App_54_1421",
+            "x-dynamic": "true",
+            "x-source-type": "computed",
+            "x-source-editable": "false",
+            children: loading ? "AUTHENTICATING..." : /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.Fragment, {
+              children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_16__["default"], {
+                size: 17,
+                "x-file-name": "App",
+                "x-line-number": "54",
+                "x-column": "1542",
+                "x-component": "LogIn",
+                "x-id": "App_54_1542",
+                "x-dynamic": "false"
+              }, void 0, false, {
+                fileName: _jsxFileName,
+                lineNumber: 54,
+                columnNumber: 1543
+              }, this), " ENTER SAFETY CONSOLE"]
+            }, void 0, true)
+          }, void 0, false, {
+            fileName: _jsxFileName,
+            lineNumber: 54,
+            columnNumber: 1422
+          }, this)]
+        }, void 0, true, {
+          fileName: _jsxFileName,
+          lineNumber: 54,
+          columnNumber: 834
+        }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("p", {
+          className: "login-footnote",
+          "x-file-name": "App",
+          "x-line-number": "54",
+          "x-column": "1601",
+          "x-component": "p",
+          "x-id": "App_54_1601",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+            className: "live-dot",
+            "x-file-name": "App",
+            "x-line-number": "54",
+            "x-column": "1631",
+            "x-component": "span",
+            "x-id": "App_54_1631",
+            "x-dynamic": "false"
+          }, void 0, false, {
+            fileName: _jsxFileName,
+            lineNumber: 54,
+            columnNumber: 1632
+          }, this), " Encrypted operator session \xB7 MV-07"]
+        }, void 0, true, {
+          fileName: _jsxFileName,
+          lineNumber: 54,
+          columnNumber: 1602
+        }, this)]
+      }, void 0, true, {
+        fileName: _jsxFileName,
+        lineNumber: 54,
+        columnNumber: 587
+      }, this)
+    }, void 0, false, {
+      fileName: _jsxFileName,
+      lineNumber: 54,
+      columnNumber: 558
+    }, this)]
+  }, void 0, true, {
+    fileName: _jsxFileName,
+    lineNumber: 54,
+    columnNumber: 10
+  }, this);
+}
+_s4(Login, "yCbXNlOJJPJVRLyAaaIx7/HBJhw=");
+_c7 = Login;
+function LoginRegister({
+  onLogin
+}) {
+  _s5();
+  const [registering, setRegistering] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const [name, setName] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
+  const [email, setEmail] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
+  const [password, setPassword] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
+  const [confirm, setConfirm] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
+  const [error, setError] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
+  const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const submit = async event => {
+    event.preventDefault();
+    setError("");
+    if (registering && password !== confirm) {
+      setError("Passw
+
+=== SNIPPET FOR: VEHICLE MV-07 ===
+e,
+          lineNumber: 12,
+          columnNumber: 355
+        }, this)]
+      }, void 0, true, {
+        fileName: _jsxFileName,
+        lineNumber: 12,
+        columnNumber: 213
+      }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+        className: "fleet-chip",
+        "data-testid": "vehicle-identity",
+        "x-file-name": "App",
+        "x-line-number": "12",
+        "x-column": "484",
+        "x-component": "div",
+        "x-id": "App_12_484",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+          className: "live-dot",
+          "x-file-name": "App",
+          "x-line-number": "12",
+          "x-column": "543",
+          "x-component": "span",
+          "x-id": "App_12_543",
+          "x-dynamic": "false"
+        }, void 0, false, {
+          fileName: _jsxFileName,
+          lineNumber: 12,
+          columnNumber: 544
+        }, this), "VEHICLE MV-07 ", /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("b", {
+          "x-file-name": "App",
+          "x-line-number": "12",
+          "x-column": "585",
+          "x-component": "b",
+          "x-id": "App_12_585",
+          "x-dynamic": "false",
+          children: "\u2022"
+        }, void 0, false, {
+          fileName: _jsxFileName,
+          lineNumber: 12,
+          columnNumber: 586
+        }, this), " PIT 03"]
+      }, void 0, true, {
+        fileName: _jsxFileName,
+        lineNumber: 12,
+        columnNumber: 485
+      }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("nav", {
+        "x-file-name": "App",
+        "x-line-number": "12",
+        "x-column": "606",
+        "x-component": "nav",
+        "x-id": "App_12_606",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.NavLink, {
+          to: "/",
+          end: true,
+          className: location.pathname === "/" ? "active" : "",
+          "data-testid": "dashboard-navigation-link",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            size: 18,
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "725",
+            "x-component": "LayoutDashboard",
+            "x-id": "App_12_725",
+            "x-dynamic": "false"
+          }, void 0, false, {
+            fileName: _jsxFileName,
+            lineNumber: 12,
+            columnNumber: 726
+          }, this), "Live dashboard"]
+        }, void 0, true, {
+          fileName: _jsxFileName,
+          lineNumber: 12,
+          columnNumber: 612
+        }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.NavLink, {
+          to: "/analytics",
+          className: location.pathname === "/analytics" ? "active" : "",
+          "data-testid": "analytics-navigation-link",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_3__["default"], {
+            size: 18,
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "905",
+            "x-component": "BarChart3",
+            "x-id": "App_12_905",
+            "x-dynami
+
+=== SNIPPET FOR: MINE VEHICLE / SAFETY LAYER ===
+ucide_react__WEBPACK_IMPORTED_MODULE_18__["default"], {
+            size: 22
+          }, void 0, false, {
+            fileName: _jsxFileName,
+            lineNumber: 12,
+            columnNumber: 1445
+          }, this)
+        }, void 0, false, {
+          fileName: _jsxFileName,
+          lineNumber: 12,
+          columnNumber: 1344
+        }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+          "x-file-name": "App",
+          "x-line-number": "12",
+          "x-column": "1470",
+          "x-component": "div",
+          "x-id": "App_12_1470",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+            className: "eyebrow",
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "1475",
+            "x-component": "div",
+            "x-id": "App_12_1475",
+            "x-dynamic": "false",
+            children: "MINE VEHICLE / SAFETY LAYER"
+          }, void 0, false, {
+            fileName: _jsxFileName,
+            lineNumber: 12,
+            columnNumber: 1476
+          }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("h1", {
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "1533",
+            "x-component": "h1",
+            "x-id": "App_12_1533",
+            "x-dynamic": "true",
+            "x-source-type": "computed",
+            "x-source-editable": "false",
+            children: location.pathname === "/" ? "Live operations" : location.pathname === "/analytics" ? "Analytics & history" : "System settings"
+          }, void 0, false, {
+            fileName: _jsxFileName,
+            lineNumber: 12,
+            columnNumber: 1534
+          }, this)]
+        }, void 0, true, {
+          fileName: _jsxFileName,
+          lineNumber: 12,
+          columnNumber: 1471
+        }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+          className: "top-actions",
+          "x-file-name": "App",
+          "x-line-number": "12",
+          "x-column": "1676",
+          "x-component": "div",
+          "x-id": "App_12_1676",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+            className: "mode-toggle",
+            "data-testid": "global-mode-toggle",
+            "x-file-name": "App",
+            "x-line-number": "12",
+            "x-column": "1705",
+            "x-component": "div",
+            "x-id": "App_12_1705",
+            "x-dynamic": "false",
+            children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("button", {
+              className: mode === "simulation" ? "selected" : "",
+              "data-testid": "simulation-mode-button",
+              onClick: () => setMode("simulation"),
+              "x-file-name": "App",
+              "x-line-number": "12",
+              "x-column": "1767",
+              "x-component": "button",
+              "x-id": "App_12_1767",
+              "x-dynamic": "false",
+              children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_7__["default"], {
+                size: 15,
+                "x-file-name": "App",
+                "x-line-number": "12",
+                "x-column": "1902",
+                "x-c
+
+=== SNIPPET FOR: CURRENT RISK LEVEL ===
+          "x-id": "App_35_441",
+              "x-dynamic": "false"
+            }, void 0, false, {
+              fileName: _jsxFileName,
+              lineNumber: 35,
+              columnNumber: 442
+            }, this)
+          }, void 0, false, {
+            fileName: _jsxFileName,
+            lineNumber: 35,
+            columnNumber: 338
+          }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "464",
+            "x-component": "div",
+            "x-id": "App_35_464",
+            "x-dynamic": "false",
+            children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "469",
+              "x-component": "span",
+              "x-id": "App_35_469",
+              "x-dynamic": "false",
+              children: "CURRENT RISK LEVEL"
+            }, void 0, false, {
+              fileName: _jsxFileName,
+              lineNumber: 35,
+              columnNumber: 470
+            }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("h2", {
+              "data-testid": "risk-level",
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "500",
+              "x-component": "h2",
+              "x-id": "App_35_500",
+              "x-dynamic": "true",
+              "x-source-type": "computed",
+              "x-source-editable": "false",
+              children: estop ? "EMERGENCY STOP" : risk
+            }, void 0, false, {
+              fileName: _jsxFileName,
+              lineNumber: 35,
+              columnNumber: 501
+            }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("p", {
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "567",
+              "x-component": "p",
+              "x-id": "App_35_567",
+              "x-dynamic": "true",
+              "x-source-type": "computed",
+              "x-source-editable": "false",
+              children: estop ? "Vehicle immobilized · manual reset required" : risk === "SAFE" ? "Clear path · standard operating conditions" : risk === "WARNING" ? "Reduced visibility · adaptive speed applied" : "Immediate hazard · intervention engaged"
+            }, void 0, false, {
+              fileName: _jsxFileName,
+              lineNumber: 35,
+              columnNumber: 568
+            }, this)]
+          }, void 0, true, {
+            fileName: _jsxFileName,
+            lineNumber: 35,
+            columnNumber: 465
+          }, this)]
+        }, void 0, true, {
+          fileName: _jsxFileName,
+          lineNumber: 35,
+          columnNumber: 308
+        }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+          className: "risk-score",
+          "x-file-name": "App",
+          "x-line-number": "35",
+          "x-column": "819",
+          "x-component": "div",
+          "x-id": "App_35_819",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "847",
+            "x-component": "div",
+            "x-id": "App_35_847",
+            "x-dynamic": "false",
+     
+
+=== SNIPPET FOR: RESET EMERGENCY STOP ===
+MODULE_34__.jsxDEV)("button", {
+          className: `estop-button ${estop ? "engaged" : ""}`,
+          "data-testid": "emergency-stop-button",
+          onClick: () => setEstop(!estop),
+          "x-file-name": "App",
+          "x-line-number": "35",
+          "x-column": "1028",
+          "x-component": "button",
+          "x-id": "App_35_1028",
+          "x-dynamic": "true",
+          "x-source-type": "computed",
+          "x-source-editable": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)(lucide_react__WEBPACK_IMPORTED_MODULE_5__["default"], {
+            size: 22,
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "1158",
+            "x-component": "CircleStop",
+            "x-id": "App_35_1158",
+            "x-dynamic": "false"
+          }, void 0, false, {
+            fileName: _jsxFileName,
+            lineNumber: 35,
+            columnNumber: 1159
+          }, this), estop ? "RESET EMERGENCY STOP" : "EMERGENCY STOP", /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("small", {
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "1232",
+            "x-component": "small",
+            "x-id": "App_35_1232",
+            "x-dynamic": "true",
+            "x-source-type": "computed",
+            "x-source-editable": "false",
+            children: estop ? "INTERLOCKED" : "MANUAL OVERRIDE"
+          }, void 0, false, {
+            fileName: _jsxFileName,
+            lineNumber: 35,
+            columnNumber: 1233
+          }, this)]
+        }, void 0, true, {
+          fileName: _jsxFileName,
+          lineNumber: 35,
+          columnNumber: 1029
+        }, this)]
+      }, void 0, true, {
+        fileName: _jsxFileName,
+        lineNumber: 35,
+        columnNumber: 37
+      }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("section", {
+        className: "radar-panel",
+        "x-file-name": "App",
+        "x-line-number": "35",
+        "x-column": "1309",
+        "x-component": "section",
+        "x-id": "App_35_1309",
+        "x-dynamic": "false",
+        children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+          className: "panel-heading",
+          "x-file-name": "App",
+          "x-line-number": "35",
+          "x-column": "1342",
+          "x-component": "div",
+          "x-id": "App_35_1342",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+            "x-file-name": "App",
+            "x-line-number": "35",
+            "x-column": "1373",
+            "x-component": "div",
+            "x-id": "App_35_1373",
+            "x-dynamic": "false",
+            children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+              className: "section-label",
+              "x-file-name": "App",
+              "x-line-number": "35",
+              "x-column": "1378",
+              "x-component": "span",
+              "x-id": "App_35_1378",
+              "x-dynamic": "false",
+              children: "PROXIMITY MONITOR"
+            }, void 0, false, {
+              fileName: _jsxFileName,
+              lineNumber: 35,
+              columnNumber: 1379
+            }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("h3", {
+              "x
+
+=== SNIPPET FOR: Risk engine thresholds ===
+ult"], {
+            "x-file-name": "App",
+            "x-line-number": "48",
+            "x-column": "332",
+            "x-component": "SlidersHorizontal",
+            "x-id": "App_48_332",
+            "x-dynamic": "false"
+          }, void 0, false, {
+            fileName: _jsxFileName,
+            lineNumber: 48,
+            columnNumber: 333
+          }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("div", {
+            "x-file-name": "App",
+            "x-line-number": "48",
+            "x-column": "352",
+            "x-component": "div",
+            "x-id": "App_48_352",
+            "x-dynamic": "false",
+            children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("h3", {
+              "x-file-name": "App",
+              "x-line-number": "48",
+              "x-column": "357",
+              "x-component": "h3",
+              "x-id": "App_48_357",
+              "x-dynamic": "false",
+              children: "Risk engine thresholds"
+            }, void 0, false, {
+              fileName: _jsxFileName,
+              lineNumber: 48,
+              columnNumber: 358
+            }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("p", {
+              "x-file-name": "App",
+              "x-line-number": "48",
+              "x-column": "388",
+              "x-component": "p",
+              "x-id": "App_48_388",
+              "x-dynamic": "false",
+              children: "Adjust how quickly the safety layer responds to changing conditions."
+            }, void 0, false, {
+              fileName: _jsxFileName,
+              lineNumber: 48,
+              columnNumber: 389
+            }, this)]
+          }, void 0, true, {
+            fileName: _jsxFileName,
+            lineNumber: 48,
+            columnNumber: 353
+          }, this)]
+        }, void 0, true, {
+          fileName: _jsxFileName,
+          lineNumber: 48,
+          columnNumber: 301
+        }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("label", {
+          className: "setting-row",
+          "x-file-name": "App",
+          "x-line-number": "48",
+          "x-column": "475",
+          "x-component": "label",
+          "x-id": "App_48_475",
+          "x-dynamic": "false",
+          children: [/*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("span", {
+            "x-file-name": "App",
+            "x-line-number": "48",
+            "x-column": "506",
+            "x-component": "span",
+            "x-id": "App_48_506",
+            "x-dynamic": "false",
+            children: ["Warning distance ", /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("small", {
+              "x-file-name": "App",
+              "x-line-number": "48",
+              "x-column": "529",
+              "x-component": "small",
+              "x-id": "App_48_529",
+              "x-dynamic": "false",
+              children: "Distance to trigger adaptive warning"
+            }, void 0, false, {
+              fileName: _jsxFileName,
+              lineNumber: 48,
+              columnNumber: 530
+            }, this)]
+          }, void 0, true, {
+            fileName: _jsxFileName,
+            lineNumber: 48,
+            columnNumber: 507
+          }, this), /*#__PURE__*/(0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_34__.jsxDEV)("input", {
+            "data-testid": "warning-distance-input",
+            type: "range",
+   
+
