@@ -204,6 +204,32 @@
       border-radius: 50%;
     }
 
+    /* Top Left Home Button */
+    .top-home-btn {
+      position: absolute;
+      top: 36px;
+      left: 36px;
+      background: var(--white);
+      color: var(--ink);
+      border: 1.5px solid var(--line);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font: 600 11px 'JetBrains Mono';
+      letter-spacing: 1px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      text-decoration: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    }
+
+    .top-home-btn:hover {
+      border-color: var(--ink);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+      transform: translateY(-1px);
+    }
+
     /* Main Box */
     .login-box {
       width: 100%;
@@ -469,6 +495,12 @@
 
     <!-- RIGHT MAIN (EXACT SCREENSHOT DESIGN) -->
     <main class="login-main">
+
+      <!-- Top Left Home Button -->
+      <a href="landing.html" class="top-home-btn" id="topHomeBtn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        HOME
+      </a>
       
       <!-- Top Simulation Badge -->
       <div class="top-badge">
