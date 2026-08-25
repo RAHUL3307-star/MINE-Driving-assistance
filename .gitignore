@@ -1,9 +1,16 @@
-# Logs and temp files
-*.log
-scratch/
+# Node
+node_modules/
+npm-debug.log*
+
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
 *.pyc
 
-# Local server / environment
-.env
-node_modules/
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
