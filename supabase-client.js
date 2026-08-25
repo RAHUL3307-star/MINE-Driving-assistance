@@ -5,9 +5,8 @@
  */
 
 // Supabase Configuration
-// Users can enter their own credentials in the UI or define them here.
-const DEFAULT_SUPABASE_URL = localStorage.getItem('oreguard_sb_url') || '';
-const DEFAULT_SUPABASE_ANON_KEY = localStorage.getItem('oreguard_sb_key') || '';
+const DEFAULT_SUPABASE_URL = localStorage.getItem('oreguard_sb_url') || 'https://rlwdrbpcnmqqejofdbbs.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = localStorage.getItem('oreguard_sb_key') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsd2RyYnBjbm1xcWVqb2ZkYmJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NTMwODQsImV4cCI6MjEwMzIyOTA4NH0.VpwN9LISANX5VH3iNDOVB64h8DeSt2uvi6BJK3qi8Yg';
 
 let supabase = null;
 let isSupabaseConfigured = false;
