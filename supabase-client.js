@@ -246,3 +246,13 @@ window.logIncidentToSupabase = logIncidentToSupabase;
 window.fetchIncidentsFromSupabase = fetchIncidentsFromSupabase;
 window.saveSettingsToSupabase = saveSettingsToSupabase;
 window.loadSettingsFromSupabase = loadSettingsFromSupabase;
+
+// Expose raw client + config flag so app.js hardware polling can use them
+Object.defineProperty(window, 'supabase', {
+  get: () => supabase,
+  configurable: true
+});
+Object.defineProperty(window, 'isSupabaseConfigured', {
+  get: () => isSupabaseConfigured,
+  configurable: true
+});

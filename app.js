@@ -9,20 +9,24 @@
 // ─────────────────────────────────────────────────────────────
 const state = {
   view: 'dashboard',         // 'dashboard' | 'analytics' | 'settings' | 'login'
-  feedMode: 'auto',          // 'auto' | 'manual'
+  feedMode: 'auto',          // 'auto' | 'manual' | 'hardware'
   scenario: 'clear',         // 'clear' | 'dust' | 'poor' | 'emergency'
-  
+
   // Real-time telemetry values
   visibility: 85,            // % (0-100)
-  distance: 4.20,            // metres (0.2 - 6.0)
-  speed: 8.2,                // m/s (0 - 15)
+  distance: 4.00,            // metres (0.2 - 4.0) — HC-SR04 reliable max
+  speed: 0.0,                // m/s (0 - 15)
   brakingDist: 1.8,          // metres
-  
+
   // Risk Engine Output
   riskScore: 12,             // 0 - 100
   riskLevel: 'SAFE',         // 'SAFE' | 'WARNING' | 'HIGH' | 'CRITICAL'
   emergencyEngaged: false,
-  
+
+  // Hardware live mode
+  hardwareConnected: false,  // true when real ESP32 data arrives
+  lastHardwareTs: 0,         // timestamp of last hardware packet
+
   // Audio ADAS warning tone
   audioEnabled: true,
   
@@ -115,9 +119,9 @@ function calculateRisk(vis, dist, spd) {
     return { score: 98, level: 'CRITICAL' };
   }
 
-  const visNorm = Math.max(0.01, Math.min(1.0, vis / 100));
-  const distNorm = Math.max(0.01, Math.min(1.0, dist / 6.0));
-  const spdNorm = Math.max(0.0, Math.min(1.0, spd / 12.0));
+  const visNorm  = Math.max(0.01, Math.min(1.0, vis  / 100));
+  const distNorm = Math.max(0.01, Math.min(1.0, dist / 4.0));  // FIX: 4m = HC-SR04 max reliable range
+  const spdNorm  = Math.max(0.0,  Math.min(1.0, spd  / 12.0));
 
   // Visibility hazard factor (lower vis = higher hazard)
   const visHazard = 1.0 - visNorm;
@@ -198,18 +202,32 @@ function processAudioBeeps(level) {
 let tickCount = 0;
 
 function simulationTick() {
+  // ── HARDWARE MODE: skip simulation if real ESP32 data is live ──
+  if (state.feedMode === 'hardware') {
+    // If no hardware packet in 10 seconds → fall back to auto simulation
+    if (Date.now() - state.lastHardwareTs > 10000) {
+      state.hardwareConnected = false;
+      state.feedMode = 'auto';
+      updateHardwareBadge(false);
+      console.warn('[ADAS] Hardware timeout — reverting to simulation mode');
+    } else {
+      updateApp(); // just re-render with latest hardware state
+      return;
+    }
+  }
+
   if (state.feedMode === 'auto') {
     tickCount++;
     const t = tickCount * 0.08;
 
     // Based on current preset mode, generate natural minor variance
     const base = scenarioPresets[state.scenario];
-    
+
     state.visibility = Math.max(10, Math.min(100,
       base.visibility + Math.sin(t * 0.7) * 3 + (Math.random() - 0.5) * 1.5
     ));
 
-    state.distance = Math.max(0.3, Math.min(6.0,
+    state.distance = Math.max(0.3, Math.min(4.0,  // FIX: max 4.0m to match HC-SR04
       base.distance + Math.sin(t * 1.2) * 0.25 + (Math.random() - 0.5) * 0.1
     ));
 
@@ -220,6 +238,74 @@ function simulationTick() {
 
   updateApp();
 }
+
+// ─────────────────────────────────────────────────────────────
+// LIVE HARDWARE DATA INJECTION (called by Supabase realtime or polling)
+// ─────────────────────────────────────────────────────────────
+function handleRemoteHardwareData(row) {
+  // Only process rows from the physical ESP32 node (not web simulation)
+  if (!row || row.operator_id !== 'ESP32-HARDWARE-NODE') return;
+
+  // Switch to hardware mode on first real packet
+  if (!state.hardwareConnected) {
+    state.hardwareConnected = true;
+    state.feedMode = 'hardware';
+    updateHardwareBadge(true);
+    console.log('[ADAS] 🟢 Live hardware detected — simulation suspended');
+  }
+
+  state.lastHardwareTs = Date.now();
+  state.visibility     = parseFloat(row.visibility)   || state.visibility;
+  state.distance       = parseFloat(row.obstacle_distance) || state.distance;
+  state.speed          = parseFloat(row.vehicle_speed) || state.speed;
+  state.riskScore      = parseInt(row.risk_score)      || state.riskScore;
+  state.riskLevel      = row.risk_level                || state.riskLevel;
+  state.brakingDist    = parseFloat(row.braking_distance) || state.brakingDist;
+
+  if (row.emergency_brake) {
+    state.emergencyEngaged = true;
+  }
+
+  updateApp();
+}
+
+// Hardware connection status badge
+function updateHardwareBadge(connected) {
+  let badge = document.getElementById('hwModeBadge');
+  if (!badge) {
+    // Create badge if not present
+    badge = document.createElement('div');
+    badge.id = 'hwModeBadge';
+    badge.style.cssText = `
+      position: fixed; top: 16px; right: 200px; z-index: 9999;
+      padding: 6px 14px; border-radius: 20px;
+      font: 700 11px 'JetBrains Mono'; letter-spacing: 0.5px;
+      display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      transition: all 0.4s;
+    `;
+    document.body.appendChild(badge);
+  }
+  if (connected) {
+    badge.style.background = '#052e16';
+    badge.style.color = '#4ade80';
+    badge.style.border = '1px solid #166534';
+    badge.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:#4ade80;display:inline-block;animation:pulse 1s infinite"></span> LIVE HARDWARE · ESP32-MV07';
+  } else {
+    badge.style.background = '#1c1f26';
+    badge.style.color = '#94a3b8';
+    badge.style.border = '1px solid #334155';
+    badge.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:#94a3b8;display:inline-block"></span> SIMULATION MODE';
+  }
+}
+
+// Expose so supabase-client.js realtime can call it
+window.handleRemoteIncident = function(row) {
+  if (row && row.operator_id === 'ESP32-HARDWARE-NODE') {
+    handleRemoteHardwareData(row);
+  }
+};
+window.handleRemoteHardwareData = handleRemoteHardwareData;
 
 // ─────────────────────────────────────────────────────────────
 // UPDATE ALL UI COMPONENTS
@@ -717,11 +803,11 @@ function showApp() {
 // INITIALIZATION
 // ─────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize Supabase if keys exist
+  // Initialize Supabase
   if (window.initSupabase) {
     window.initSupabase();
-    
-    // Populate settings fields if saved
+
+    // Populate saved settings fields
     const savedUrl = localStorage.getItem('oreguard_sb_url');
     const savedKey = localStorage.getItem('oreguard_sb_key');
     const urlInput = document.getElementById('cfgSupabaseUrl');
@@ -729,16 +815,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (urlInput && savedUrl) urlInput.value = savedUrl;
     if (keyInput && savedKey) keyInput.value = savedKey;
 
-    // Attempt to load settings from Supabase
+    // Load cloud settings
     if (window.loadSettingsFromSupabase) {
       const cloudSettings = await window.loadSettingsFromSupabase();
       if (cloudSettings) {
-        if (cloudSettings.vis_threshold) state.visThreshold = parseFloat(cloudSettings.vis_threshold);
+        if (cloudSettings.vis_threshold)  state.visThreshold  = parseFloat(cloudSettings.vis_threshold);
         if (cloudSettings.dist_threshold) state.distThreshold = parseFloat(cloudSettings.dist_threshold);
         if (cloudSettings.risk_multiplier) state.riskMultiplier = parseFloat(cloudSettings.risk_multiplier);
       }
     }
+
+    // ── HARDWARE POLLING: check Supabase every 3s for new ESP32 data ──
+    setInterval(async () => {
+      if (!window.supabase || !window.isSupabaseConfigured) return;
+      try {
+        const { data } = await window.supabase
+          .from('telemetry_logs')
+          .select('*')
+          .eq('operator_id', 'ESP32-HARDWARE-NODE')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+        if (data) {
+          const age = Date.now() - new Date(data.created_at).getTime();
+          if (age < 8000) { // Only use data fresher than 8 seconds
+            handleRemoteHardwareData(data);
+          }
+        }
+      } catch(e) { /* no hardware data yet — keep simulation */ }
+    }, 3000);
   }
+
+  // Show simulation badge on load
+  updateHardwareBadge(false);
 
   // Check auth
   const auth = localStorage.getItem('oreguard_auth');
@@ -754,6 +863,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     navigateTo(hash);
   }
 
-  // Start Real-Time Simulation
+  // Start Real-Time Simulation loop
   setInterval(simulationTick, 700);
 });
+
