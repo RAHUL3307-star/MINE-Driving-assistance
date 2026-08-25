@@ -394,17 +394,28 @@
     }
 
     .nav-landing-link {
-      display: block;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       margin-top: 18px;
-      font: 600 11px 'JetBrains Mono';
-      color: var(--muted);
+      height: 44px;
+      background: var(--white);
+      border: 1.5px solid var(--line);
+      border-radius: 4px;
+      font: 600 11.5px 'JetBrains Mono';
+      letter-spacing: 0.6px;
+      color: var(--muted-dark);
       text-decoration: none;
-      transition: color 0.2s;
+      transition: border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
 
     .nav-landing-link:hover {
+      border-color: var(--ink);
       color: var(--ink);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
     }
 
     @media (max-width: 900px) {
@@ -528,8 +539,9 @@
           <span>Encrypted operator session · MV-07</span>
         </p>
 
-        <a href="landing.html" class="nav-landing-link">
-          ← View Full Product Overview & Landing Page
+        <a href="landing.html" class="nav-landing-link" id="btnBackToLanding">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          ← Back to Product Overview
         </a>
 
       </div>
