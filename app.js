@@ -849,13 +849,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Show simulation badge on load
   updateHardwareBadge(false);
 
-  // Check auth
+  // Check auth — show login screen if no session, otherwise restore session
   const auth = localStorage.getItem('oreguard_auth');
-  if (!auth) {
-    showApp();
-  } else {
+  if (auth) {
+    try {
+      const parsed = JSON.parse(auth);
+      if (parsed.name) state.operator = parsed.name;
+    } catch (e) {}
     showApp();
   }
+  // No auth → login screen stays visible (default HTML state)
 
   // Apply preset, custom sim, or operator passed from landing page
   const savedOperator = localStorage.getItem('oreguard_operator');
