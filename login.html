@@ -3,46 +3,55 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OREGUARD · Get Started & Quick Launch Console</title>
-  <meta name="description" content="Quick start and role launcher for the OREGUARD MV-07 mine vehicle safety cockpit." />
+  <title>Sign in to console · OREGUARD ADAS</title>
+  <meta name="description" content="Access the MV-07 mine vehicle safety cockpit" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --ink: #0d1117;
-      --muted: #71808a;
-      --line: #222d39;
-      --paper: #0b0f14;
-      --white: #fff;
-      --lime: #10b981;
-      --amber: #f59e0b;
-      --red: #ef4444;
-      --blue: #3b82f6;
-      --dark: #101419;
-      --dark-card: #151d26;
-      --border-lit: #2a3a4c;
+      --ink:       #161b20;
+      --muted:     #71808a;
+      --muted-dark:#53636b;
+      --line:      #dfe5e8;
+      --paper:     #f4f7f8;
+      --white:     #ffffff;
+      --lime:      #10b981;
+      --emerald:   #07865d;
+      --emerald-bg:#e4f7ef;
+      --amber:     #f59e0b;
+      --red:       #ef4444;
+      --dark:      #101419;
+      --dark-btn:  #161b20;
+      --dark-hover:#1f2937;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--paper);
-      color: #e2e8f0;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* ══════════ PAGE LAYOUT ══════════ */
-    .login-page {
+      color: var(--ink);
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
+      position: relative;
     }
 
-    /* ══════════ LEFT DARK PANEL ══════════ */
+    /* ══════════ PAGE WRAPPER ══════════ */
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      width: 100%;
+    }
+
+    /* ══════════ LEFT DARK ASIDE ══════════ */
     .login-aside {
-      width: 48%;
+      width: 46%;
       background: var(--dark);
       color: #fff;
       padding: 48px 6%;
@@ -52,387 +61,475 @@
       position: relative;
       overflow: hidden;
       flex-shrink: 0;
-      border-right: 1px solid var(--line);
     }
 
-    .login-brand {
+    .login-aside::after {
+      content: "";
+      position: absolute;
+      inset: auto -10% -20% -10%;
+      height: 55%;
+      background: repeating-linear-gradient(
+        120deg,
+        transparent 0 42px,
+        #1b252a 43px 44px
+      );
+      opacity: 0.45;
+      transform: skewY(-8deg);
+      pointer-events: none;
+    }
+
+    .aside-brand {
       display: flex;
-      gap: 12px;
       align-items: center;
-      position: relative;
-      z-index: 1;
+      gap: 12px;
       text-decoration: none;
       color: #fff;
+      position: relative;
+      z-index: 2;
     }
 
-    .login-brand-mark {
-      width: 40px;
-      height: 40px;
+    .aside-mark {
+      width: 38px;
+      height: 38px;
       background: var(--lime);
+      color: #062b1d;
       display: grid;
       place-items: center;
-      color: #042618;
-      border-radius: 6px;
+      border-radius: 4px;
       flex-shrink: 0;
-      box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
     }
 
-    .login-brand strong {
-      font: 800 22px/1 'Barlow Condensed';
+    .aside-brand strong {
+      font: 800 20px 'Barlow Condensed';
       letter-spacing: 1.5px;
       display: block;
     }
 
-    .login-brand span {
+    .aside-brand span {
       font: 600 9px 'JetBrains Mono';
       letter-spacing: 1.2px;
-      color: var(--lime);
+      color: #8a979d;
       display: block;
       margin-top: 2px;
     }
 
-    .login-message {
+    .aside-message {
       position: relative;
-      z-index: 1;
-      margin: 36px 0;
-      max-width: 480px;
+      z-index: 2;
+      margin: auto 0;
+      max-width: 460px;
     }
 
-    .login-eyebrow {
+    .aside-eyebrow {
       font: 600 10px 'JetBrains Mono';
       letter-spacing: 1.5px;
-      color: #6a7c84;
+      color: #607880;
       margin-bottom: 16px;
     }
 
-    .login-message h1 {
-      font: 800 clamp(42px, 5vw, 68px)/0.92 'Barlow Condensed';
-      letter-spacing: 0.5px;
-      margin: 0 0 18px;
+    .aside-message h1 {
+      font: 800 clamp(40px, 4.5vw, 64px)/0.92 'Barlow Condensed';
+      letter-spacing: 0.4px;
+      margin-bottom: 20px;
       text-transform: uppercase;
     }
 
-    .login-message h1 .white-line {
-      color: #fff;
-      display: block;
-    }
+    .aside-message h1 .white-txt { color: #fff; display: block; }
+    .aside-message h1 .lime-txt { color: var(--lime); display: block; font-style: italic; }
 
-    .login-message h1 .lime-line {
-      color: var(--lime);
-      display: block;
-      font-style: italic;
-      text-shadow: 0 0 24px rgba(16, 185, 129, 0.35);
-    }
-
-    .login-message p {
+    .aside-message p {
       color: #94a3b8;
       font-size: 14px;
       line-height: 1.65;
       margin-bottom: 24px;
     }
 
-    .login-signal {
+    .aside-signal {
       position: relative;
-      z-index: 1;
-      font: 500 11px 'JetBrains Mono';
-      color: #94a3b8;
+      z-index: 2;
+      font: 600 10px 'JetBrains Mono';
+      color: #8a979d;
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 8px;
     }
 
-    .live-dot {
+    .aside-signal .dot {
       width: 7px;
       height: 7px;
       background: var(--lime);
       border-radius: 50%;
-      display: inline-block;
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+      box-shadow: 0 0 0 3px #123e30;
       animation: blink 1.8s infinite;
-      flex-shrink: 0;
     }
 
     @keyframes blink {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.35; transform: scale(0.85); }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
     }
 
-    /* ══════════ RIGHT GET STARTED PANEL ══════════ */
+    /* ══════════ RIGHT LIGHT MAIN FORM ══════════ */
     .login-main {
       flex: 1;
+      background: var(--paper);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       padding: 40px 6%;
-      background: #0d1217;
+      position: relative;
     }
 
-    .launch-box {
-      width: min(480px, 100%);
+    /* Top Right Simulation Mode Badge */
+    .top-badge {
+      position: absolute;
+      top: 36px;
+      right: 36px;
+      background: #161b20;
+      color: #ffffff;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font: 600 11px 'JetBrains Mono';
+      letter-spacing: 1.2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
     }
 
-    .launch-heading {
+    .top-badge .dot {
+      width: 7px;
+      height: 7px;
+      background: #60a5fa;
+      border-radius: 50%;
+    }
+
+    /* Main Box */
+    .login-box {
+      width: 100%;
+      max-width: 440px;
+      padding: 20px 0;
+    }
+
+    /* Green Shield Icon */
+    .login-icon-box {
+      width: 48px;
+      height: 48px;
+      background: var(--emerald-bg);
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
       margin-bottom: 24px;
     }
 
-    .launch-heading h2 {
-      font: 800 36px 'Barlow Condensed';
-      color: #fff;
-      letter-spacing: 0.5px;
-      margin: 0 0 6px;
-      text-transform: uppercase;
+    /* Headings */
+    .login-title {
+      font: 800 42px/1 'Barlow Condensed';
+      color: var(--ink);
+      letter-spacing: 0.4px;
+      margin-bottom: 6px;
     }
 
-    .launch-heading p {
-      font-size: 13px;
-      color: #94a3b8;
-      margin: 0;
+    .login-subtitle {
+      font-size: 13.5px;
+      color: var(--muted);
+      margin-bottom: 28px;
     }
 
-    /* Role Selection Grid */
-    .role-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    /* Tabs */
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 28px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      padding: 0 20px 12px 0;
+      margin-right: 16px;
+      font: 700 11.5px 'JetBrains Mono';
+      letter-spacing: 0.8px;
+      color: #8a969d;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      color: var(--ink);
+      border-bottom-color: var(--lime);
+    }
+
+    .tab-btn:hover {
+      color: var(--ink);
+    }
+
+    /* Form Fields */
+    .form-group {
       margin-bottom: 20px;
     }
 
-    .role-card {
-      background: var(--dark-card);
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 16px;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.2s;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .role-card:hover {
-      border-color: var(--lime);
-      background: #1a2430;
-      transform: translateY(-2px);
-    }
-
-    .role-card.active {
-      border-color: var(--lime);
-      background: rgba(16, 185, 129, 0.1);
-    }
-
-    .role-icon {
-      font-size: 20px;
-    }
-
-    .role-title {
-      font: 800 16px 'Barlow Condensed';
-      color: #fff;
+    .form-label {
+      display: block;
+      font: 600 11px 'JetBrains Mono';
       letter-spacing: 0.5px;
+      color: var(--muted-dark);
+      margin-bottom: 8px;
     }
 
-    .role-sub {
-      font: 500 10px 'JetBrains Mono';
-      color: #94a3b8;
-      line-height: 1.4;
-    }
-
-    /* Primary Action Buttons */
-    .btn-launch-primary {
+    .form-input {
       width: 100%;
-      background: linear-gradient(135deg, #10b981, #059669);
-      color: #042618;
-      border: 0;
-      padding: 16px;
-      font: 800 16px 'Barlow Condensed';
-      letter-spacing: 1.5px;
-      cursor: pointer;
-      text-decoration: none;
+      height: 48px;
+      background: var(--white);
+      border: 1px solid var(--line);
       border-radius: 4px;
+      padding: 0 16px;
+      font-size: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: var(--ink);
+      box-shadow: 0 0 0 1px var(--ink);
+    }
+
+    /* Submit Button */
+    .btn-submit {
+      width: 100%;
+      height: 52px;
+      background: var(--dark-btn);
+      color: #ffffff;
+      border: 0;
+      border-radius: 4px;
+      font: 700 13px 'JetBrains Mono';
+      letter-spacing: 1.2px;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      font-weight: 700;
-      transition: all 0.25s;
-      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
-      margin-bottom: 14px;
+      transition: background-color 0.2s, transform 0.15s, box-shadow 0.2s;
+      margin-top: 26px;
+      margin-bottom: 26px;
+      box-shadow: 0 4px 14px rgba(22, 27, 32, 0.18);
     }
 
-    .btn-launch-primary:hover {
-      background: linear-gradient(135deg, #34d399, #10b981);
-      box-shadow: 0 6px 28px rgba(16, 185, 129, 0.55);
-      transform: translateY(-2px);
+    .btn-submit:hover {
+      background: var(--dark-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(22, 27, 32, 0.25);
     }
 
-    .scenario-picker-box {
-      background: #111720;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 14px 16px;
+    /* Divider */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
       margin-bottom: 20px;
     }
 
-    .scenario-picker-label {
+    .or-divider::before, .or-divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .or-divider span {
+      padding: 0 14px;
       font: 600 10px 'JetBrains Mono';
-      letter-spacing: 1px;
-      color: var(--muted);
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
+      letter-spacing: 1.4px;
+      color: #8a969d;
     }
 
-    .scenario-btn-row {
+    /* Demo Access Buttons Grid */
+    .demo-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
     }
 
-    .btn-scen {
-      background: #161e28;
+    .btn-demo {
+      height: 48px;
+      background: var(--white);
       border: 1px solid var(--line);
-      color: #cbd5e1;
-      padding: 8px 4px;
-      font: 700 11px 'Barlow Condensed';
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
       border-radius: 4px;
-      transition: all 0.2s;
-    }
-
-    .btn-scen:hover {
-      border-color: var(--lime);
-      color: var(--lime);
-      background: rgba(16, 185, 129, 0.12);
-    }
-
-    .nav-back-link {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      font: 600 11px 'JetBrains Mono';
-      color: #94a3b8;
+      font: 600 12.5px 'Inter', sans-serif;
+      color: var(--ink);
+      cursor: pointer;
       text-decoration: none;
-      transition: color 0.2s;
-      margin-top: 10px;
+      transition: all 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
 
-    .nav-back-link:hover {
-      color: var(--lime);
+    .btn-demo:hover {
+      border-color: var(--ink);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+    }
+
+    /* Footnote */
+    .login-footnote {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font: 500 11px 'JetBrains Mono';
+      color: #8a969d;
+    }
+
+    .login-footnote .dot {
+      width: 7px;
+      height: 7px;
+      background: var(--lime);
+      border-radius: 50%;
+    }
+
+    .nav-landing-link {
+      display: block;
+      text-align: center;
+      margin-top: 18px;
+      font: 600 11px 'JetBrains Mono';
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-landing-link:hover {
+      color: var(--ink);
     }
 
     @media (max-width: 900px) {
-      .login-page { flex-direction: column; }
-      .login-aside, .login-main { width: 100%; }
-      .login-aside { padding: 40px 6%; }
+      .login-container { flex-direction: column; }
+      .login-aside { width: 100%; padding: 40px 6%; }
+      .top-badge { top: 20px; right: 20px; }
+      .login-main { padding: 40px 6%; }
     }
   </style>
 </head>
 <body>
 
-  <div class="login-page">
+  <div class="login-container">
     
-    <!-- LEFT PANEL: Brand, Specs & Information -->
+    <!-- LEFT ASIDE -->
     <aside class="login-aside">
-      <a href="landing.html" class="login-brand">
-        <div class="login-brand-mark">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      <a href="landing.html" class="aside-brand">
+        <div class="aside-mark">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
         </div>
         <div>
           <strong>OREGUARD</strong>
-          <span>ADAS SAFETY LAYER</span>
+          <span>ADAS CONTROL</span>
         </div>
       </a>
 
-      <div class="login-message">
-        <div class="login-eyebrow">MINE VEHICLE · MV-07 SAFETY COCKPIT</div>
+      <div class="aside-message">
+        <div class="aside-eyebrow">MINE VEHICLE / SAFETY LAYER</div>
         <h1>
-          <span class="white-line">Instant Launch</span>
-          <span class="lime-line">Ready for Operation</span>
+          <span class="white-txt">Visibility-aware</span>
+          <span class="lime-txt">protection below</span>
+          <span class="white-txt">the surface.</span>
         </h1>
         <p>
-          Select your operator role or test preset to immediately access the live visibility-aware safety layer, dynamic braking matrix, and ESP32 hardware streaming console.
+          Dynamic driver assistance that automatically recalculates risk thresholds and stopping margins based on real-time atmospheric optical attenuation and obstacle proximity.
         </p>
       </div>
 
-      <div class="login-signal">
-        <span class="live-dot"></span>
+      <div class="aside-signal">
+        <span class="dot"></span>
         <span>ESP32 TELEMETRY</span>
         <b style="color:#475569">·</b>
         <span>MV-07 READY</span>
         <b style="color:#475569">·</b>
-        <span>SIH 2025 DEMO</span>
+        <span>SIH 2025</span>
       </div>
     </aside>
 
-    <!-- RIGHT PANEL: 1-Click Get Started / Role Launcher (NO PASSWORD REQUIRED) -->
+    <!-- RIGHT MAIN (EXACT SCREENSHOT DESIGN) -->
     <main class="login-main">
-      <div class="launch-box">
+      
+      <!-- Top Simulation Badge -->
+      <div class="top-badge">
+        <span class="dot"></span>
+        <span>SIMULATION MODE</span>
+      </div>
+
+      <div class="login-box">
         
-        <div class="launch-heading">
-          <h2>Get Started</h2>
-          <p>Choose an operational mode to enter the safety console</p>
+        <!-- Green Shield Icon -->
+        <div class="login-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#07865d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
         </div>
 
-        <!-- 4 Role Launcher Cards -->
-        <div class="role-grid">
+        <!-- Headings -->
+        <h2 class="login-title">Sign in to console</h2>
+        <p class="login-subtitle">Access the MV-07 mine vehicle safety cockpit</p>
+
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <button type="button" class="tab-btn active" id="tabOperator" onclick="setAuthTab('operator')">OPERATOR LOGIN</button>
+          <button type="button" class="tab-btn" id="tabJury" onclick="setAuthTab('jury')">SIH JURY DEMO</button>
+        </div>
+
+        <!-- Form -->
+        <form id="authForm" onsubmit="handleLoginSubmit(event)">
           
-          <a href="index.html" class="role-card active" onclick="setRole('Driver Mode (OP-402)', 'clear')">
-            <div class="role-icon">🚛</div>
-            <div class="role-title">DRIVER COCKPIT</div>
-            <div class="role-sub">Live radar, obstacle alert HUD & audio alarms</div>
-          </a>
+          <div class="form-group">
+            <label class="form-label" for="operatorEmail">Operator ID / Email</label>
+            <input type="text" class="form-input" id="operatorEmail" value="operator-402@oreguard.mine" required />
+          </div>
 
-          <a href="index.html#analytics" class="role-card" onclick="setRole('Safety Officer', 'clear')">
-            <div class="role-icon">🛡️</div>
-            <div class="role-title">FLEET ANALYTICS</div>
-            <div class="role-sub">Incident audit log & risk trend telemetry</div>
-          </a>
+          <div class="form-group">
+            <label class="form-label" for="operatorPass">Passcode / PIN</label>
+            <input type="password" class="form-input" id="operatorPass" value="••••••••" required />
+          </div>
 
-          <a href="index.html" class="role-card" onclick="setRole('SIH Jury Evaluator', 'dust')">
-            <div class="role-icon">🏆</div>
-            <div class="role-title">SIH JURY PASS</div>
-            <div class="role-sub">Evaluation mode with live scenario testing</div>
-          </a>
+          <button type="submit" class="btn-submit" id="btnSubmit">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            <span>ENTER SAFETY CONSOLE</span>
+          </button>
 
-          <a href="index.html#settings" class="role-card" onclick="setRole('Hardware Engineer', 'clear')">
-            <div class="role-icon">⚡</div>
-            <div class="role-title">ESP32 STREAM</div>
-            <div class="role-sub">Sensor calibration & Supabase cloud sync</div>
-          </a>
+        </form>
 
+        <!-- Divider -->
+        <div class="or-divider">
+          <span>OR DEMO ACCESS</span>
         </div>
 
-        <!-- Quick Scenario Selection Bar -->
-        <div class="scenario-picker-box">
-          <div class="scenario-picker-label">
-            <span>PRE-CONFIGURED TEST SCENARIOS</span>
-            <span style="color:var(--lime)">● LIVE</span>
-          </div>
-          <div class="scenario-btn-row">
-            <a href="index.html" class="btn-scen" onclick="setRole('Operator', 'clear')">🟢 Clear</a>
-            <a href="index.html" class="btn-scen" onclick="setRole('Operator', 'dust')">🟡 Dust</a>
-            <a href="index.html" class="btn-scen" onclick="setRole('Operator', 'poor')">🟠 Fog</a>
-            <a href="index.html" class="btn-scen" onclick="setRole('Operator', 'emergency')">🔴 Stop</a>
-          </div>
+        <!-- Demo Access Grid -->
+        <div class="demo-grid">
+          <button type="button" class="btn-demo" onclick="quickLogin('Rahul Sharma (OP-402)', 'clear')">
+            <span>🚛</span>
+            <span>Driver Mode</span>
+          </button>
+          <button type="button" class="btn-demo" onclick="quickLogin('SIH Jury Evaluator', 'dust')">
+            <span>🏆</span>
+            <span>SIH Jury Pass</span>
+          </button>
         </div>
 
-        <!-- Primary Launch Button -->
-        <a href="index.html" class="btn-launch-primary" id="btnLaunchConsole">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          <span>ENTER SAFETY CONSOLE</span>
-        </a>
+        <!-- Footnote -->
+        <p class="login-footnote">
+          <span class="dot"></span>
+          <span>Encrypted operator session · MV-07</span>
+        </p>
 
-        <!-- Return to Landing Page -->
-        <a href="landing.html" class="nav-back-link">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-          <span>Back to Product Overview & Specs</span>
+        <a href="landing.html" class="nav-landing-link">
+          ← View Full Product Overview & Landing Page
         </a>
 
       </div>
@@ -441,11 +538,46 @@
   </div>
 
   <script>
-    function setRole(roleName, preset) {
+    function setAuthTab(tab) {
+      document.getElementById('tabOperator').classList.toggle('active', tab === 'operator');
+      document.getElementById('tabJury').classList.toggle('active', tab === 'jury');
+
+      if (tab === 'jury') {
+        document.getElementById('operatorEmail').value = 'jury-evaluator@sih2025.gov.in';
+      } else {
+        document.getElementById('operatorEmail').value = 'operator-402@oreguard.mine';
+      }
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('operatorEmail').value;
+      const btn = document.getElementById('btnSubmit');
+      btn.innerHTML = `<span>AUTHENTICATING...</span>`;
+      btn.disabled = true;
+
+      setTimeout(() => {
+        localStorage.setItem('oreguard_auth', JSON.stringify({
+          name: email.includes('jury') ? 'SIH Jury Evaluator' : 'Rahul Sharma (OP-402)',
+          email: email,
+          time: Date.now()
+        }));
+        localStorage.setItem('oreguard_operator', email.includes('jury') ? 'SIH Jury Evaluator' : 'Rahul Sharma (OP-402)');
+        window.location.href = 'index.html';
+      }, 500);
+    }
+
+    function quickLogin(roleName, preset) {
+      localStorage.setItem('oreguard_auth', JSON.stringify({
+        name: roleName,
+        email: `${roleName.toLowerCase().replace(/[^a-z0-9]/g, '')}@oreguard.mine`,
+        time: Date.now()
+      }));
       localStorage.setItem('oreguard_operator', roleName);
       if (preset) {
         localStorage.setItem('oreguard_preset', preset);
       }
+      window.location.href = 'index.html';
     }
   </script>
 </body>
