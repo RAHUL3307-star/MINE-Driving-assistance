@@ -148,6 +148,9 @@
               Manual Sliders
             </button>
           </div>
+          <div class="connection-badge" id="cloudStatusBadge">
+            <span class="live-dot" id="cloudStatusDot"></span> <span id="cloudStatusText">Supabase Sync Ready</span>
+          </div>
           <div class="connection-badge">
             <span class="live-dot"></span> ESP32 connected
           </div>
@@ -580,6 +583,34 @@
             </button>
           </div>
 
+          <!-- Supabase Cloud Integration Panel -->
+          <div class="settings-section" style="grid-column: 1 / -1;">
+            <div class="settings-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+              <div>
+                <h3>Supabase Cloud Database & Auth Configuration</h3>
+                <p>Connect your Supabase project to stream live telemetry, sync incident audits, and enable multi-vehicle sync.</p>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 18px 0 12px;">
+              <div>
+                <label style="display: block; font: 600 11px 'JetBrains Mono'; color: #53636b; margin-bottom: 6px;">SUPABASE PROJECT URL</label>
+                <input type="text" id="cfgSupabaseUrl" placeholder="https://xyzcompany.supabase.co" style="width: 100%; padding: 12px; border: 1px solid #d5dfe2; background: #fff; font: 12px 'JetBrains Mono';" />
+              </div>
+              <div>
+                <label style="display: block; font: 600 11px 'JetBrains Mono'; color: #53636b; margin-bottom: 6px;">SUPABASE ANON PUBLIC KEY</label>
+                <input type="password" id="cfgSupabaseKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="width: 100%; padding: 12px; border: 1px solid #d5dfe2; background: #fff; font: 12px 'JetBrains Mono';" />
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <button class="save-button" style="width: auto; padding: 12px 24px;" onclick="saveSupabaseCredentials()">Connect to Supabase</button>
+              <button class="outline-button" onclick="testSupabaseConnection()">Test Connection</button>
+              <span id="supabaseConnMsg" style="font: 11px 'JetBrains Mono'; color: #71808a;"></span>
+            </div>
+          </div>
+
         </div>
       </main>
 
@@ -592,6 +623,9 @@
     <span>Sign out</span>
   </button>
 
+  <!-- Supabase JS SDK & App Logic -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

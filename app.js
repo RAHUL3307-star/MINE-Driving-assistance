@@ -235,6 +235,20 @@ function updateApp() {
   updateGauges(level);
   updateMiniTrend(score);
   processAudioBeeps(level);
+
+  // Stream live telemetry to Supabase if linked
+  if (window.streamTelemetryToSupabase) {
+    window.streamTelemetryToSupabase({
+      operator: state.operator,
+      visibility: state.visibility,
+      distance: state.distance,
+      speed: state.speed,
+      brakingDist: state.brakingDist,
+      riskScore: score,
+      riskLevel: level,
+      emergencyEngaged: state.emergencyEngaged
+    });
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -603,7 +617,47 @@ function saveSettings() {
   state.visThreshold = parseFloat(document.getElementById('cfgVisThreshold').value);
   state.distThreshold = parseFloat(document.getElementById('cfgDistThreshold').value);
   state.riskMultiplier = parseFloat(document.getElementById('cfgMultiplier').value);
-  alert('✅ Configuration saved: Risk engine thresholds updated.');
+  
+  if (window.saveSettingsToSupabase) {
+    window.saveSettingsToSupabase(state);
+  }
+  
+  alert('✅ Configuration saved: Risk engine thresholds updated & synced.');
+}
+
+function saveSupabaseCredentials() {
+  const url = document.getElementById('cfgSupabaseUrl').value.trim();
+  const key = document.getElementById('cfgSupabaseKey').value.trim();
+  const msg = document.getElementById('supabaseConnMsg');
+
+  if (!url || !key) {
+    if (msg) { msg.style.color = '#ef4444'; msg.textContent = '❌ Please enter both URL and Anon Key'; }
+    return;
+  }
+
+  const ok = window.initSupabase(url, key);
+  if (ok) {
+    if (msg) { msg.style.color = '#10b981'; msg.textContent = '✅ Connected to Supabase Cloud'; }
+  } else {
+    if (msg) { msg.style.color = '#ef4444'; msg.textContent = '❌ Failed to connect to Supabase'; }
+  }
+}
+
+async function testSupabaseConnection() {
+  const msg = document.getElementById('supabaseConnMsg');
+  if (msg) { msg.style.color = '#f59e0b'; msg.textContent = '🔄 Testing connection...'; }
+
+  if (!window.fetchIncidentsFromSupabase) {
+    if (msg) { msg.style.color = '#ef4444'; msg.textContent = '❌ Supabase SDK not loaded'; }
+    return;
+  }
+
+  const res = await window.fetchIncidentsFromSupabase(1);
+  if (res !== null) {
+    if (msg) { msg.style.color = '#10b981'; msg.textContent = '✅ Supabase Cloud Query Verified (OK)'; }
+  } else {
+    if (msg) { msg.style.color = '#f59e0b'; msg.textContent = '⚠️ Check Supabase credentials or table permissions'; }
+  }
 }
 
 function toggleAudioSwitch(btn) {
@@ -662,11 +716,33 @@ function showApp() {
 // ─────────────────────────────────────────────────────────────
 // INITIALIZATION
 // ─────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize Supabase if keys exist
+  if (window.initSupabase) {
+    window.initSupabase();
+    
+    // Populate settings fields if saved
+    const savedUrl = localStorage.getItem('oreguard_sb_url');
+    const savedKey = localStorage.getItem('oreguard_sb_key');
+    const urlInput = document.getElementById('cfgSupabaseUrl');
+    const keyInput = document.getElementById('cfgSupabaseKey');
+    if (urlInput && savedUrl) urlInput.value = savedUrl;
+    if (keyInput && savedKey) keyInput.value = savedKey;
+
+    // Attempt to load settings from Supabase
+    if (window.loadSettingsFromSupabase) {
+      const cloudSettings = await window.loadSettingsFromSupabase();
+      if (cloudSettings) {
+        if (cloudSettings.vis_threshold) state.visThreshold = parseFloat(cloudSettings.vis_threshold);
+        if (cloudSettings.dist_threshold) state.distThreshold = parseFloat(cloudSettings.dist_threshold);
+        if (cloudSettings.risk_multiplier) state.riskMultiplier = parseFloat(cloudSettings.risk_multiplier);
+      }
+    }
+  }
+
   // Check auth
   const auth = localStorage.getItem('oreguard_auth');
   if (!auth) {
-    // Show main app directly or login screen
     showApp();
   } else {
     showApp();
