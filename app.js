@@ -319,9 +319,6 @@ function updateApp() {
   updateRiskPanel(score, level);
   updateRadar(level);
   updateGauges(level);
-  updateSensorMatrix(level);
-  updatePitOperations(score, level);
-  updateOLED(level, score);
   updateMiniTrend(score);
   processAudioBeeps(level);
 
@@ -405,8 +402,8 @@ function updateRadar(level) {
   document.getElementById('radarDistVal').innerHTML = `${d.toFixed(2)}<small>m</small>`;
 
   const obstacle = document.getElementById('radarObstacle');
-  // Map distance 0.2m to 4.0m into radar Y position (top: 14% to 42%)
-  const topPct = 14 + (d / 4.0) * 28;
+  // Map distance 0.4m to 6.0m into radar Y position (top: 15% to 42%)
+  const topPct = 14 + (d / 6.0) * 30;
   obstacle.style.top = `${topPct}%`;
   obstacle.style.left = `50%`;
 
@@ -423,298 +420,30 @@ function updateGauges(level) {
   const brk = state.brakingDist.toFixed(1);
 
   // Visibility Gauge
-  const elVisNum = document.getElementById('gaugeVisNum');
-  if (elVisNum) elVisNum.textContent = vis;
+  document.getElementById('gaugeVisNum').textContent = vis;
   const visBar = document.getElementById('gaugeVisBar');
-  if (visBar) {
-    visBar.style.width = `${vis}%`;
-    visBar.className = vis > 70 ? 'lime' : vis > 40 ? 'amber' : 'red';
-  }
-  const elVisSub = document.getElementById('gaugeVisSub');
-  if (elVisSub) elVisSub.textContent = vis > 70 ? 'Clear optical conditions' : vis > 40 ? 'Moderate dust haze' : 'Dense fog condition';
+  visBar.style.width = `${vis}%`;
+  visBar.className = vis > 70 ? 'lime' : vis > 40 ? 'amber' : 'red';
+  document.getElementById('gaugeVisSub').textContent = vis > 70 ? 'Clear conditions' : vis > 40 ? 'Moderate dust' : 'Dense fog';
 
   // Distance Gauge
-  const elDistNum = document.getElementById('gaugeDistNum');
-  if (elDistNum) elDistNum.textContent = dist;
+  document.getElementById('gaugeDistNum').textContent = dist;
   const distBar = document.getElementById('gaugeDistBar');
-  if (distBar) {
-    distBar.style.width = `${Math.min(100, (dist / 4.0) * 100)}%`;
-    distBar.className = level === 'SAFE' ? 'lime' : level === 'WARNING' ? 'amber' : 'red';
-  }
+  distBar.style.width = `${Math.min(100, (dist / 6.0) * 100)}%`;
+  distBar.className = level === 'SAFE' ? 'lime' : level === 'WARNING' ? 'amber' : 'red';
 
   // Speed Gauge
-  const elSpdNum = document.getElementById('gaugeSpeedNum');
-  if (elSpdNum) elSpdNum.textContent = spd;
+  document.getElementById('gaugeSpeedNum').textContent = spd;
   const speedBar = document.getElementById('gaugeSpeedBar');
-  if (speedBar) {
-    speedBar.style.width = `${Math.min(100, (spd / 12.0) * 100)}%`;
-    speedBar.className = spd === 0 ? 'red' : spd < 5 ? 'amber' : 'lime';
-  }
-  const elSpdSub = document.getElementById('gaugeSpeedSub');
-  if (elSpdSub) elSpdSub.textContent = spd === 0 ? 'Halted / Safe state' : spd < 6 ? 'Adaptive limited speed' : 'Nominal corridor travel';
+  speedBar.style.width = `${Math.min(100, (spd / 12.0) * 100)}%`;
+  speedBar.className = spd === 0 ? 'red' : spd < 5 ? 'amber' : 'lime';
+  document.getElementById('gaugeSpeedSub').textContent = spd === 0 ? 'Halted' : spd < 6 ? 'Adaptive limited' : 'Nominal speed';
 
   // Braking Buffer Gauge
-  const elBrkNum = document.getElementById('gaugeBrakeNum');
-  if (elBrkNum) elBrkNum.textContent = brk;
+  document.getElementById('gaugeBrakeNum').textContent = brk;
   const brakeBar = document.getElementById('gaugeBrakeBar');
-  if (brakeBar) {
-    brakeBar.style.width = `${Math.min(100, (brk / 5.0) * 100)}%`;
-    brakeBar.className = brk > 3.0 ? 'amber' : 'lime';
-  }
-
-  // Incline Gauge
-  const elInclineNum = document.getElementById('gaugeInclineNum');
-  if (elInclineNum) {
-    const t = tickCount * 0.05;
-    const incl = (3.4 + Math.sin(t * 0.6) * 0.3).toFixed(1);
-    elInclineNum.textContent = incl;
-    const inclBar = document.getElementById('gaugeInclineBar');
-    if (inclBar) inclBar.style.width = `${Math.min(100, (parseFloat(incl) / 15) * 100)}%`;
-  }
-
-  // Drive Motors & Joystick
-  const elJoyNum = document.getElementById('gaugeJoyNum');
-  const elJoySpeed = document.getElementById('gaugeJoySpeed');
-  const elJoyBar = document.getElementById('gaugeJoyBar');
-  if (elJoyNum && elJoySpeed && elJoyBar) {
-    if (state.speed === 0 || state.emergencyEngaged) {
-      elJoyNum.textContent = 'STOP';
-      elJoySpeed.textContent = ' 0%';
-      elJoyBar.style.width = '0%';
-      elJoyBar.className = 'red';
-    } else if (state.speed < 5) {
-      elJoyNum.textContent = 'ADAPT';
-      elJoySpeed.textContent = ` ${Math.round((state.speed / 12) * 100)}%`;
-      elJoyBar.style.width = `${Math.round((state.speed / 12) * 100)}%`;
-      elJoyBar.className = 'amber';
-    } else {
-      elJoyNum.textContent = 'FWD';
-      elJoySpeed.textContent = ` ${Math.round((state.speed / 12) * 100)}%`;
-      elJoyBar.style.width = `${Math.round((state.speed / 12) * 100)}%`;
-      elJoyBar.className = 'lime';
-    }
-  }
-}
-
-// ─────────────────────────────────────────────────────────────
-// 4. 6-SENSOR HARDWARE MATRIX
-// ─────────────────────────────────────────────────────────────
-function updateSensorMatrix(level) {
-  const isHw = state.hardwareConnected;
-  const t = tickCount * 0.08;
-
-  // Node 1: HC-SR04
-  const n1Val = document.getElementById('node1Val');
-  if (n1Val) {
-    n1Val.textContent = state.distance.toFixed(2);
-    const n1Bar = document.getElementById('node1Bar');
-    if (n1Bar) {
-      n1Bar.style.width = `${Math.min(100, (state.distance / 4.0) * 100)}%`;
-      n1Bar.style.background = level === 'SAFE' ? 'var(--lime)' : level === 'WARNING' ? 'var(--amber)' : 'var(--red)';
-    }
-    const n1Echo = document.getElementById('node1Echo');
-    if (n1Echo) n1Echo.textContent = `${(state.distance * 5.82 + 0.3).toFixed(1)} ms`;
-    const n1Qual = document.getElementById('node1Qual');
-    if (n1Qual) n1Qual.textContent = `${(99.1 + Math.sin(t * 1.5) * 0.6).toFixed(1)}%`;
-    const n1Stat = document.getElementById('node1Status');
-    if (n1Stat) n1Stat.textContent = isHw ? '● LIVE HW' : '● ONLINE';
-  }
-
-  // Node 2: Optical LDR
-  const n2Val = document.getElementById('node2Val');
-  if (n2Val) {
-    n2Val.textContent = Math.round(state.visibility);
-    const n2Bar = document.getElementById('node2Bar');
-    if (n2Bar) {
-      n2Bar.style.width = `${state.visibility}%`;
-      n2Bar.style.background = state.visibility > 70 ? 'var(--lime)' : state.visibility > 40 ? 'var(--amber)' : 'var(--red)';
-    }
-    const n2Lux = document.getElementById('node2Lux');
-    if (n2Lux) n2Lux.textContent = `${Math.round(state.visibility * 41.2 + 200).toLocaleString()} lx`;
-    const n2Dust = document.getElementById('node2Dust');
-    if (n2Dust) n2Dust.textContent = `${((100 - state.visibility) * 0.88 + 3.2).toFixed(1)} µg/m³`;
-    const n2Stat = document.getElementById('node2Status');
-    if (n2Stat) n2Stat.textContent = isHw ? '● LIVE HW' : '● ACTIVE';
-  }
-
-  // Node 3: MPU6050
-  const n3Val = document.getElementById('node3Val');
-  if (n3Val) {
-    const pitch = (2.1 + Math.sin(t * 0.6) * 0.3).toFixed(1);
-    const roll = (-1.3 + Math.cos(t * 0.5) * 0.2).toFixed(1);
-    const totalTilt = Math.sqrt(pitch * pitch + roll * roll).toFixed(1);
-    n3Val.textContent = totalTilt;
-    const n3Bar = document.getElementById('node3Bar');
-    if (n3Bar) n3Bar.style.width = `${Math.min(100, (parseFloat(totalTilt) / 15) * 100)}%`;
-    const n3Pitch = document.getElementById('node3Pitch');
-    if (n3Pitch) n3Pitch.textContent = `${pitch > 0 ? '+' : ''}${pitch}°`;
-    const n3Roll = document.getElementById('node3Roll');
-    if (n3Roll) n3Roll.textContent = `${roll > 0 ? '+' : ''}${roll}°`;
-    const n3G = document.getElementById('node3G');
-    if (n3G) n3G.textContent = `${(0.12 + Math.abs(Math.sin(t * 1.8)) * 0.06).toFixed(2)}g`;
-  }
-
-  // Node 4: Hall-Effect Speed Encoder
-  const n4Val = document.getElementById('node4Val');
-  if (n4Val) {
-    n4Val.textContent = state.speed.toFixed(1);
-    const n4Bar = document.getElementById('node4Bar');
-    if (n4Bar) {
-      n4Bar.style.width = `${Math.min(100, (state.speed / 12.0) * 100)}%`;
-      n4Bar.style.background = state.speed === 0 ? 'var(--red)' : state.speed < 5 ? 'var(--amber)' : 'var(--lime)';
-    }
-    const n4Kmh = document.getElementById('node4Kmh');
-    if (n4Kmh) n4Kmh.textContent = `${(state.speed * 3.6).toFixed(1)} km/h`;
-    const n4Pulses = document.getElementById('node4Pulses');
-    if (n4Pulses) n4Pulses.textContent = `${Math.round(state.speed * 15.6)} p/s`;
-    const n4Stat = document.getElementById('node4Status');
-    if (n4Stat) n4Stat.textContent = isHw ? '● LIVE HW' : '● ONLINE';
-  }
-
-  // Node 5: Dual TT Motors
-  const n5Val = document.getElementById('node5Val');
-  if (n5Val) {
-    const pwm = state.speed > 0 ? Math.round((state.speed / 12.0) * 100) : 0;
-    n5Val.textContent = pwm;
-    const n5Bar = document.getElementById('node5Bar');
-    if (n5Bar) n5Bar.style.width = `${pwm}%`;
-    const n5L = document.getElementById('node5L');
-    if (n5L) n5L.textContent = `${Math.round(state.speed * 17.5)} RPM`;
-    const n5R = document.getElementById('node5R');
-    if (n5R) n5R.textContent = `${Math.round(state.speed * 17.2)} RPM`;
-    const n5Amps = document.getElementById('node5Amps');
-    if (n5Amps) n5Amps.textContent = `${(0.35 + state.speed * 0.12).toFixed(2)}A`;
-  }
-
-  // Node 6: Failsafe Relay / Braking Solenoid
-  const n6Val = document.getElementById('node6Val');
-  if (n6Val) {
-    const n6State = document.getElementById('node6State');
-    const n6Status = document.getElementById('node6Status');
-    const n6Brake = document.getElementById('node6Brake');
-    const n6Bar = document.getElementById('node6Bar');
-    if (state.emergencyEngaged || level === 'CRITICAL') {
-      n6Val.textContent = 'TRIPPED';
-      n6Val.style.color = 'var(--red)';
-      if (n6State) n6State.textContent = 'CUTOFF (Brake Engaged)';
-      if (n6Status) {
-        n6Status.textContent = '● INTERVENED';
-        n6Status.style.color = 'var(--red)';
-        n6Status.style.background = '#fee2e2';
-      }
-      if (n6Brake) n6Brake.textContent = '185 bar';
-      if (n6Bar) {
-        n6Bar.style.width = '100%';
-        n6Bar.style.background = 'var(--red)';
-      }
-    } else {
-      n6Val.textContent = 'READY';
-      n6Val.style.color = 'var(--emerald)';
-      if (n6State) n6State.textContent = 'Energized (Nominal)';
-      if (n6Status) {
-        n6Status.textContent = '● ARMED';
-        n6Status.style.color = 'var(--emerald)';
-        n6Status.style.background = '#e4f7ef';
-      }
-      if (n6Brake) n6Brake.textContent = '138 bar';
-      if (n6Bar) {
-        n6Bar.style.width = '100%';
-        n6Bar.style.background = 'var(--lime)';
-      }
-    }
-  }
-}
-
-// ─────────────────────────────────────────────────────────────
-// 5. PIT OPERATIONS & STOPPING ENVELOPE
-// ─────────────────────────────────────────────────────────────
-function updatePitOperations(score, level) {
-  const t = tickCount * 0.05;
-  const spd = state.speed;
-  const vis = state.visibility;
-
-  // Stopping Envelope breakdown
-  const reactDist = parseFloat((spd * 0.12).toFixed(2));
-  const frictDist = parseFloat(((spd * spd) / (2 * 9.81 * 0.62)).toFixed(2));
-  const fogBuff   = parseFloat((((100 - vis) / 100) * 1.5).toFixed(2));
-  const totalSafe = parseFloat((reactDist + frictDist + fogBuff).toFixed(2));
-
-  const elReact = document.getElementById('valEnvReact');
-  if (elReact) elReact.textContent = `${reactDist.toFixed(2)} m`;
-  const elBarReact = document.getElementById('barEnvReact');
-  if (elBarReact) elBarReact.style.width = `${Math.min(100, (reactDist / 3.0) * 100)}%`;
-
-  const elFrict = document.getElementById('valEnvFrict');
-  if (elFrict) elFrict.textContent = `${frictDist.toFixed(2)} m`;
-  const elBarFrict = document.getElementById('barEnvFrict');
-  if (elBarFrict) elBarFrict.style.width = `${Math.min(100, (frictDist / 5.0) * 100)}%`;
-
-  const elFog = document.getElementById('valEnvFog');
-  if (elFog) elFog.textContent = `+${fogBuff.toFixed(2)} m`;
-  const elBarFog = document.getElementById('barEnvFog');
-  if (elBarFog) elBarFog.style.width = `${Math.min(100, (fogBuff / 2.0) * 100)}%`;
-
-  const elTotal = document.getElementById('valEnvTotal');
-  if (elTotal) elTotal.textContent = `${totalSafe.toFixed(2)} m`;
-  const elBarTotal = document.getElementById('barEnvTotal');
-  if (elBarTotal) elBarTotal.style.width = `${Math.min(100, (totalSafe / 6.0) * 100)}%`;
-
-  // Safety Tag calculation
-  const envTag = document.getElementById('envSafetyTag');
-  if (envTag) {
-    const margin = state.distance - totalSafe;
-    if (margin > 0.5) {
-      envTag.style.background = '#e4f7ef';
-      envTag.style.color = '#07865d';
-      envTag.textContent = `CLEAR BUFFER (+${margin.toFixed(1)}m MARGIN)`;
-    } else if (margin >= 0) {
-      envTag.style.background = '#fff7e8';
-      envTag.style.color = '#b45309';
-      envTag.textContent = `ADVISORY: CLOSE BUFFER (+${margin.toFixed(1)}m)`;
-    } else {
-      envTag.style.background = '#fee2e2';
-      envTag.style.color = '#b91c1c';
-      envTag.textContent = `CRITICAL: OVERRUN BY ${Math.abs(margin).toFixed(1)}m`;
-    }
-  }
-
-  // Environmental fluctuations
-  const elTemp = document.getElementById('envTemp');
-  if (elTemp) elTemp.textContent = `${(28.2 + Math.sin(t * 0.4) * 0.4).toFixed(1)} °C`;
-  const elHumid = document.getElementById('envHumid');
-  if (elHumid) elHumid.textContent = `${Math.round(56 + Math.cos(t * 0.3) * 3)} %`;
-
-  // Fleet Distance micro-changes
-  const f1 = document.getElementById('fleetUnit1Dist');
-  if (f1) f1.textContent = `${(48.2 + Math.sin(t * 0.8) * 1.5).toFixed(1)} m`;
-  const f2 = document.getElementById('fleetUnit2Dist');
-  if (f2) f2.textContent = `${(92.6 + Math.cos(t * 0.7) * 2.0).toFixed(1)} m`;
-}
-
-// ─────────────────────────────────────────────────────────────
-// 6. OLED DRIVER HUD DISPLAY
-// ─────────────────────────────────────────────────────────────
-function updateOLED(level, score) {
-  const oledStatus = document.getElementById('oledStatusText');
-  if (oledStatus) {
-    oledStatus.textContent = state.emergencyEngaged ? 'E-STOP' : level;
-    oledStatus.style.color = level === 'SAFE' ? '#10b981' : level === 'WARNING' ? '#f59e0b' : '#ef4444';
-  }
-
-  const oledVis = document.getElementById('oledVisVal');
-  if (oledVis) oledVis.textContent = ` ${Math.round(state.visibility)}%`;
-
-  const oledDist = document.getElementById('oledDistVal');
-  if (oledDist) oledDist.textContent = ` ${state.distance.toFixed(1)}m`;
-
-  const oledSpd = document.getElementById('oledSpeedVal');
-  if (oledSpd) oledSpd.textContent = `${state.speed.toFixed(1)}m/s`;
-
-  const oledRisk = document.getElementById('oledRiskVal');
-  if (oledRisk) {
-    oledRisk.textContent = `${score}/100`;
-    oledRisk.style.color = level === 'SAFE' ? '#10b981' : level === 'WARNING' ? '#f59e0b' : '#ef4444';
-  }
+  brakeBar.style.width = `${Math.min(100, (brk / 5.0) * 100)}%`;
+  brakeBar.className = brk > 3.0 ? 'amber' : 'lime';
 }
 
 // ─────────────────────────────────────────────────────────────

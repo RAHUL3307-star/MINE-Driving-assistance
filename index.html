@@ -282,26 +282,26 @@
 
         </div>
 
-        <!-- Telemetry Gauges (6x Grid) -->
-        <div class="gauge-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        <!-- Telemetry Gauges (4x Row) -->
+        <div class="gauge-grid">
           <div class="gauge-card" data-testid="telemetry-visibility">
             <div class="gauge-head">
-              <span>ATMOSPHERIC VISIBILITY</span>
+              <span>VISIBILITY</span>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
             </div>
             <strong><span id="gaugeVisNum">85</span><small>%</small></strong>
             <div class="gauge-line"><span class="lime" id="gaugeVisBar" style="width: 85%;"></span></div>
-            <em id="gaugeVisSub">Clear optical conditions</em>
+            <em id="gaugeVisSub">Clear conditions</em>
           </div>
 
           <div class="gauge-card" data-testid="telemetry-obstacle">
             <div class="gauge-head">
               <span>NEAREST OBSTACLE</span>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m10 8 4 4-4 4"/></svg>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/></svg>
             </div>
             <strong><span id="gaugeDistNum">4.20</span><small>m</small></strong>
             <div class="gauge-line"><span class="lime" id="gaugeDistBar" style="width: 70%;"></span></div>
-            <em id="gaugeDistSub">Forward sector 01 · Clear</em>
+            <em id="gaugeDistSub">Front sector 01</em>
           </div>
 
           <div class="gauge-card" data-testid="telemetry-speed">
@@ -311,32 +311,29 @@
             </div>
             <strong><span id="gaugeSpeedNum">8.2</span><small>m/s</small></strong>
             <div class="gauge-line"><span class="lime" id="gaugeSpeedBar" style="width: 65%;"></span></div>
-            <em id="gaugeSpeedSub">Nominal corridor travel</em>
+            <em id="gaugeSpeedSub">Nominal speed</em>
           </div>
 
           <div class="gauge-card" data-testid="telemetry-braking">
             <div class="gauge-head">
-              <span>DYNAMIC BRAKING BUFFER</span>
+              <span>DYNAMIC BRAKING DISTANCE</span>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
             </div>
             <strong><span id="gaugeBrakeNum">1.8</span><small>m</small></strong>
             <div class="gauge-line"><span class="lime" id="gaugeBrakeBar" style="width: 30%;"></span></div>
-            <em id="gaugeBrakeSub">Dynamic margin active</em>
-          </div>
-
           <div class="gauge-card" data-testid="telemetry-incline">
             <div class="gauge-head">
-              <span>MPU6050 RAMP INCLINE</span>
+              <span>MPU6050 TILT / INCLINE</span>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             </div>
             <strong><span id="gaugeInclineNum">3.4</span><small>°</small></strong>
-            <div class="gauge-line"><span class="lime" id="gaugeInclineBar" style="width: 17%;"></span></div>
+            <div class="gauge-line"><span class="lime" id="gaugeInclineBar" style="width: 15%;"></span></div>
             <em id="gaugeInclineSub">Pitch: +2.1° · Roll: -1.3°</em>
           </div>
 
           <div class="gauge-card" data-testid="telemetry-joystick">
             <div class="gauge-head">
-              <span>DRIVE MOTORS & PWM</span>
+              <span>JOYSTICK / 2WD MOTORS</span>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             </div>
             <strong><span id="gaugeJoyNum">FWD</span><small id="gaugeJoySpeed"> 75%</small></strong>
@@ -345,272 +342,31 @@
           </div>
         </div>
 
-        <!-- ════════ 6-SENSOR HARDWARE TELEMETRY BUS ════════ -->
-        <div class="sensor-matrix-section">
-          <div class="sensor-matrix-header">
-            <div>
-              <span class="section-label">EDGE TELEMETRY BUS</span>
-              <h3>6-Point Hardware Sensor Node Matrix</h3>
-            </div>
-            <div class="sensor-status">
-              <i></i> 6 SENSORS CALIBRATED & STREAMING
-            </div>
-          </div>
-
-          <div class="sensor-matrix-grid">
-            <!-- Node 1: HC-SR04 Ultrasonic Distance -->
-            <div class="sensor-box">
-              <div class="sensor-box-top">
-                <span class="sensor-name">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m10 8 4 4-4 4"/></svg>
-                  HC-SR04 ULTRASONIC
-                </span>
-                <span class="sensor-tag-live" id="node1Status">● ONLINE</span>
-              </div>
-              <div class="sensor-main-val">
-                <span id="node1Val">4.20</span><small>m</small>
-              </div>
-              <div class="sensor-mini-bar"><span id="node1Bar" style="width: 70%;"></span></div>
-              <div class="sensor-sub-metrics">
-                <span>Echo: <b id="node1Echo">12.2 ms</b></span>
-                <span>Quality: <b id="node1Qual">99.4%</b></span>
-                <span>Pin: <b>GPIO 5/18</b></span>
-              </div>
-            </div>
-
-            <!-- Node 2: Optical LDR Dust Attenuation -->
-            <div class="sensor-box">
-              <div class="sensor-box-top">
-                <span class="sensor-name">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><circle cx="12" cy="12" r="4"/></svg>
-                  LDR OPTICAL ATTENUATION
-                </span>
-                <span class="sensor-tag-live" id="node2Status">● ACTIVE</span>
-              </div>
-              <div class="sensor-main-val">
-                <span id="node2Val">85</span><small>%</small>
-              </div>
-              <div class="sensor-mini-bar"><span id="node2Bar" style="width: 85%;"></span></div>
-              <div class="sensor-sub-metrics">
-                <span>Ambient: <b id="node2Lux">3,420 lx</b></span>
-                <span>Dust PM2.5: <b id="node2Dust">18.4 µg/m³</b></span>
-                <span>Pin: <b>ADC1 34</b></span>
-              </div>
-            </div>
-
-            <!-- Node 3: MPU-6050 6-Axis IMU -->
-            <div class="sensor-box">
-              <div class="sensor-box-top">
-                <span class="sensor-name">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
-                  MPU-6050 GYRO / ACCEL
-                </span>
-                <span class="sensor-tag-live" id="node3Status">● CALIBRATED</span>
-              </div>
-              <div class="sensor-main-val">
-                <span id="node3Val">3.4</span><small>° tilt</small>
-              </div>
-              <div class="sensor-mini-bar"><span id="node3Bar" style="width: 22%;"></span></div>
-              <div class="sensor-sub-metrics">
-                <span>Pitch: <b id="node3Pitch">+2.1°</b></span>
-                <span>Roll: <b id="node3Roll">-1.3°</b></span>
-                <span>Jolt: <b id="node3G">0.14g</b></span>
-              </div>
-            </div>
-
-            <!-- Node 4: Hall-Effect Speed Encoder -->
-            <div class="sensor-box">
-              <div class="sensor-box-top">
-                <span class="sensor-name">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/></svg>
-                  HALL SPEED ENCODER
-                </span>
-                <span class="sensor-tag-live" id="node4Status">● ONLINE</span>
-              </div>
-              <div class="sensor-main-val">
-                <span id="node4Val">8.2</span><small>m/s</small>
-              </div>
-              <div class="sensor-mini-bar"><span id="node4Bar" style="width: 65%;"></span></div>
-              <div class="sensor-sub-metrics">
-                <span>Kmh: <b id="node4Kmh">29.5 km/h</b></span>
-                <span>Pulses: <b id="node4Pulses">128 p/s</b></span>
-                <span>Pin: <b>ADC1 36</b></span>
-              </div>
-            </div>
-
-            <!-- Node 5: Dual TT 2WD Motor Driver -->
-            <div class="sensor-box">
-              <div class="sensor-box-top">
-                <span class="sensor-name">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 7h10v10H7z"/></svg>
-                  DUAL TT MOTOR DRIVER
-                </span>
-                <span class="sensor-tag-live" id="node5Status">● 2WD RUN</span>
-              </div>
-              <div class="sensor-main-val">
-                <span id="node5Val">78</span><small>% PWM</small>
-              </div>
-              <div class="sensor-mini-bar"><span id="node5Bar" style="width: 78%;"></span></div>
-              <div class="sensor-sub-metrics">
-                <span>Left: <b id="node5L">142 RPM</b></span>
-                <span>Right: <b id="node5R">140 RPM</b></span>
-                <span>Current: <b id="node5Amps">1.35A</b></span>
-              </div>
-            </div>
-
-            <!-- Node 6: Failsafe Relay / Braking Solenoid -->
-            <div class="sensor-box">
-              <div class="sensor-box-top">
-                <span class="sensor-name">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                  FAILSAFE RELAY ACTUATOR
-                </span>
-                <span class="sensor-tag-live" id="node6Status">● ARMED</span>
-              </div>
-              <div class="sensor-main-val">
-                <span id="node6Val" style="color:var(--emerald)">READY</span><small>intervene</small>
-              </div>
-              <div class="sensor-mini-bar"><span id="node6Bar" style="width: 100%;"></span></div>
-              <div class="sensor-sub-metrics">
-                <span>Loop: <b id="node6Loop">42 ms</b></span>
-                <span>Line: <b id="node6Brake">138 bar</b></span>
-                <span>State: <b id="node6State">Energized</b></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ════════ PIT OPERATIONS & FLEET MESH SECTION ════════ -->
-        <div class="pit-ops-grid">
-          
-          <!-- Haul Road Safety Envelope -->
-          <div class="pit-card">
-            <div class="panel-heading">
-              <div>
-                <span class="section-label">DYNAMIC STOPPING ENVELOPE</span>
-                <h3>Haul Road Physical Buffer Decomposition</h3>
-              </div>
-              <span class="mini-tag" id="envSafetyTag" style="background:#e4f7ef;color:#07865d;font:700 9px 'JetBrains Mono';padding:4px 8px;border-radius:3px;">
-                CLEAR BUFFER (+2.4m MARGIN)
-              </span>
-            </div>
-
-            <div class="envelope-breakdown">
-              <div class="env-row">
-                <span>Driver Reaction Dist:</span>
-                <div class="env-track"><span class="blue" id="barEnvReact" style="width: 32%;"></span></div>
-                <strong id="valEnvReact">0.68 m</strong>
-              </div>
-              <div class="env-row">
-                <span>Mechanical Tire Friction:</span>
-                <div class="env-track"><span id="barEnvFrict" style="width: 45%;"></span></div>
-                <strong id="valEnvFrict">1.14 m</strong>
-              </div>
-              <div class="env-row">
-                <span>Fog Hazard Escalation:</span>
-                <div class="env-track"><span class="amber" id="barEnvFog" style="width: 25%;"></span></div>
-                <strong id="valEnvFog">+0.32 m</strong>
-              </div>
-              <div class="env-row" style="border-top:1px solid #dfe5e8;padding-top:8px;">
-                <span>Total Safe Buffer:</span>
-                <div class="env-track"><span class="lime" id="barEnvTotal" style="width: 50%;"></span></div>
-                <strong id="valEnvTotal" style="font-size:13px;color:#07865d;">1.82 m</strong>
-              </div>
-            </div>
-
-            <div class="pit-env-strip">
-              <div class="pit-env-item">
-                <span>TUNNEL TEMP</span>
-                <strong id="envTemp">28.4 °C</strong>
-              </div>
-              <div class="pit-env-item">
-                <span>HUMIDITY</span>
-                <strong id="envHumid">58 %</strong>
-              </div>
-              <div class="pit-env-item">
-                <span>MINE GAS (CH4)</span>
-                <strong id="envGas" style="color:var(--emerald);">0.01% SAFE</strong>
-              </div>
-              <div class="pit-env-item">
-                <span>ROAD FRICTION</span>
-                <strong id="envMu">μ = 0.62</strong>
-              </div>
-            </div>
-          </div>
-
-          <!-- V2V Fleet Mesh Radar Tracker -->
-          <div class="pit-card">
-            <div class="panel-heading">
-              <div>
-                <span class="section-label">V2V PROXIMITY MESH</span>
-                <h3>Pit 03 Fleet Neighbors</h3>
-              </div>
-              <span class="sensor-status">
-                <i></i> 98% MESH SIGNAL
-              </span>
-            </div>
-
-            <div class="fleet-list">
-              <div class="fleet-unit-row">
-                <div>
-                  <div class="fleet-unit-name">
-                    <span>🚛</span> DUMPER DT-104 (CAT 777)
-                  </div>
-                  <div class="fleet-unit-meta">Ramp Decline · Speed: 7.4 m/s · Sector 04</div>
-                </div>
-                <div class="fleet-unit-dist" id="fleetUnit1Dist">48.2 m</div>
-              </div>
-
-              <div class="fleet-unit-row">
-                <div>
-                  <div class="fleet-unit-name">
-                    <span>🚜</span> ORE HAULER HT-09
-                  </div>
-                  <div class="fleet-unit-meta">Following Incline · Speed: 6.1 m/s · Sector 02</div>
-                </div>
-                <div class="fleet-unit-dist" id="fleetUnit2Dist">92.6 m</div>
-              </div>
-
-              <div class="fleet-unit-row">
-                <div>
-                  <div class="fleet-unit-name">
-                    <span>🚙</span> SAFETY ROVER XR-2
-                  </div>
-                  <div class="fleet-unit-meta">Stationary · Gate Checkpoint 01</div>
-                </div>
-                <div class="fleet-unit-dist" id="fleetUnit3Dist">142.0 m</div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ════════ IN-CABIN OLED DRIVER HUD SIMULATOR ════════ -->
-        <div class="oled-container-card">
-          <div class="oled-meta-left">
-            <div class="oled-icon-square">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <!-- In-Cabin OLED Driver Display Simulator (SSD1306 0.96") -->
+        <div class="oled-simulator-panel" style="margin: 20px 0; background: #080c10; border: 2px solid #1a2530; border-radius: 6px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 38px; height: 38px; background: #111820; border: 1px solid #10b981; color: #10b981; display: grid; place-items: center; border-radius: 4px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
             </div>
             <div>
-              <span class="section-label" style="color:var(--emerald);">IN-CABIN DRIVER HUD (SSD1306 0.96" I2C)</span>
-              <h3 style="font:700 17px 'Barlow Condensed';letter-spacing:.4px;margin:2px 0 0;">Vehicle Cabin Micro-Display Live Feed</h3>
-              <p style="font:500 11px 'JetBrains Mono';color:#64748b;margin-top:2px;">Real-time synchronized physical OLED frame buffer emulation</p>
+              <span style="font: 600 9px 'JetBrains Mono'; letter-spacing: 1.4px; color: #10b981; display: block;">IN-CABIN DRIVER HUD (SSD1306 0.96" OLED)</span>
+              <strong style="color: #fff; font: 700 16px 'Barlow Condensed'; letter-spacing: .5px;">Vehicle Cabin Micro-Display Live Feed</strong>
             </div>
           </div>
 
           <!-- The OLED screen simulation box -->
-          <div style="background: #000; border: 2px solid #3b82f6; border-radius: 4px; padding: 10px 18px; width: 300px; height: 78px; font-family: 'JetBrains Mono', monospace; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 0 16px rgba(59,130,246,0.22); flex-shrink: 0;">
+          <div style="background: #000; border: 2px solid #3b82f6; border-radius: 4px; padding: 10px 18px; width: 280px; height: 72px; font-family: 'JetBrains Mono', monospace; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 0 15px rgba(59,130,246,0.25);">
             <div style="display: flex; justify-content: space-between; font-size: 10px; color: #60a5fa; border-bottom: 1px dashed #1e3a8a; padding-bottom: 2px;">
               <span>OREGUARD MV-07</span>
-              <span id="oledStatusText" style="color:#10b981;font-weight:700;">SAFE</span>
+              <span id="oledStatusText" style="color:#10b981">SAFE</span>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #93c5fd;">
               <span>VIS:<b id="oledVisVal" style="color:#fff"> 85%</b></span>
               <span>DST:<b id="oledDistVal" style="color:#fff"> 4.2m</b></span>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 9px; color: #60a5fa;">
-              <span>SPD: <span id="oledSpeedVal" style="color:#e2e8f0;">8.2m/s</span></span>
-              <span>RISK: <span id="oledRiskVal" style="color:#10b981;font-weight:700;">12/100</span></span>
+              <span>SPD: <span id="oledSpeedVal">8.2m/s</span></span>
+              <span>RISK: <span id="oledRiskVal" style="color:#10b981">12/100</span></span>
             </div>
           </div>
         </div>
