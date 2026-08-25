@@ -187,24 +187,20 @@
       margin: 0 auto;
       background: #ffffff;
       color: var(--ink);
-      padding: 70px 6% 80px;
+      padding: 75px 6% 85px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
       position: relative;
-      overflow: hidden;
     }
 
     .hero-left::after {
       content: "";
       position: absolute;
       inset: 0;
-      background-image: 
-        radial-gradient(circle at 50% 10%, rgba(16, 185, 129, 0.07) 0%, transparent 60%),
-        repeating-linear-gradient(135deg, transparent 0 45px, rgba(226, 232, 240, 0.45) 46px 47px);
-      opacity: 0.8;
+      background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.05) 0%, transparent 65%);
       pointer-events: none;
       z-index: 1;
     }
@@ -381,23 +377,6 @@
       border-radius: 50%;
       box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
       animation: blink 1.8s infinite;
-    }
-      align-items: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* Subtle diagonal texture on black right panel */
-    .hero-right::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        135deg,
-        transparent 0 60px,
-        rgba(16, 185, 129, 0.03) 61px 62px
-      );
-      pointer-events: none;
     }
 
     .hud-box-container {
