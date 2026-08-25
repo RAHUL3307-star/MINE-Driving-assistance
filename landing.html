@@ -3,100 +3,153 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OREGUARD ADAS · Mine Vehicle Safety Intelligence</title>
-  <meta name="description" content="Visibility-aware collision prevention for mine vehicles. See the risk before it arrives with the OREGUARD Advanced Driver-Assistance System." />
+  <title>OREGUARD ADAS · Mine Vehicle Safety Intelligence & Collision Prevention</title>
+  <meta name="description" content="Visibility-aware collision prevention system for underground and surface mine vehicles. Real-time sensor fusion with dynamic risk recalculation." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;1,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;1,700;1,800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
   <style>
     :root {
-      --ink:    #161b20;
-      --muted:  #71808a;
-      --line:   #dfe5e8;
-      --paper:  #f4f7f8;
-      --white:  #ffffff;
-      --lime:   #10b981;
-      --amber:  #f59e0b;
-      --red:    #ef4444;
-      --dark:   #101419;
-      --dark2:  #141c21;
+      --ink:       #0d1117;
+      --dark:      #0b0f14;
+      --dark-card: #121820;
+      --dark-card2:#17202a;
+      --border:    #1e2936;
+      --border-lit:#2a3a4c;
+      --muted:     #7c8e9a;
+      --muted-lit: #a5b4be;
+      --white:     #ffffff;
+      --lime:      #10b981;
+      --lime-glow: rgba(16, 185, 129, 0.4);
+      --amber:     #f59e0b;
+      --red:       #ef4444;
+      --blue:      #3b82f6;
+      --cyan:      #06b6d4;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+      color-scheme: dark;
+    }
 
     body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: #ffffff;
-      color: var(--ink);
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--dark);
+      color: #e2e8f0;
+      line-height: 1.6;
       overflow-x: hidden;
+      font-size: 15px;
     }
 
     /* ════════════════════════════════════════
-       NAV BAR
+       GRID & AMBIENT GLOW BACKGROUND
+    ════════════════════════════════════════ */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      top: -150px;
+      left: 30%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+      animation: float-glow 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes float-glow {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(50px, 30px) scale(1.15); }
+    }
+
+    /* ════════════════════════════════════════
+       NAVIGATION BAR
     ════════════════════════════════════════ */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
-      z-index: 100;
+      z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 6%;
-      height: 64px;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--line);
+      height: 70px;
+      background: rgba(11, 15, 20, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
     }
 
     .nav-brand {
       display: flex;
-      gap: 10px;
       align-items: center;
+      gap: 12px;
       text-decoration: none;
+      color: var(--white);
     }
 
     .nav-mark {
-      width: 34px;
-      height: 34px;
-      background: var(--lime);
-      color: #062b1d;
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #042618;
       display: grid;
       place-items: center;
+      border-radius: 6px;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
       flex-shrink: 0;
     }
 
     .nav-brand strong {
-      font: 700 18px 'Barlow Condensed';
+      font: 800 20px 'Barlow Condensed';
       letter-spacing: 1.5px;
-      color: var(--ink);
+      display: block;
+      line-height: 1;
     }
 
     .nav-brand sub {
       font: 600 9px 'JetBrains Mono';
-      letter-spacing: 1px;
-      color: #8a979d;
+      letter-spacing: 1.2px;
+      color: var(--lime);
       display: block;
-      vertical-align: bottom;
+      margin-top: 2px;
     }
 
     .nav-links {
       display: flex;
-      gap: 36px;
+      gap: 28px;
       list-style: none;
     }
 
     .nav-links a {
       text-decoration: none;
-      font: 500 11px 'JetBrains Mono';
-      letter-spacing: .8px;
-      color: #71808a;
-      transition: color .2s;
+      font: 600 11px 'JetBrains Mono';
+      letter-spacing: 0.8px;
+      color: var(--muted-lit);
+      transition: color 0.2s;
     }
 
-    .nav-links a:hover { color: var(--ink); }
+    .nav-links a:hover {
+      color: var(--lime);
+    }
 
     .nav-actions {
       display: flex;
@@ -106,556 +159,817 @@
 
     .btn-ghost {
       background: transparent;
-      border: 1px solid #d0d7db;
-      color: var(--muted);
+      border: 1px solid var(--border-lit);
+      color: #cbd5e1;
       padding: 9px 18px;
       font: 600 11px 'JetBrains Mono';
+      letter-spacing: 0.5px;
       cursor: pointer;
       text-decoration: none;
-      transition: border-color .2s, color .2s, background .2s;
+      border-radius: 4px;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .btn-ghost:hover { border-color: var(--ink); color: var(--ink); background: #f0f2f3; }
+    .btn-ghost:hover {
+      border-color: var(--lime);
+      color: var(--lime);
+      background: rgba(16, 185, 129, 0.08);
+      transform: translateY(-1px);
+    }
 
-    .btn-primary-sm {
-      background: #111827;
-      color: #fff;
+    .btn-primary-glow {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #042618;
       border: 0;
       padding: 10px 22px;
-      font: 700 11px 'Barlow Condensed';
+      font: 800 12px 'Barlow Condensed';
       letter-spacing: 1.2px;
       cursor: pointer;
       text-decoration: none;
-      transition: background-color .2s, transform .2s, box-shadow .2s;
-      box-shadow: 0 2px 8px rgba(0,0,0,.18);
+      border-radius: 4px;
+      font-weight: 700;
+      transition: all 0.25s;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .btn-primary-sm:hover { background: #1f2937; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.25); }
+    .btn-primary-glow:hover {
+      background: linear-gradient(135deg, #34d399, #10b981);
+      box-shadow: 0 0 24px rgba(16, 185, 129, 0.6);
+      transform: translateY(-2px);
+    }
 
     /* ════════════════════════════════════════
-       HERO SECTION
+       HERO SECTION (SPLIT SCREEN)
     ════════════════════════════════════════ */
     .hero {
+      position: relative;
+      z-index: 1;
       min-height: 100vh;
       display: flex;
       align-items: stretch;
-      padding-top: 64px; /* nav height */
+      padding-top: 70px;
     }
 
-    /* LEFT HALF — Dark hero */
+    /* LEFT HERO PANEL */
     .hero-left {
       width: 50%;
-      background: #101419;
-      color: #fff;
+      padding: 48px 6% 48px 6%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 52px 7% 52px 8%;
       position: relative;
-      overflow: hidden;
+      background: radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 60%);
+      border-right: 1px solid var(--border);
     }
 
-    /* Diagonal stripe overlay bottom */
-    .hero-left::after {
-      content: "";
-      position: absolute;
-      inset: auto -10% -20% -10%;
-      height: 50%;
-      background: repeating-linear-gradient(
-        120deg,
-        transparent 0 42px,
-        #1b252a 43px 44px
-      );
-      opacity: 0.45;
-      transform: skewY(-8deg);
-      pointer-events: none;
-    }
-
-    /* Radar glow blob */
-    .hero-left::before {
-      content: "";
-      position: absolute;
-      bottom: -8%;
-      right: -10%;
-      width: 360px;
-      height: 360px;
-      background: radial-gradient(circle, rgba(16,185,129,.14) 0%, transparent 68%);
-      pointer-events: none;
-      animation: glow-pulse 3.8s ease-in-out infinite;
-    }
-
-    @keyframes glow-pulse {
-      0%, 100% { transform: scale(1); opacity: .55; }
-      50% { transform: scale(1.14); opacity: 0.9; }
-    }
-
-    .hero-brand-row {
-      display: flex;
+    .hero-badge-tag {
+      display: inline-flex;
       align-items: center;
-      gap: 11px;
-      position: relative;
-      z-index: 2;
-    }
-
-    .hero-brand-mark {
-      width: 36px;
-      height: 36px;
-      background: var(--lime);
-      color: #052c1e;
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-    }
-
-    .hero-brand-row strong {
-      font: 700 20px/1 'Barlow Condensed';
-      letter-spacing: 1.4px;
-      color: #fff;
-      display: block;
-    }
-
-    .hero-brand-row span {
-      font: 600 9px 'JetBrains Mono';
-      letter-spacing: 1.2px;
-      color: #607880;
-      display: block;
-      margin-top: 2px;
-    }
-
-    .hero-eyebrow {
+      gap: 8px;
+      padding: 6px 12px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 4px;
       font: 600 10px 'JetBrains Mono';
-      letter-spacing: 1.6px;
-      color: #607880;
+      letter-spacing: 1.2px;
+      color: var(--lime);
       margin-bottom: 20px;
-      position: relative;
-      z-index: 2;
+      width: fit-content;
     }
 
     .hero-heading {
-      position: relative;
-      z-index: 2;
-      font: 700 clamp(52px, 6vw, 84px)/.86 'Barlow Condensed';
-      margin: 0 0 22px;
+      font: 800 clamp(48px, 5.5vw, 80px)/0.92 'Barlow Condensed';
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
     }
 
-    .hero-heading .h-white { color: #ffffff; display: block; }
-    .hero-heading .h-lime { color: var(--lime); display: block; font-style: italic; }
-
-    .hero-sub {
-      position: relative;
-      z-index: 2;
-      font-size: 14px;
-      color: #8a9eaa;
-      max-width: 380px;
-      line-height: 1.72;
-      margin-bottom: 0;
+    .hero-heading .h-white {
+      color: var(--white);
+      display: block;
     }
 
-    /* Status indicator row */
-    .hero-status {
-      position: relative;
-      z-index: 2;
+    .hero-heading .h-lime {
+      color: var(--lime);
+      font-style: italic;
+      display: block;
+      text-shadow: 0 0 28px rgba(16, 185, 129, 0.4);
+    }
+
+    .hero-desc {
+      font-size: 14.5px;
+      color: #94a3b8;
+      line-height: 1.7;
+      max-width: 520px;
+      margin-bottom: 32px;
+    }
+
+    .hero-cta-group {
       display: flex;
-      gap: 24px;
       flex-wrap: wrap;
       align-items: center;
+      gap: 14px;
+      margin-bottom: 36px;
     }
 
-    .status-chip {
+    .btn-hero-lg {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #042618;
+      border: 0;
+      padding: 16px 36px;
+      font: 800 15px 'Barlow Condensed';
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: all 0.25s;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-hero-lg:hover {
+      background: linear-gradient(135deg, #34d399, #10b981);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(16, 185, 129, 0.55);
+    }
+
+    .btn-hero-sec {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid var(--border-lit);
+      color: #f1f5f9;
+      padding: 16px 26px;
+      font: 600 12px 'JetBrains Mono';
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-hero-sec:hover {
+      background: rgba(51, 65, 85, 0.8);
+      border-color: var(--muted-lit);
+      transform: translateY(-1px);
+    }
+
+    /* Quick Launch Role Bar */
+    .quick-launch-box {
+      background: rgba(18, 24, 32, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin-bottom: 28px;
+    }
+
+    .quick-launch-label {
+      font: 600 10px 'JetBrains Mono';
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .quick-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .quick-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-lit);
+      color: #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font: 600 11px 'JetBrains Mono';
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .quick-pill:hover {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: var(--lime);
+      color: var(--lime);
+    }
+
+    /* Status Bar */
+    .hero-status-row {
       display: flex;
       align-items: center;
-      gap: 7px;
-      font: 10px 'JetBrains Mono';
-      color: #7a8c93;
-    }
-
-    .status-chip .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .status-chip.ok .dot { background: var(--lime); box-shadow: 0 0 0 2px #123e30; animation: blink 2s infinite; }
-    .status-chip.warn .dot { background: var(--amber); }
-    .status-chip.info .dot { background: #2563eb; }
-
-    .hero-center {
-      position: relative;
-      z-index: 2;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
       gap: 20px;
-      padding: 24px 0;
+      flex-wrap: wrap;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    /* RIGHT HALF — Dark Live Telemetry HUD */
+    .status-badge-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font: 500 11px 'JetBrains Mono';
+      color: var(--muted-lit);
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+      animation: pulse-dot 1.8s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* RIGHT HERO PANEL (TELEMETRY COCKPIT HUD) */
     .hero-right {
-      flex: 1;
-      background: #101419;
+      width: 50%;
+      padding: 44px 5%;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 52px 8% 52px 4%;
-      gap: 16px;
+      gap: 18px;
+      background: #0d1217;
       position: relative;
-      overflow: hidden;
     }
 
-    .hero-right::before {
-      content: "";
-      position: absolute;
-      top: 10%;
-      right: -10%;
-      width: 440px;
-      height: 440px;
-      background: radial-gradient(circle, rgba(16,185,129,.09) 0%, transparent 68%);
-      pointer-events: none;
+    .hud-cockpit-frame {
+      background: rgba(18, 24, 32, 0.85);
+      border: 1px solid var(--border-lit);
+      border-radius: 8px;
+      padding: 24px;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(12px);
     }
 
-    /* Dark Metric Cards Grid */
+    .hud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hud-header-title {
+      font: 700 16px 'Barlow Condensed';
+      letter-spacing: 1px;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hud-header-title span {
+      color: var(--lime);
+      font-size: 11px;
+      font-family: 'JetBrains Mono';
+    }
+
+    .hud-signal-tag {
+      font: 600 10px 'JetBrains Mono';
+      letter-spacing: 1px;
+      color: var(--cyan);
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      padding: 3px 8px;
+      border-radius: 3px;
+    }
+
+    /* 4-Card Telemetry Grid */
     .hud-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      position: relative;
-      z-index: 2;
+      margin-bottom: 16px;
     }
 
     .hud-card {
-      background: rgba(22, 29, 35, 0.85);
-      border: 1px solid #233038;
-      padding: 18px 20px;
-      border-radius: 4px;
-      transition: border-color .25s, transform .25s, background .25s;
+      background: #151d26;
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+      border-radius: 6px;
+      transition: all 0.25s;
     }
 
     .hud-card:hover {
-      border-color: rgba(16,185,129,.45);
-      background: rgba(26, 36, 44, 0.95);
+      border-color: var(--border-lit);
+      background: #19232e;
       transform: translateY(-2px);
     }
 
-    .hud-label {
-      font: 600 9px 'JetBrains Mono';
-      letter-spacing: 1.2px;
-      color: #728994;
-      margin-bottom: 8px;
+    .hud-card-label {
+      font: 600 10px 'JetBrains Mono';
+      letter-spacing: 1px;
+      color: var(--muted);
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      margin-bottom: 8px;
     }
 
-    .hud-value {
-      font: 700 34px 'Barlow Condensed';
-      color: #ffffff;
+    .hud-card-value {
+      font: 800 36px/1 'Barlow Condensed';
+      color: var(--white);
       display: flex;
       align-items: flex-end;
       gap: 4px;
-      line-height: 1;
     }
 
-    .hud-value .unit {
+    .hud-card-value .unit {
       font-size: 14px;
-      color: #728994;
+      color: var(--muted);
       margin-bottom: 3px;
+      font-family: 'JetBrains Mono';
+      font-weight: 500;
     }
 
-    .hud-value .lime { color: var(--lime); }
-    .hud-value .amber { color: var(--amber); }
-    .hud-value .red { color: var(--red); }
-
-    .hud-bar-wrap {
-      margin-top: 12px;
-      height: 4px;
-      background: #172127;
-      border-radius: 2px;
+    .hud-bar-bg {
+      margin-top: 10px;
+      height: 5px;
+      background: #0f151c;
+      border-radius: 3px;
       overflow: hidden;
     }
 
-    .hud-bar {
+    .hud-bar-fill {
       height: 100%;
-      border-radius: 2px;
-      transition: width .8s ease;
+      background: var(--lime);
+      border-radius: 3px;
+      transition: width 0.6s ease;
     }
 
-    .hud-bar.lime { background: var(--lime); }
-    .hud-bar.amber { background: var(--amber); }
-    .hud-bar.red { background: var(--red); }
-
-    .hud-sub {
-      font: 10px 'JetBrains Mono';
-      color: #728994;
+    .hud-card-sub {
+      font: 500 10px 'JetBrains Mono';
+      color: var(--muted-lit);
       margin-top: 8px;
       display: flex;
       align-items: center;
       gap: 5px;
     }
 
-    /* Risk Status Card */
+    /* Dynamic Risk Engine Output Card */
     .hud-risk-card {
       background: rgba(16, 185, 129, 0.08);
       border: 1px solid rgba(16, 185, 129, 0.35);
-      padding: 20px 22px;
-      border-radius: 4px;
+      border-radius: 6px;
+      padding: 18px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      position: relative;
-      z-index: 2;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
     }
 
-    .hud-risk-card .label-col {
+    .hud-risk-info .tag {
       font: 600 9px 'JetBrains Mono';
       letter-spacing: 1.2px;
-      color: #5aa68c;
+      color: #6ee7b7;
     }
 
-    .hud-risk-card h3 {
-      font: 700 28px 'Barlow Condensed';
+    .hud-risk-info h3 {
+      font: 800 28px 'Barlow Condensed';
       color: var(--lime);
-      letter-spacing: .5px;
-      margin: 4px 0 2px;
+      letter-spacing: 0.5px;
+      margin: 2px 0;
     }
 
-    .hud-risk-card p {
-      font: 11px 'JetBrains Mono';
-      color: #7fae9e;
+    .hud-risk-info p {
+      font: 500 11px 'JetBrains Mono';
+      color: #94a3b8;
     }
 
-    .hud-score-pill {
+    .hud-score-box {
       background: rgba(16, 185, 129, 0.15);
       border: 1px solid rgba(16, 185, 129, 0.4);
       color: var(--lime);
-      font: 700 30px 'Barlow Condensed';
-      padding: 10px 20px;
-      border-radius: 3px;
+      padding: 8px 18px;
+      border-radius: 4px;
       text-align: center;
-      line-height: 1;
     }
 
-    .hud-score-pill span {
+    .hud-score-num {
+      font: 800 32px/1 'Barlow Condensed';
       display: block;
-      font: 600 9px 'JetBrains Mono';
-      color: #5aa68c;
-      margin-top: 4px;
     }
 
-    /* Hero CTA Row */
-    .hero-cta-row {
+    .hud-score-sub {
+      font: 600 8px 'JetBrains Mono';
+      letter-spacing: 1px;
+      color: #6ee7b7;
+      display: block;
+    }
+
+    /* Live Radar Scanner Widget */
+    .hud-radar-row {
+      background: #111720;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 18px;
       display: flex;
       align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-top: 10px;
+      justify-content: space-between;
+      gap: 16px;
     }
 
-    .btn-hero-main {
-      background: var(--lime);
-      color: #052c1e;
-      border: 0;
-      padding: 15px 30px;
-      font: 700 13px 'Barlow Condensed';
-      letter-spacing: 1.4px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 3px;
-      transition: background-color .2s, transform .2s, box-shadow .2s;
-      box-shadow: 0 4px 16px rgba(16,185,129,.3);
+    .radar-svg-box {
+      width: 60px;
+      height: 60px;
+      position: relative;
+      display: grid;
+      place-items: center;
     }
 
-    .btn-hero-main:hover {
-      background: #0ea570;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(16,185,129,.45);
+    .radar-svg {
+      width: 100%;
+      height: 100%;
+      animation: rotate-radar 3.5s linear infinite;
     }
 
-    .btn-hero-sec {
-      background: transparent;
-      border: 1px solid #2a3a44;
-      color: #9ab0ba;
-      padding: 15px 24px;
-      font: 600 11px 'JetBrains Mono';
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 3px;
-      transition: border-color .2s, color .2s, background .2s;
+    @keyframes rotate-radar {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
-    .btn-hero-sec:hover {
-      border-color: #526f7e;
-      color: #fff;
-      background: rgba(255,255,255,0.04);
+    .radar-text {
+      flex: 1;
+    }
+
+    .radar-text strong {
+      font: 700 14px 'Barlow Condensed';
+      color: var(--white);
+      display: block;
+    }
+
+    .radar-text span {
+      font: 500 10px 'JetBrains Mono';
+      color: var(--muted);
+      display: block;
     }
 
     /* ════════════════════════════════════════
-       TECH SPECS STRIP
+       SPECS STRIP
     ════════════════════════════════════════ */
     .specs-strip {
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      padding: 26px 8%;
-      display: flex;
-      gap: 0;
-      overflow-x: auto;
-      background: #f4f7f8;
+      background: #10161f;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 6%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 20px;
+      position: relative;
+      z-index: 1;
     }
 
-    .spec-item {
-      flex: 1 0 160px;
+    .spec-card {
       display: flex;
       align-items: center;
       gap: 14px;
-      padding: 0 24px;
-      border-right: 1px solid var(--line);
     }
 
-    .spec-item:first-child { padding-left: 0; }
-    .spec-item:last-child { border-right: 0; }
-
     .spec-icon {
-      width: 34px;
-      height: 34px;
-      background: rgba(16,185,129,.1);
+      width: 38px;
+      height: 38px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
       color: var(--lime);
       display: grid;
       place-items: center;
+      border-radius: 6px;
       flex-shrink: 0;
     }
 
-    .spec-title {
-      font: 700 18px 'Barlow Condensed';
-      color: var(--ink);
+    .spec-meta strong {
+      font: 800 18px/1.1 'Barlow Condensed';
+      color: var(--white);
       display: block;
+      letter-spacing: 0.5px;
     }
 
-    .spec-desc {
-      font: 10px 'JetBrains Mono';
-      color: #71808a;
+    .spec-meta span {
+      font: 500 10px 'JetBrains Mono';
+      color: var(--muted);
       display: block;
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
     /* ════════════════════════════════════════
-       HOW IT WORKS SECTION
+       INTERACTIVE LIVE SIMULATOR SECTION
     ════════════════════════════════════════ */
-    .section-how {
-      padding: 100px 8%;
-      background: #ffffff;
+    .section-simulator {
+      padding: 90px 6%;
+      background: radial-gradient(circle at 50% 10%, rgba(16, 185, 129, 0.06) 0%, transparent 70%);
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 50px;
     }
 
     .section-tag {
-      font: 600 10px 'JetBrains Mono';
-      letter-spacing: 1.6px;
-      color: #3d8068;
-      margin-bottom: 14px;
+      font: 700 11px 'JetBrains Mono';
+      letter-spacing: 1.8px;
+      color: var(--lime);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      display: block;
     }
 
-    .section-heading {
-      font: 700 clamp(38px, 4vw, 60px)/.9 'Barlow Condensed';
-      color: var(--ink);
+    .section-title {
+      font: 800 clamp(36px, 4.5vw, 56px)/0.95 'Barlow Condensed';
+      color: var(--white);
       margin-bottom: 16px;
-      max-width: 620px;
+      text-transform: uppercase;
     }
 
-    .section-heading em { color: var(--lime); font-style: normal; }
+    .section-title em {
+      color: var(--lime);
+      font-style: normal;
+    }
 
-    .section-sub {
-      font-size: 13px;
-      color: #71808a;
-      max-width: 520px;
+    .section-desc {
+      font-size: 14px;
+      color: #94a3b8;
       line-height: 1.7;
-      margin-bottom: 64px;
     }
 
-    .steps-grid {
+    .sim-container {
+      max-width: 1060px;
+      margin: 0 auto;
+      background: var(--dark-card);
+      border: 1px solid var(--border-lit);
+      border-radius: 10px;
+      padding: 36px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.6);
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 2px;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
     }
 
-    .step-card {
-      background: #f9fbfc;
-      border: 1px solid var(--line);
-      padding: 34px 30px;
-      position: relative;
-      transition: border-color .3s, background .3s;
+    .sim-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
     }
 
-    .step-card:hover {
-      border-color: rgba(16,185,129,.35);
-      background: #f0fdf8;
+    .sim-slider-block {
+      background: #17202c;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 20px;
     }
 
-    .step-num {
-      font: 700 52px 'Barlow Condensed';
-      color: rgba(16,185,129,.12);
-      position: absolute;
-      top: 18px;
-      right: 22px;
+    .sim-slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .sim-slider-label {
+      font: 600 11px 'JetBrains Mono';
+      color: #cbd5e1;
+    }
+
+    .sim-slider-val {
+      font: 800 20px 'Barlow Condensed';
+      color: var(--lime);
+    }
+
+    .sim-range {
+      width: 100%;
+      accent-color: var(--lime);
+      cursor: pointer;
+    }
+
+    .sim-slider-footer {
+      display: flex;
+      justify-content: space-between;
+      font: 500 9px 'JetBrains Mono';
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .sim-output-box {
+      background: #17202c;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .sim-calc-head {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+    }
+
+    .sim-calc-head strong {
+      font: 800 18px 'Barlow Condensed';
+      color: var(--white);
+      display: block;
+    }
+
+    .sim-calc-head span {
+      font: 500 10px 'JetBrains Mono';
+      color: var(--muted);
+    }
+
+    .sim-metric-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .sim-m-card {
+      background: #111720;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px 14px;
+    }
+
+    .sim-m-card small {
+      font: 600 9px 'JetBrains Mono';
+      color: var(--muted);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .sim-m-card b {
+      font: 800 24px 'Barlow Condensed';
+      color: var(--white);
+      display: block;
       line-height: 1;
     }
 
+    .sim-physics-formula {
+      background: #0f151d;
+      border: 1px dashed var(--border-lit);
+      border-radius: 4px;
+      padding: 10px 14px;
+      font: 500 10px 'JetBrains Mono';
+      color: #94a3b8;
+      margin-bottom: 18px;
+    }
+
+    .sim-physics-formula code {
+      color: var(--lime);
+      display: block;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .sim-action-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #042618;
+      border: 0;
+      padding: 14px;
+      font: 800 14px 'Barlow Condensed';
+      letter-spacing: 1.2px;
+      cursor: pointer;
+      text-decoration: none;
+      border-radius: 4px;
+      text-align: center;
+      transition: all 0.2s;
+      font-weight: 700;
+    }
+
+    .sim-action-btn:hover {
+      background: linear-gradient(135deg, #34d399, #10b981);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    }
+
+    /* ════════════════════════════════════════
+       HOW IT WORKS (4-STAGE PIPELINE)
+    ════════════════════════════════════════ */
+    .section-how {
+      padding: 90px 6%;
+      background: #0e1319;
+      position: relative;
+      z-index: 1;
+    }
+
+    .steps-grid {
+      max-width: 1140px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .step-card {
+      background: var(--dark-card);
+      border: 1px solid var(--border);
+      padding: 32px 26px;
+      border-radius: 8px;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .step-card:hover {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: #17202c;
+      transform: translateY(-4px);
+    }
+
+    .step-num {
+      font: 800 52px/1 'Barlow Condensed';
+      color: rgba(16, 185, 129, 0.12);
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
     .step-icon {
-      width: 42px;
-      height: 42px;
-      background: rgba(16,185,129,.1);
+      width: 44px;
+      height: 44px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
       color: var(--lime);
       display: grid;
       place-items: center;
-      margin-bottom: 22px;
+      border-radius: 6px;
+      margin-bottom: 20px;
     }
 
     .step-title {
-      font: 700 18px 'Barlow Condensed';
-      color: var(--ink);
-      margin-bottom: 8px;
-      letter-spacing: .3px;
+      font: 800 20px 'Barlow Condensed';
+      color: var(--white);
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
     }
 
     .step-desc {
-      font: 12px/1.65 'Inter';
-      color: #71808a;
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.65;
     }
 
     /* ════════════════════════════════════════
        SCENARIOS SECTION
     ════════════════════════════════════════ */
     .section-scenarios {
-      padding: 100px 8%;
-      background: #f4f7f8;
+      padding: 90px 6%;
+      position: relative;
+      z-index: 1;
     }
 
     .scenarios-grid {
+      max-width: 1140px;
+      margin: 0 auto;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 14px;
-      margin-top: 56px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
     }
 
     .scenario-card {
-      border: 1px solid var(--line);
-      background: #ffffff;
+      background: var(--dark-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
       padding: 28px 24px;
-      transition: all .25s;
       cursor: pointer;
       position: relative;
       overflow: hidden;
+      transition: all 0.25s;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .scenario-card::before {
       content: "";
       position: absolute;
-      bottom: 0; left: 0; right: 0;
+      top: 0; left: 0; right: 0;
       height: 3px;
     }
 
@@ -664,178 +978,201 @@
     .scenario-card.poor::before { background: #f97316; }
     .scenario-card.emergency::before { background: var(--red); }
 
-    .scenario-card:hover { transform: translateY(-4px); border-color: rgba(0,0,0,.15); box-shadow: 0 8px 28px rgba(0,0,0,.08); }
-
-    .scenario-vis {
-      font: 700 44px 'Barlow Condensed';
-      margin-bottom: 4px;
+    .scenario-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.45);
+      border-color: var(--border-lit);
     }
 
-    .scenario-card.clear .scenario-vis { color: var(--lime); }
-    .scenario-card.dust .scenario-vis { color: var(--amber); }
-    .scenario-card.poor .scenario-vis { color: #f97316; }
-    .scenario-card.emergency .scenario-vis { color: var(--red); }
+    .scen-top {
+      margin-bottom: 20px;
+    }
 
-    .scenario-name {
-      font: 700 14px 'Barlow Condensed';
-      color: var(--ink);
-      letter-spacing: .4px;
+    .scen-vis {
+      font: 800 48px/1 'Barlow Condensed';
       margin-bottom: 6px;
     }
 
-    .scenario-detail {
-      font: 10px 'JetBrains Mono';
-      color: #849098;
+    .scenario-card.clear .scen-vis { color: var(--lime); }
+    .scenario-card.dust .scen-vis { color: var(--amber); }
+    .scenario-card.poor .scen-vis { color: #f97316; }
+    .scenario-card.emergency .scen-vis { color: var(--red); }
+
+    .scen-name {
+      font: 800 18px 'Barlow Condensed';
+      color: var(--white);
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .scen-desc {
+      font: 500 11px 'JetBrains Mono';
+      color: #94a3b8;
       line-height: 1.6;
     }
 
+    .scen-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font: 700 11px 'Barlow Condensed';
+      letter-spacing: 1px;
+      color: var(--lime);
+      margin-top: 16px;
+    }
+
     /* ════════════════════════════════════════
-       FINAL CTA SECTION
+       HARDWARE STACK SECTION
+    ════════════════════════════════════════ */
+    .section-hardware {
+      padding: 90px 6%;
+      background: #0e1319;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hw-grid {
+      max-width: 1140px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .hw-card {
+      background: var(--dark-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      display: flex;
+      gap: 18px;
+      transition: all 0.25s;
+    }
+
+    .hw-card:hover {
+      border-color: var(--border-lit);
+      background: #17202c;
+    }
+
+    .hw-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--blue);
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .hw-meta strong {
+      font: 800 18px 'Barlow Condensed';
+      color: var(--white);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .hw-meta p {
+      font-size: 12.5px;
+      color: #94a3b8;
+      line-height: 1.55;
+    }
+
+    .hw-meta span {
+      font: 600 10px 'JetBrains Mono';
+      color: var(--lime);
+      display: block;
+      margin-top: 8px;
+    }
+
+    /* ════════════════════════════════════════
+       FINAL CALL TO ACTION SECTION
     ════════════════════════════════════════ */
     .section-cta {
-      padding: 120px 8%;
+      padding: 100px 6%;
       text-align: center;
       position: relative;
-      overflow: hidden;
-      background: #f4f7f8;
+      z-index: 1;
+      background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 65%);
     }
 
-    .section-cta::before {
-      content: "";
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 700px;
-      height: 700px;
-      background: radial-gradient(circle, rgba(16,185,129,.12) 0%, transparent 68%);
-      pointer-events: none;
-    }
-
-    .cta-tag {
-      font: 600 10px 'JetBrains Mono';
-      letter-spacing: 1.6px;
-      color: #3d8068;
-      margin-bottom: 14px;
+    .cta-container {
+      max-width: 740px;
+      margin: 0 auto;
     }
 
     .cta-heading {
-      font: 700 clamp(52px, 6vw, 96px)/.88 'Barlow Condensed';
-      color: var(--ink);
+      font: 800 clamp(44px, 5.5vw, 76px)/0.92 'Barlow Condensed';
+      color: var(--white);
       margin-bottom: 20px;
-      position: relative;
-      z-index: 1;
+      text-transform: uppercase;
     }
 
-    .cta-heading .lime { color: var(--lime); display: block; font-style: italic; }
+    .cta-heading em {
+      color: var(--lime);
+      font-style: normal;
+      display: block;
+    }
 
-    .cta-sub {
-      font-size: 13px;
-      color: #71808a;
-      max-width: 440px;
-      margin: 0 auto 46px;
-      line-height: 1.72;
-      position: relative;
-      z-index: 1;
+    .cta-desc {
+      font-size: 15px;
+      color: #94a3b8;
+      max-width: 540px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
     }
 
     .cta-buttons {
       display: flex;
-      gap: 14px;
       justify-content: center;
+      gap: 16px;
       flex-wrap: wrap;
-      position: relative;
-      z-index: 1;
-    }
-
-    .btn-cta-main {
-      background: #111827;
-      color: #ffffff;
-      border: 0;
-      padding: 18px 42px;
-      font: 700 14px 'Barlow Condensed';
-      letter-spacing: 1.5px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      border-radius: 3px;
-      transition: background-color .2s, transform .25s, box-shadow .25s;
-      box-shadow: 0 4px 18px rgba(0,0,0,.22);
-    }
-
-    .btn-cta-main:hover {
-      background: #1f2937;
-      transform: translateY(-3px);
-      box-shadow: 0 8px 28px rgba(0,0,0,.32);
-    }
-
-    .btn-cta-secondary {
-      background: #ffffff;
-      border: 1px solid #d0d7db;
-      color: #374151;
-      padding: 18px 36px;
-      font: 600 12px 'JetBrains Mono';
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 3px;
-      transition: border-color .2s, color .2s, background-color .2s, transform .25s;
-    }
-
-    .btn-cta-secondary:hover {
-      border-color: var(--ink);
-      color: var(--ink);
-      background: #f3f4f6;
-      transform: translateY(-2px);
     }
 
     /* ════════════════════════════════════════
        FOOTER
     ════════════════════════════════════════ */
     footer {
-      border-top: 1px solid var(--line);
-      padding: 28px 8%;
+      border-top: 1px solid var(--border);
+      padding: 32px 6%;
+      background: #090c10;
+      position: relative;
+      z-index: 1;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 20px;
+      align-items: center;
       flex-wrap: wrap;
+      gap: 20px;
     }
 
     .footer-brand {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 10px;
+      color: var(--white);
       text-decoration: none;
     }
 
     .footer-mark {
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       background: var(--lime);
-      color: #063320;
+      color: #042618;
       display: grid;
       place-items: center;
+      border-radius: 4px;
     }
 
     .footer-brand strong {
-      font: 700 14px 'Barlow Condensed';
+      font: 800 16px 'Barlow Condensed';
       letter-spacing: 1px;
-      color: var(--ink);
     }
 
     .footer-brand small {
-      font: 10px 'JetBrains Mono';
-      color: #9aacb2;
+      font: 500 10px 'JetBrains Mono';
+      color: var(--muted);
       display: block;
-    }
-
-    .footer-copy {
-      font: 10px 'JetBrains Mono';
-      color: #a0b4ba;
     }
 
     .footer-links {
@@ -844,440 +1181,626 @@
     }
 
     .footer-links a {
-      font: 10px 'JetBrains Mono';
-      color: #93a8af;
+      font: 500 11px 'JetBrains Mono';
+      color: var(--muted-lit);
       text-decoration: none;
-      transition: color .2s;
+      transition: color 0.2s;
     }
 
-    .footer-links a:hover { color: var(--ink); }
+    .footer-links a:hover {
+      color: var(--lime);
+    }
+
+    .footer-copy {
+      font: 500 11px 'JetBrains Mono';
+      color: var(--muted);
+    }
 
     /* ════════════════════════════════════════
-       UTILITIES & ANIMATIONS
+       RESPONSIVE DESIGN
     ════════════════════════════════════════ */
-    @keyframes blink {
-      50% { opacity: .35; }
-    }
-
-    @keyframes slide-up {
-      from { opacity: 0; transform: translateY(30px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .animate-up {
-      opacity: 0;
-      animation: slide-up .7s ease forwards;
-    }
-
-    .delay-1 { animation-delay: .1s; }
-    .delay-2 { animation-delay: .22s; }
-    .delay-3 { animation-delay: .36s; }
-    .delay-4 { animation-delay: .52s; }
-    .delay-5 { animation-delay: .68s; }
-
-    /* ════════════════════════════════════════
-       RESPONSIVE
-    ════════════════════════════════════════ */
-    @media (max-width: 900px) {
+    @media (max-width: 992px) {
       .hero { flex-direction: column; }
-      .hero-left { width: 100%; padding: 60px 7%; min-height: auto; }
-      .hero-right { width: 100%; padding: 40px 7% 60px; }
+      .hero-left, .hero-right { width: 100%; }
+      .hero-left { padding: 40px 6%; }
+      .hero-right { padding: 30px 6% 60px; }
+      .sim-container { grid-template-columns: 1fr; }
       .nav-links { display: none; }
-    }
-
-    @media (max-width: 600px) {
-      .metric-grid { grid-template-columns: 1fr; }
-      .specs-strip { flex-wrap: wrap; }
-      .spec-item { border-right: 0; border-bottom: 1px solid var(--line); padding: 14px 0; }
-      footer { flex-direction: column; gap: 14px; text-align: center; }
-      .footer-links { flex-wrap: wrap; justify-content: center; }
     }
   </style>
 </head>
 <body>
 
+  <!-- Ambient Grid & Glow -->
+  <div class="bg-grid"></div>
+  <div class="ambient-glow"></div>
+
   <!-- ════════ NAV BAR ════════ -->
   <nav>
     <a href="landing.html" class="nav-brand">
       <div class="nav-mark">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           <path d="m9 12 2 2 4-4"/>
         </svg>
       </div>
       <div>
         <strong>OREGUARD</strong>
-        <sub>ADAS CONTROL</sub>
+        <sub>ADAS SAFETY LAYER</sub>
       </div>
     </a>
 
     <ul class="nav-links">
       <li><a href="#how-it-works">HOW IT WORKS</a></li>
+      <li><a href="#simulator">PHYSICS ENGINE</a></li>
       <li><a href="#scenarios">SCENARIOS</a></li>
-      <li><a href="index.html">DASHBOARD</a></li>
+      <li><a href="#hardware">HARDWARE STACK</a></li>
+      <li><a href="index.html">LIVE CONSOLE</a></li>
     </ul>
 
     <div class="nav-actions">
-      <a href="login.html" class="btn-ghost">SIGN IN</a>
-      <a href="login.html" class="btn-primary-sm">GET STARTED</a>
+      <a href="index.html" class="btn-ghost">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span>DASHBOARD</span>
+      </a>
+      <a href="index.html" class="btn-primary-glow">
+        <span>GET STARTED</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
     </div>
   </nav>
 
-  <!-- ════════ HERO ════════ -->
+  <!-- ════════ HERO SECTION ════════ -->
   <section class="hero">
 
-    <!-- LEFT — Dark Brand Panel -->
+    <!-- LEFT: High-Impact Brand & Get Started Panel -->
     <div class="hero-left">
-
-      <!-- Brand mark at top -->
-      <div class="hero-brand-row animate-up delay-1">
-        <div class="hero-brand-mark">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="m9 12 2 2 4-4"/>
-          </svg>
+      <div>
+        <div class="hero-badge-tag">
+          <span class="live-dot"></span>
+          <span>ESP32 SENSOR FUSION · MV-07 ACTIVE · SIH 2025</span>
         </div>
-        <div>
-          <strong>OREGUARD</strong>
-          <span>ADAS CONTROL</span>
-        </div>
-      </div>
 
-      <!-- Center: Headline + Sub + Action buttons -->
-      <div class="hero-center">
-        <p class="hero-eyebrow animate-up delay-2">MINE VEHICLE / SAFETY LAYER</p>
-
-        <h1 class="hero-heading animate-up delay-2">
+        <h1 class="hero-heading">
           <span class="h-white">See the risk</span>
-          <em class="h-lime">before it arrives.</em>
+          <span class="h-lime">before it arrives.</span>
         </h1>
 
-        <p class="hero-sub animate-up delay-3">
-          Visibility-aware protection for every movement below the surface. OREGUARD combines real-time sensor fusion with a dynamic risk engine to keep mine vehicle operators safe.
+        <p class="hero-desc">
+          Visibility-aware collision prevention for underground and surface mine vehicles. OREGUARD fuses real-time LDR optical attenuation with HC-SR04 ultrasonic distance sweeping to calculate dynamic, speed-governed braking buffers in sub-100ms edge loops.
         </p>
 
-        <div class="hero-cta-row animate-up delay-4">
-          <a href="index.html" class="btn-hero-main">
-            ENTER LIVE CONSOLE
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-              <polyline points="10 17 15 12 10 7"/>
-              <line x1="15" y1="12" x2="3" y2="12"/>
-            </svg>
+        <!-- Primary Call To Actions -->
+        <div class="hero-cta-group">
+          <a href="index.html" class="btn-hero-lg" id="btnHeroEnter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>LAUNCH SAFETY CONSOLE</span>
           </a>
-          <a href="#scenarios" class="btn-hero-sec">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="5 3 19 12 5 21 5 3"/>
-            </svg>
-            EXPLORE SCENARIOS
+          <a href="#simulator" class="btn-hero-sec">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m10 8 4 4-4 4"/></svg>
+            <span>TEST SIMULATOR</span>
           </a>
+        </div>
+
+        <!-- 1-Click Role & Scenario Launcher -->
+        <div class="quick-launch-box">
+          <div class="quick-launch-label">
+            <span>⚡ 1-CLICK INSTANT LAUNCH</span>
+            <span>NO LOGIN REQUIRED</span>
+          </div>
+          <div class="quick-pills">
+            <a href="index.html" class="quick-pill" onclick="setPreset('clear')"><b>🚛</b> Driver Cockpit</a>
+            <a href="index.html#analytics" class="quick-pill" onclick="setPreset('clear')"><b>📊</b> Safety Analytics</a>
+            <a href="index.html" class="quick-pill" onclick="setPreset('dust')"><b>🌫️</b> Dust Hazard</a>
+            <a href="index.html" class="quick-pill" onclick="setPreset('emergency')"><b>🚨</b> Emergency Stop</a>
+            <a href="index.html#settings" class="quick-pill"><b>⚙️</b> ESP32 Stream</a>
+          </div>
         </div>
       </div>
 
-      <!-- Bottom status chips -->
-      <div class="hero-status animate-up delay-4">
-        <div class="status-chip ok">
-          <span class="dot"></span>
-          SYSTEM READY
+      <!-- Status Indicators -->
+      <div class="hero-status-row">
+        <div class="status-badge-item">
+          <span class="live-dot"></span>
+          <span>6 SENSORS ACTIVE</span>
         </div>
-        <b style="color:#2d3c42;margin:0 4px">·</b>
-        <div class="status-chip ok">
-          <span class="dot"></span>
-          6 SENSORS ONLINE
+        <div class="status-badge-item">
+          <span class="live-dot" style="background:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.25)"></span>
+          <span>100ms SAFETY LOOP</span>
         </div>
-        <b style="color:#2d3c42;margin:0 4px">·</b>
-        <div class="status-chip info">
-          <span class="dot" style="background:#2563eb;box-shadow:none"></span>
-          ESP32 / MV-07 LINKED
+        <div class="status-badge-item">
+          <span class="live-dot" style="background:#06b6d4;box-shadow:0 0 0 3px rgba(6,182,212,0.25)"></span>
+          <span>SUPABASE CLOUD READY</span>
         </div>
       </div>
-
     </div>
 
-    <!-- RIGHT — Dark Live Telemetry HUD -->
+    <!-- RIGHT: Live Telemetry & Radar Cockpit HUD -->
     <div class="hero-right">
-      
-      <!-- 4 Live Metric Cards -->
-      <div class="hud-grid">
-        <div class="hud-card animate-up delay-2">
-          <div class="hud-label">
-            <span>OPTICAL VISIBILITY</span>
-            <span style="color:var(--lime)">● LIVE</span>
+      <div class="hud-cockpit-frame">
+        
+        <div class="hud-header">
+          <div class="hud-header-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            VEHICLE MV-07 HUD <span>• LIVE TELEMETRY</span>
           </div>
-          <div class="hud-value">
-            <span class="lime" id="hudVis">85</span>
-            <span class="unit">%</span>
+          <div class="hud-signal-tag">ESP32 10Hz</div>
+        </div>
+
+        <!-- 4-Gauge Metric Cards -->
+        <div class="hud-grid">
+          
+          <div class="hud-card">
+            <div class="hud-card-label">
+              <span>OPTICAL VISIBILITY</span>
+              <span style="color:var(--lime)">● LIVE</span>
+            </div>
+            <div class="hud-card-value">
+              <span id="hudVis" style="color:var(--lime)">85</span>
+              <span class="unit">%</span>
+            </div>
+            <div class="hud-bar-bg">
+              <div class="hud-bar-fill" id="hudVisBar" style="width: 85%;"></div>
+            </div>
+            <div class="hud-card-sub" id="hudVisSub">
+              <span>●</span> Clear haul corridor
+            </div>
           </div>
-          <div class="hud-bar-wrap">
-            <div class="hud-bar lime" id="hudVisBar" style="width:85%"></div>
+
+          <div class="hud-card">
+            <div class="hud-card-label">
+              <span>NEAREST OBSTACLE</span>
+              <span style="color:#94a3b8">HC-SR04</span>
+            </div>
+            <div class="hud-card-value">
+              <span id="hudDist" style="color:var(--lime)">4.20</span>
+              <span class="unit">m</span>
+            </div>
+            <div class="hud-bar-bg">
+              <div class="hud-bar-fill" id="hudDistBar" style="width: 75%;"></div>
+            </div>
+            <div class="hud-card-sub">
+              <span>●</span> 360° Ultrasonic Sweep
+            </div>
           </div>
-          <div class="hud-sub" id="hudVisSub">
-            <span>●</span> Clear corridor detected
+
+          <div class="hud-card">
+            <div class="hud-card-label">
+              <span>VEHICLE SPEED</span>
+              <span style="color:#94a3b8">HALL SENSOR</span>
+            </div>
+            <div class="hud-card-value">
+              <span id="hudSpeed" style="color:var(--lime)">8.2</span>
+              <span class="unit">m/s</span>
+            </div>
+            <div class="hud-bar-bg">
+              <div class="hud-bar-fill" id="hudSpeedBar" style="width: 68%;"></div>
+            </div>
+            <div class="hud-card-sub" id="hudSpeedSub">
+              <span>●</span> Nominal unrestricted speed
+            </div>
+          </div>
+
+          <div class="hud-card">
+            <div class="hud-card-label">
+              <span>STOPPING BUFFER</span>
+              <span style="color:var(--amber)">DYNAMIC</span>
+            </div>
+            <div class="hud-card-value">
+              <span id="hudBrake" style="color:var(--lime)">1.8</span>
+              <span class="unit">m</span>
+            </div>
+            <div class="hud-bar-bg">
+              <div class="hud-bar-fill" id="hudBrakeBar" style="width: 36%;"></div>
+            </div>
+            <div class="hud-card-sub">
+              <span>●</span> Fog-weighted safety margin
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Dynamic Risk Engine Card -->
+        <div class="hud-risk-card" id="hudRiskCard">
+          <div class="hud-risk-info">
+            <div class="tag">DYNAMIC RISK ENGINE / OUTPUT</div>
+            <h3 id="hudRiskTitle">SAFE CORRIDOR</h3>
+            <p id="hudRiskDesc">All 6 sensors reporting nominal · full speed permitted</p>
+          </div>
+          <div class="hud-score-box" id="hudScoreBox">
+            <span class="hud-score-num" id="hudRiskScore">12</span>
+            <span class="hud-score-sub">/ 100 RISK</span>
           </div>
         </div>
 
-        <div class="hud-card animate-up delay-3">
-          <div class="hud-label">
-            <span>NEAREST OBSTACLE</span>
-            <span style="color:#607880">CH-01</span>
+        <!-- Live Obstacle Radar Scan Line -->
+        <div class="hud-radar-row">
+          <div class="radar-svg-box">
+            <svg class="radar-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+              <circle cx="50" cy="50" r="30" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+              <circle cx="50" cy="50" r="15" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+              <line x1="50" y1="5" x2="50" y2="95" stroke="#1e293b" stroke-width="1"/>
+              <line x1="5" y1="50" x2="95" y2="50" stroke="#1e293b" stroke-width="1"/>
+              <polygon points="50,50 85,15 95,30" fill="url(#radarGradient)"/>
+              <circle cx="68" cy="28" r="4" fill="#10b981"/>
+              <defs>
+                <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(16,185,129,0.4)"/>
+                  <stop offset="100%" stop-color="transparent"/>
+                </linearGradient>
+              </defs>
+            </svg>
           </div>
-          <div class="hud-value">
-            <span class="lime" id="hudDist">4.20</span>
-            <span class="unit">m</span>
+          <div class="radar-text">
+            <strong>Forward Path Clear · Sector 01-04</strong>
+            <span>Proximity threshold dynamically scaled to atmospheric clarity</span>
           </div>
-          <div class="hud-bar-wrap">
-            <div class="hud-bar lime" id="hudDistBar" style="width:70%"></div>
-          </div>
-          <div class="hud-sub">
-            <span>●</span> Forward ultrasonic sweep
-          </div>
+          <a href="index.html" class="btn-ghost" style="padding: 6px 12px; font-size: 10px;">EXPAND</a>
         </div>
 
-        <div class="hud-card animate-up delay-4">
-          <div class="hud-label">
-            <span>VEHICLE SPEED</span>
-            <span style="color:#607880">MV-07</span>
-          </div>
-          <div class="hud-value">
-            <span class="lime" id="hudSpeed">8.2</span>
-            <span class="unit">m/s</span>
-          </div>
-          <div class="hud-bar-wrap">
-            <div class="hud-bar lime" id="hudSpeedBar" style="width:68%"></div>
-          </div>
-          <div class="hud-sub" id="hudSpeedSub">
-            <span>●</span> Nominal speed · unrestricted
-          </div>
-        </div>
-
-        <div class="hud-card animate-up delay-5">
-          <div class="hud-label">
-            <span>BRAKING BUFFER</span>
-            <span style="color:var(--amber)">DYNAMIC</span>
-          </div>
-          <div class="hud-value">
-            <span class="lime" id="hudBrake">1.8</span>
-            <span class="unit">m</span>
-          </div>
-          <div class="hud-bar-wrap">
-            <div class="hud-bar lime" id="hudBrakeBar" style="width:36%"></div>
-          </div>
-          <div class="hud-sub">
-            <span>●</span> Fog-weighted stopping margin
-          </div>
-        </div>
       </div>
-
-      <!-- Risk Engine Output Card -->
-      <div class="hud-risk-card animate-up delay-3" id="hudRiskBox">
-        <div>
-          <div class="label-col">DYNAMIC RISK ENGINE / OUTPUT</div>
-          <h3 id="hudRiskLevel">SAFE CORRIDOR</h3>
-          <p id="hudRiskDesc">All 6 sensors reporting nominal · safety margins active</p>
-        </div>
-        <div class="hud-score-pill" id="hudScorePill">
-          <span id="hudScore">12</span>
-          <span>/ 100 RISK</span>
-        </div>
-      </div>
-
     </div>
 
   </section>
 
   <!-- ════════ SPECS STRIP ════════ -->
   <div class="specs-strip">
-    <div class="spec-item">
+    <div class="spec-card">
       <div class="spec-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="2" y1="12" x2="22" y2="12"/>
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
       </div>
-      <div>
-        <strong class="spec-title">6 Sensors</strong>
-        <span class="spec-desc">360° obstacle coverage</span>
+      <div class="spec-meta">
+        <strong>6-Point Radar</strong>
+        <span>360° obstacle array</span>
       </div>
     </div>
 
-    <div class="spec-item">
+    <div class="spec-card">
       <div class="spec-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
       </div>
-      <div>
-        <strong class="spec-title">ESP32</strong>
-        <span class="spec-desc">Real-time MCU telemetry</span>
+      <div class="spec-meta">
+        <strong>ESP32 Edge MCU</strong>
+        <span>Sub-100ms loop</span>
       </div>
     </div>
 
-    <div class="spec-item">
+    <div class="spec-card">
       <div class="spec-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
       </div>
-      <div>
-        <strong class="spec-title">Dynamic Risk</strong>
-        <span class="spec-desc">Visibility-weighted engine</span>
+      <div class="spec-meta">
+        <strong>Dynamic Risk</strong>
+        <span>Visibility-weighted</span>
       </div>
     </div>
 
-    <div class="spec-item">
+    <div class="spec-card">
       <div class="spec-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
       </div>
-      <div>
-        <strong class="spec-title">Auto-Stop</strong>
-        <span class="spec-desc">Emergency brake override</span>
+      <div class="spec-meta">
+        <strong>OLED Cabin HUD</strong>
+        <span>SSD1306 driver screen</span>
       </div>
     </div>
 
-    <div class="spec-item">
+    <div class="spec-card">
       <div class="spec-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
       </div>
-      <div>
-        <strong class="spec-title">Audit Log</strong>
-        <span class="spec-desc">Timestamped incident history</span>
+      <div class="spec-meta">
+        <strong>Auto-Brake Relay</strong>
+        <span>Failsafe motor cutoff</span>
       </div>
     </div>
   </div>
 
+  <!-- ════════ INTERACTIVE LIVE SIMULATOR ════════ -->
+  <section class="section-simulator" id="simulator">
+    <div class="section-header">
+      <span class="section-tag">LIVE PHYSICS PLAYGROUND</span>
+      <h2 class="section-title">Test the Risk Engine <em>in Real Time</em></h2>
+      <p class="section-desc">
+        Drag the sliders below to simulate different mine environmental hazards and watch OREGUARD recalculate stopping distances, hazard scores, and automatic speed interventions.
+      </p>
+    </div>
+
+    <div class="sim-container">
+      
+      <!-- Sliders Left -->
+      <div class="sim-controls">
+        
+        <div class="sim-slider-block">
+          <div class="sim-slider-header">
+            <span class="sim-slider-label">🌫️ ATMOSPHERIC VISIBILITY</span>
+            <span class="sim-slider-val" id="simVisVal">85%</span>
+          </div>
+          <input type="range" class="sim-range" id="simVisRange" min="10" max="100" value="85" oninput="runSimCalc()" />
+          <div class="sim-slider-footer">
+            <span>Dense Dust/Fog (10%)</span>
+            <span>Clear Pit (100%)</span>
+          </div>
+        </div>
+
+        <div class="sim-slider-block">
+          <div class="sim-slider-header">
+            <span class="sim-slider-label">🚧 FORWARD OBSTACLE DISTANCE</span>
+            <span class="sim-slider-val" id="simDistVal">4.20 m</span>
+          </div>
+          <input type="range" class="sim-range" id="simDistRange" min="0.2" max="5.0" step="0.05" value="4.20" oninput="runSimCalc()" />
+          <div class="sim-slider-footer">
+            <span>Critical (0.2m)</span>
+            <span>Far Range (5.0m)</span>
+          </div>
+        </div>
+
+        <div class="sim-slider-block">
+          <div class="sim-slider-header">
+            <span class="sim-slider-label">🚚 VEHICLE SPEED</span>
+            <span class="sim-slider-val" id="simSpeedVal">8.2 m/s</span>
+          </div>
+          <input type="range" class="sim-range" id="simSpeedRange" min="0" max="12" step="0.2" value="8.2" oninput="runSimCalc()" />
+          <div class="sim-slider-footer">
+            <span>Halted (0 m/s)</span>
+            <span>Full Speed (12 m/s)</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Real-Time Output Right -->
+      <div class="sim-output-box">
+        
+        <div>
+          <div class="sim-calc-head">
+            <strong>DYNAMIC SAFETY RECALCULATION</strong>
+            <span>Autonomous Sub-100ms Edge Calculation</span>
+          </div>
+
+          <div class="sim-metric-row">
+            <div class="sim-m-card">
+              <small>CALCULATED RISK SCORE</small>
+              <b id="simScoreText" style="color:var(--lime)">12 / 100</b>
+            </div>
+            <div class="sim-m-card">
+              <small>DYNAMIC BRAKING BUFFER</small>
+              <b id="simBrakeText" style="color:#60a5fa">1.82 m</b>
+            </div>
+          </div>
+
+          <div class="sim-physics-formula">
+            <strong>MATHEMATICAL FORMULATION:</strong>
+            <code>D_stop = (v² / 2μg) + v·t_react × [1 + (1 - Vis%) × 1.5]</code>
+            <code>Risk = (Vis_hazard × 0.35 + Prox_hazard × 0.50 + Spd × 0.15) × 1.8</code>
+          </div>
+        </div>
+
+        <a href="index.html" class="sim-action-btn" onclick="transferSimValues()">
+          APPLY THESE VALUES TO LIVE CONSOLE →
+        </a>
+
+      </div>
+
+    </div>
+  </section>
+
   <!-- ════════ HOW IT WORKS ════════ -->
   <section class="section-how" id="how-it-works">
-    <div class="section-tag">HOW IT WORKS</div>
-    <h2 class="section-heading">A safety layer built for the <em>underground</em></h2>
-    <p class="section-sub">
-      OREGUARD sits between the operator and the hazard — continuously measuring, computing, and intervening when conditions demand it.
-    </p>
+    <div class="section-header">
+      <span class="section-tag">ARCHITECTURE PIPELINE</span>
+      <h2 class="section-title">A Safety Layer Built for the <em>Underground</em></h2>
+      <p class="section-desc">
+        OREGUARD sits directly between the driver and the vehicle drivetrain — continuously sensing, evaluating, and intervening before human perception can react.
+      </p>
+    </div>
 
     <div class="steps-grid">
       <div class="step-card">
         <div class="step-num">01</div>
         <div class="step-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="2" y1="12" x2="22" y2="12"/>
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/>
-          </svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>
         </div>
-        <div class="step-title">Sensor Fusion</div>
-        <p class="step-desc">6 ultrasonic + LDR sensors stream data at 10 Hz to the ESP32 microcontroller. Forward, lateral, and rearward paths are all monitored simultaneously.</p>
+        <div class="step-title">Multi-Sensor Fusion</div>
+        <p class="step-desc">6 ultrasonic sensors sweep 360° surroundings at 10Hz, while optical LDR sensors gauge ambient atmospheric clarity and MPU-6050 monitors haul road incline.</p>
       </div>
 
       <div class="step-card">
         <div class="step-num">02</div>
         <div class="step-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-          </svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         </div>
-        <div class="step-title">Visibility Analysis</div>
-        <p class="step-desc">An optical LDR pipeline quantifies ambient light attenuation to derive a real-time visibility percentage — the core input to the risk equation.</p>
+        <div class="step-title">Optical Attenuation</div>
+        <p class="step-desc">Atmospheric particulate density from coal dust and mist is calibrated into a dynamic visibility coefficient, shifting safety thresholds earlier in poor conditions.</p>
       </div>
 
       <div class="step-card">
         <div class="step-num">03</div>
         <div class="step-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-          </svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
         </div>
-        <div class="step-title">Dynamic Risk Engine</div>
-        <p class="step-desc">Risk is not a fixed threshold. The lower the visibility, the earlier the system escalates — warning the driver sooner and triggering adaptive speed limits.</p>
+        <div class="step-title">Dynamic Risk Recalibration</div>
+        <p class="step-desc">The edge risk engine dynamically calculates required stopping distance based on road grade, current vehicle velocity, and ambient visibility reduction.</p>
       </div>
 
       <div class="step-card">
         <div class="step-num">04</div>
         <div class="step-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="m9 12 2 2 4-4"/>
-          </svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
         </div>
-        <div class="step-title">Operator Response</div>
-        <p class="step-desc">SAFE corridors allow full speed. WARNING triggers audio and visual alerts. HIGH RISK cuts speed. EMERGENCY engages the automatic brake and halts the vehicle.</p>
+        <div class="step-title">Autonomous Intervention</div>
+        <p class="step-desc">Triggers multi-stage responses: Green safe path, Yellow speed advisory, Amber motor governor, and Red automatic emergency brake cutoff.</p>
       </div>
     </div>
   </section>
 
-  <!-- ════════ SCENARIOS ════════ -->
+  <!-- ════════ OPERATIONAL SCENARIOS ════════ -->
   <section class="section-scenarios" id="scenarios">
-    <div class="section-tag">OPERATIONAL SCENARIOS</div>
-    <h2 class="section-heading">Every condition.<br><em>One system.</em></h2>
-    <p class="section-sub">OREGUARD is pre-calibrated for four common mine environment scenarios, each with a distinct risk profile and automatic response.</p>
+    <div class="section-header">
+      <span class="section-tag">DEMO PRESETS</span>
+      <h2 class="section-title">Every Condition. <em>One Shield.</em></h2>
+      <p class="section-desc">
+        Click any scenario below to load the live ADAS console pre-configured to that exact underground environmental condition.
+      </p>
+    </div>
 
     <div class="scenarios-grid">
-      <div class="scenario-card clear" onclick="goToDashboard('clear')">
-        <div class="scenario-vis">85%</div>
-        <div class="scenario-name">NORMAL CLEAR</div>
-        <div class="scenario-detail">
-          Visibility 85% · Obstacle 4.2 m<br>
-          ↳ Risk LOW · Full speed permitted
+      
+      <a href="index.html" class="scenario-card clear" onclick="setPreset('clear')">
+        <div class="scen-top">
+          <div class="scen-vis">85%</div>
+          <div class="scen-name">NORMAL CLEAR</div>
+          <div class="scen-desc">
+            Visibility: 85% · Obstacle: 4.20m<br>
+            ↳ Safe corridor · Full nominal speed permitted
+          </div>
         </div>
-      </div>
+        <div class="scen-cta">TEST IN CONSOLE →</div>
+      </a>
 
-      <div class="scenario-card dust" onclick="goToDashboard('dust')">
-        <div class="scenario-vis">55%</div>
-        <div class="scenario-name">DUST DEGRADED</div>
-        <div class="scenario-detail">
-          Visibility 55% · Obstacle 2.8 m<br>
-          ↳ Risk WARNING · Speed advisory active
+      <a href="index.html" class="scenario-card dust" onclick="setPreset('dust')">
+        <div class="scen-top">
+          <div class="scen-vis">55%</div>
+          <div class="scen-name">DUST DEGRADED</div>
+          <div class="scen-desc">
+            Visibility: 55% · Obstacle: 2.80m<br>
+            ↳ Warning level · Speed advisory & alert chime
+          </div>
         </div>
-      </div>
+        <div class="scen-cta">TEST IN CONSOLE →</div>
+      </a>
 
-      <div class="scenario-card poor" onclick="goToDashboard('poor')">
-        <div class="scenario-vis">35%</div>
-        <div class="scenario-name">POOR FOG</div>
-        <div class="scenario-detail">
-          Visibility 35% · Obstacle 1.8 m<br>
-          ↳ Risk HIGH · Speed cut applied
+      <a href="index.html" class="scenario-card poor" onclick="setPreset('poor')">
+        <div class="scen-top">
+          <div class="scen-vis">35%</div>
+          <div class="scen-name">POOR FOG / SMOKE</div>
+          <div class="scen-desc">
+            Visibility: 35% · Obstacle: 1.80m<br>
+            ↳ High risk · Automatic speed governor active
+          </div>
         </div>
-      </div>
+        <div class="scen-cta">TEST IN CONSOLE →</div>
+      </a>
 
-      <div class="scenario-card emergency" onclick="goToDashboard('emergency')">
-        <div class="scenario-vis">18%</div>
-        <div class="scenario-name">EMERGENCY NEAR</div>
-        <div class="scenario-detail">
-          Visibility 18% · Obstacle 0.7 m<br>
-          ↳ EMERGENCY STOP · Vehicle immobilized
+      <a href="index.html" class="scenario-card emergency" onclick="setPreset('emergency')">
+        <div class="scen-top">
+          <div class="scen-vis">18%</div>
+          <div class="scen-name">EMERGENCY NEAR</div>
+          <div class="scen-desc">
+            Visibility: 18% · Obstacle: 0.70m<br>
+            ↳ CRITICAL STOP · Emergency brake engaged
+          </div>
         </div>
-      </div>
+        <div class="scen-cta">TEST IN CONSOLE →</div>
+      </a>
+
     </div>
   </section>
 
-  <!-- ════════ FINAL CTA ════════ -->
+  <!-- ════════ HARDWARE & SENSORS STACK ════════ -->
+  <section class="section-hardware" id="hardware">
+    <div class="section-header">
+      <span class="section-tag">HARDWARE SPECIFICATIONS</span>
+      <h2 class="section-title">Built on Industrial <em>Edge IoT</em></h2>
+      <p class="section-desc">
+        Complete prototype hardware schematic designed for tough, dust-heavy underground mining environments.
+      </p>
+    </div>
+
+    <div class="hw-grid">
+      
+      <div class="hw-card">
+        <div class="hw-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div class="hw-meta">
+          <strong>ESP32 Microcontroller</strong>
+          <p>Dual-core 240MHz MCU executing real-time FreeRTOS safety threads with sub-100ms sensor processing cycles.</p>
+          <span>LOCAL ZERO-LATENCY EDGE LOOP</span>
+        </div>
+      </div>
+
+      <div class="hw-card">
+        <div class="hw-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>
+        </div>
+        <div class="hw-meta">
+          <strong>HC-SR04 Ultrasonic Array</strong>
+          <p>Multi-sensor proximity grid with running median filters to prevent echo noise and detect haul road hazards up to 4.0m.</p>
+          <span>DIGITAL 10Hz FILTERED SWEEP</span>
+        </div>
+      </div>
+
+      <div class="hw-card">
+        <div class="hw-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        </div>
+        <div class="hw-meta">
+          <strong>LDR Optical Attenuation</strong>
+          <p>Calibrated ambient light photocell analyzing light scattering from underground dust and blasting smoke.</p>
+          <span>ANALOG VOLTAGE DIVIDER PIPELINE</span>
+        </div>
+      </div>
+
+      <div class="hw-card">
+        <div class="hw-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="hw-meta">
+          <strong>SSD1306 In-Cabin OLED HUD</strong>
+          <p>0.96" 128x64 I2C driver cockpit micro-display rendering live visibility %, distance meters, and risk warnings to the operator.</p>
+          <span>IN-CABIN DRIVER TELEMETRY</span>
+        </div>
+      </div>
+
+      <div class="hw-card">
+        <div class="hw-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
+        </div>
+        <div class="hw-meta">
+          <strong>MPU-6050 6-Axis IMU</strong>
+          <p>Detects haul road incline, vehicle pitch, roll, and tilt angles to dynamically recalculate gravitational braking resistance.</p>
+          <span>ROAD GRADE COMPENSATION</span>
+        </div>
+      </div>
+
+      <div class="hw-card">
+        <div class="hw-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <div class="hw-meta">
+          <strong>Dual TT Motors & Auto-Brake</strong>
+          <p>L298N motor driver with PWM speed regulation and instant emergency relay cutoff for automatic vehicle immobilization.</p>
+          <span>AUTONOMOUS BRAKING INTERVENTION</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════ FINAL CTA SECTION ════════ -->
   <section class="section-cta">
-    <p class="cta-tag">START PROTECTING YOUR FLEET TODAY</p>
-    <h2 class="cta-heading">
-      Safety isn't reactive.
-      <em class="lime">Make it predictive.</em>
-    </h2>
-    <p class="cta-sub">
-      Deploy the OREGUARD ADAS system on your mine vehicle fleet. Sign in to access the full live safety console.
-    </p>
-    <div class="cta-buttons">
-      <a href="login.html" class="btn-cta-main">
-        GET STARTED — FREE
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-          <polyline points="10 17 15 12 10 7"/>
-          <line x1="15" y1="12" x2="3" y2="12"/>
-        </svg>
-      </a>
-      <a href="index.html" class="btn-cta-secondary">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="5 3 19 12 5 21 5 3"/>
-        </svg>
-        VIEW LIVE DASHBOARD
-      </a>
+    <div class="cta-container">
+      <span class="section-tag">MINE VEHICLE ADAS DEPLOYMENT</span>
+      <h2 class="cta-heading">
+        Safety isn't reactive.
+        <em>Make it predictive.</em>
+      </h2>
+      <p class="cta-desc">
+        Experience the OREGUARD Mine Driving Assistance & Collision Prevention console. Test real-time scenario adaptations, live ESP32 telemetry streaming, and incident analytics.
+      </p>
+
+      <div class="cta-buttons">
+        <a href="index.html" class="btn-hero-lg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>GET STARTED — LAUNCH CONSOLE</span>
+        </a>
+        <a href="#simulator" class="btn-hero-sec">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg>
+          <span>TRY PHYSICS SIMULATOR</span>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -1285,7 +1808,7 @@
   <footer>
     <a href="landing.html" class="footer-brand">
       <div class="footer-mark">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           <path d="m9 12 2 2 4-4"/>
         </svg>
@@ -1297,32 +1820,35 @@
     </a>
 
     <div class="footer-links">
-      <a href="index.html">Dashboard</a>
-      <a href="login.html">Sign in</a>
-      <a href="#how-it-works">How it works</a>
-      <a href="#scenarios">Scenarios</a>
+      <a href="index.html">Live Dashboard</a>
+      <a href="index.html#analytics">Analytics</a>
+      <a href="#simulator">Simulator</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#hardware">Hardware Stack</a>
     </div>
 
-    <div class="footer-copy">© 2025 OREGUARD · SIH Mine Safety Shield</div>
+    <div class="footer-copy">
+      © 2025 OREGUARD · SIH Mine Safety Shield
+    </div>
   </footer>
 
-  <!-- ════════ LIVE SIMULATION FOR HERO CARDS ════════ -->
+  <!-- ════════ JAVASCRIPT: LIVE TELEMETRY & SIMULATOR LOGIC ════════ -->
   <script>
-    // Live Telemetry Simulation for Hero Section HUD
+    // Live Hero HUD Dynamic Ticking
     let hudTick = 0;
     const baseVis = 85, baseDist = 4.20, baseSpeed = 8.2;
 
     function updateHeroHUD() {
       hudTick++;
-      const t = hudTick * 0.08;
+      const t = hudTick * 0.09;
 
-      const vis = Math.round(Math.max(15, Math.min(98, baseVis + Math.sin(t * 0.7) * 3.5 + (Math.random() - 0.5) * 1.5)));
-      const dist = parseFloat(Math.max(0.4, Math.min(6.0, baseDist + Math.sin(t * 1.2) * 0.25 + (Math.random() - 0.5) * 0.1)).toFixed(2));
-      const speed = parseFloat(Math.max(0, Math.min(12.0, baseSpeed + Math.sin(t * 0.5) * 0.3)).toFixed(1));
+      const vis = Math.round(Math.max(15, Math.min(98, baseVis + Math.sin(t * 0.6) * 4.0 + (Math.random() - 0.5) * 1.5)));
+      const dist = parseFloat(Math.max(0.4, Math.min(5.0, baseDist + Math.sin(t * 1.1) * 0.30 + (Math.random() - 0.5) * 0.1)).toFixed(2));
+      const speed = parseFloat(Math.max(0, Math.min(11.5, baseSpeed + Math.sin(t * 0.4) * 0.35)).toFixed(1));
 
-      // Calculate risk
+      // Calculate risk and dynamic braking
       const visNorm = vis / 100;
-      const distNorm = dist / 6.0;
+      const distNorm = dist / 5.0;
       const spdNorm = speed / 12.0;
       const visHazard = 1.0 - visNorm;
       const proxHazard = Math.pow(1.0 - distNorm, 2.3);
@@ -1330,12 +1856,12 @@
       const score = Math.round(Math.min(100, Math.max(0, rawRisk * 1.8 * 100)));
       const brk = parseFloat((1.2 + (speed * 0.18) + (1.0 - visNorm) * 1.5).toFixed(1));
 
-      // Update DOM
+      // Update HUD elements
       const elVis = document.getElementById('hudVis');
       const elDist = document.getElementById('hudDist');
       const elSpeed = document.getElementById('hudSpeed');
       const elBrake = document.getElementById('hudBrake');
-      const elScore = document.getElementById('hudScore');
+      const elScore = document.getElementById('hudRiskScore');
 
       if (elVis) elVis.textContent = vis;
       if (elDist) elDist.textContent = dist.toFixed(2);
@@ -1349,68 +1875,99 @@
       const barBrake = document.getElementById('hudBrakeBar');
 
       if (barVis) barVis.style.width = `${vis}%`;
-      if (barDist) barDist.style.width = `${Math.min(100, (dist / 6.0) * 100)}%`;
+      if (barDist) barDist.style.width = `${Math.min(100, (dist / 5.0) * 100)}%`;
       if (barSpeed) barSpeed.style.width = `${Math.min(100, (speed / 12.0) * 100)}%`;
-      if (barBrake) barBrake.style.width = `${Math.min(100, (brk / 5.0) * 100)}%`;
+      if (barBrake) barBrake.style.width = `${Math.min(100, (brk / 4.5) * 100)}%`;
 
       // Status text updates
       const subVis = document.getElementById('hudVisSub');
       if (subVis) {
-        subVis.innerHTML = vis > 70 ? '<span>●</span> Clear corridor detected' : vis > 40 ? '<span>●</span> Moderate dust haze' : '<span>●</span> Dense fog active';
+        subVis.innerHTML = vis > 70 ? '<span>●</span> Clear haul corridor' : vis > 40 ? '<span>●</span> Moderate dust haze' : '<span>●</span> Dense fog active';
       }
 
-      const riskLevel = document.getElementById('hudRiskLevel');
+      const riskTitle = document.getElementById('hudRiskTitle');
       const riskDesc = document.getElementById('hudRiskDesc');
-      const riskBox = document.getElementById('hudRiskBox');
+      const riskCard = document.getElementById('hudRiskCard');
+      const scoreBox = document.getElementById('hudScoreBox');
 
-      if (riskLevel && riskDesc && riskBox) {
+      if (riskTitle && riskDesc && riskCard && scoreBox) {
         if (score >= 80) {
-          riskLevel.textContent = 'EMERGENCY STOP';
-          riskLevel.style.color = 'var(--red)';
-          riskDesc.textContent = 'Proximity hazard in low visibility · vehicle halt';
-          riskBox.style.borderColor = 'rgba(239, 68, 68, 0.5)';
-          riskBox.style.background = 'rgba(239, 68, 68, 0.1)';
+          riskTitle.textContent = 'EMERGENCY STOP';
+          riskTitle.style.color = 'var(--red)';
+          riskDesc.textContent = 'Proximity hazard in low visibility · automatic vehicle halt';
+          riskCard.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+          riskCard.style.background = 'rgba(239, 68, 68, 0.12)';
+          scoreBox.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+          scoreBox.style.color = 'var(--red)';
         } else if (score >= 50) {
-          riskLevel.textContent = 'HIGH RISK';
-          riskLevel.style.color = 'var(--amber)';
-          riskDesc.textContent = 'Adaptive speed reduction active';
-          riskBox.style.borderColor = 'rgba(245, 158, 11, 0.5)';
-          riskBox.style.background = 'rgba(245, 158, 11, 0.1)';
+          riskTitle.textContent = 'HIGH RISK';
+          riskTitle.style.color = 'var(--amber)';
+          riskDesc.textContent = 'Adaptive motor speed governor engaged';
+          riskCard.style.borderColor = 'rgba(245, 158, 11, 0.5)';
+          riskCard.style.background = 'rgba(245, 158, 11, 0.12)';
+          scoreBox.style.borderColor = 'rgba(245, 158, 11, 0.5)';
+          scoreBox.style.color = 'var(--amber)';
         } else {
-          riskLevel.textContent = 'SAFE CORRIDOR';
-          riskLevel.style.color = 'var(--lime)';
-          riskDesc.textContent = 'All 6 sensors reporting nominal · safety margins active';
-          riskBox.style.borderColor = 'rgba(16, 185, 129, 0.35)';
-          riskBox.style.background = 'rgba(16, 185, 129, 0.08)';
+          riskTitle.textContent = 'SAFE CORRIDOR';
+          riskTitle.style.color = 'var(--lime)';
+          riskDesc.textContent = 'All 6 sensors reporting nominal · full speed permitted';
+          riskCard.style.borderColor = 'rgba(16, 185, 129, 0.35)';
+          riskCard.style.background = 'rgba(16, 185, 129, 0.08)';
+          scoreBox.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+          scoreBox.style.color = 'var(--lime)';
         }
       }
     }
 
-    // Tick every 750ms
-    setInterval(updateHeroHUD, 750);
+    setInterval(updateHeroHUD, 800);
 
-    // Navigate to dashboard with preset
-    function goToDashboard(preset) {
-      localStorage.setItem('oreguard_preset', preset);
-      window.location.href = 'index.html';
+    // Interactive Simulator Calculation
+    function runSimCalc() {
+      const vis = parseFloat(document.getElementById('simVisRange').value);
+      const dist = parseFloat(document.getElementById('simDistRange').value);
+      const speed = parseFloat(document.getElementById('simSpeedRange').value);
+
+      document.getElementById('simVisVal').textContent = `${vis}%`;
+      document.getElementById('simDistVal').textContent = `${dist.toFixed(2)} m`;
+      document.getElementById('simSpeedVal').textContent = `${speed.toFixed(1)} m/s`;
+
+      const visNorm = vis / 100;
+      const distNorm = Math.min(1, dist / 5.0);
+      const spdNorm = speed / 12.0;
+
+      const visHazard = 1.0 - visNorm;
+      const proxHazard = Math.pow(1.0 - distNorm, 2.3);
+      const rawRisk = (visHazard * 0.35) + (proxHazard * 0.50) + (spdNorm * 0.15);
+      const score = Math.round(Math.min(100, Math.max(0, rawRisk * 1.8 * 100)));
+
+      // Stopping distance formula
+      const brakeBuffer = parseFloat(((speed * speed) / (2 * 0.6 * 9.81) + (speed * 0.3) * (1 + (1 - visNorm) * 1.5) + 0.8).toFixed(2));
+
+      const scoreEl = document.getElementById('simScoreText');
+      const brakeEl = document.getElementById('simBrakeText');
+
+      if (scoreEl) {
+        scoreEl.textContent = `${score} / 100`;
+        if (score >= 80) scoreEl.style.color = 'var(--red)';
+        else if (score >= 50) scoreEl.style.color = 'var(--amber)';
+        else scoreEl.style.color = 'var(--lime)';
+      }
+
+      if (brakeEl) {
+        brakeEl.textContent = `${brakeBuffer} m`;
+      }
     }
 
-    // Intersection Observer for scroll animations
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.style.opacity = '1';
-          e.target.style.transform = 'translateY(0)';
-        }
-      });
-    }, { threshold: 0.1 });
+    function transferSimValues() {
+      const vis = document.getElementById('simVisRange').value;
+      const dist = document.getElementById('simDistRange').value;
+      const speed = document.getElementById('simSpeedRange').value;
+      localStorage.setItem('oreguard_custom_sim', JSON.stringify({ vis, dist, speed }));
+    }
 
-    document.querySelectorAll('.step-card, .scenario-card').forEach(el => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(20px)';
-      el.style.transition = 'opacity .5s ease, transform .5s ease, border-color .25s, background .25s';
-      observer.observe(el);
-    });
+    function setPreset(preset) {
+      localStorage.setItem('oreguard_preset', preset);
+    }
   </script>
 
 </body>

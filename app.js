@@ -857,10 +857,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     showApp();
   }
 
-  // Handle URL Hash navigation
-  const hash = window.location.hash.replace('#', '') || 'dashboard';
-  if (['dashboard', 'analytics', 'settings'].includes(hash)) {
-    navigateTo(hash);
+  // Apply preset, custom sim, or operator passed from landing page
+  const savedOperator = localStorage.getItem('oreguard_operator');
+  if (savedOperator) {
+    state.operator = savedOperator;
+    const opDisplay = document.getElementById('userDisplayName');
+    if (opDisplay) opDisplay.textContent = savedOperator;
+  }
+
+  const savedPreset = localStorage.getItem('oreguard_preset');
+  if (savedPreset && scenarioPresets[savedPreset]) {
+    setScenarioPreset(savedPreset);
+    localStorage.removeItem('oreguard_preset');
+  }
+
+  const customSim = localStorage.getItem('oreguard_custom_sim');
+  if (customSim) {
+    try {
+      const parsed = JSON.parse(customSim);
+      if (parsed.vis) state.visibility = parseFloat(parsed.vis);
+      if (parsed.dist) state.distance = parseFloat(parsed.dist);
+      if (parsed.speed) state.speed = parseFloat(parsed.speed);
+      setFeedMode('manual');
+      updateApp();
+    } catch(e) {}
+    localStorage.removeItem('oreguard_custom_sim');
   }
 
   // Start Real-Time Simulation loop
