@@ -7,26 +7,27 @@
   <meta name="description" content="Visibility-aware collision prevention system for underground and surface mine vehicles. Real-time sensor fusion with dynamic risk recalculation." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
   
   <style>
     :root {
-      --ink:       #161b20;
-      --muted:     #71808a;
-      --muted-dark:#53636b;
-      --line:      #dfe5e8;
-      --paper:     #f4f7f8;
+      --ink:       #0d1117;
+      --black:     #080c10;
+      --dark:      #0b0f14;
+      --dark-card: #121820;
+      --dark-card2:#17202a;
+      --border:    #1e2936;
+      --border-lit:#2a3a4c;
+      --muted:     #7c8e9a;
+      --muted-lit: #a5b4be;
       --white:     #ffffff;
       --lime:      #10b981;
+      --lime-glow: rgba(16, 185, 129, 0.35);
       --emerald:   #07865d;
-      --emerald-bg:#e4f7ef;
       --amber:     #f59e0b;
       --red:       #ef4444;
-      --blue:      #2563eb;
-      --dark:      #101419;
-      --dark2:     #172027;
-      --dark-btn:  #161b20;
-      --dark-hover:#1f2937;
+      --blue:      #3b82f6;
+      --cyan:      #06b6d4;
     }
 
     *, *::before, *::after {
@@ -37,19 +38,52 @@
 
     html {
       scroll-behavior: smooth;
+      color-scheme: dark;
     }
 
     body {
       font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #ffffff;
-      color: var(--ink);
+      background: var(--black);
+      color: #e2e8f0;
       line-height: 1.6;
       overflow-x: hidden;
       font-size: 15px;
     }
 
     /* ════════════════════════════════════════
-       NAVIGATION BAR
+       AMBIENT RADAR & GRID BACKGROUND
+    ════════════════════════════════════════ */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      top: -120px;
+      left: 25%;
+      width: 650px;
+      height: 650px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+      animation: pulse-ambient 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse-ambient {
+      0% { transform: scale(1); opacity: 0.7; }
+      100% { transform: scale(1.15) translate(30px, 20px); opacity: 1; }
+    }
+
+    /* ════════════════════════════════════════
+       NAVIGATION BAR (BLACK GLASS)
     ════════════════════════════════════════ */
     nav {
       position: fixed;
@@ -59,42 +93,44 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 6%;
-      height: 68px;
-      background: rgba(255, 255, 255, 0.94);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--line);
+      height: 70px;
+      background: rgba(8, 12, 16, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
     }
 
     .nav-brand {
       display: flex;
       align-items: center;
-      gap: 11px;
+      gap: 12px;
       text-decoration: none;
-      color: var(--ink);
+      color: var(--white);
     }
 
     .nav-mark {
-      width: 36px;
-      height: 36px;
-      background: var(--lime);
-      color: #062b1d;
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #042618;
       display: grid;
       place-items: center;
-      border-radius: 4px;
+      border-radius: 6px;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
       flex-shrink: 0;
     }
 
     .nav-brand strong {
-      font: 800 19px/1 'Barlow Condensed';
+      font: 800 20px 'Barlow Condensed';
       letter-spacing: 1.5px;
       display: block;
+      line-height: 1;
     }
 
     .nav-brand sub {
       font: 600 9px 'JetBrains Mono';
-      letter-spacing: 1.1px;
-      color: var(--muted);
+      letter-spacing: 1.2px;
+      color: var(--lime);
       display: block;
       margin-top: 2px;
     }
@@ -109,12 +145,12 @@
       text-decoration: none;
       font: 600 11px 'JetBrains Mono';
       letter-spacing: 0.8px;
-      color: var(--muted);
+      color: var(--muted-lit);
       transition: color 0.2s;
     }
 
     .nav-links a:hover {
-      color: var(--ink);
+      color: var(--lime);
     }
 
     .nav-actions {
@@ -125,8 +161,8 @@
 
     .btn-nav-ghost {
       background: transparent;
-      border: 1px solid var(--line);
-      color: var(--muted-dark);
+      border: 1px solid var(--border-lit);
+      color: #cbd5e1;
       padding: 9px 18px;
       font: 600 11px 'JetBrains Mono';
       letter-spacing: 0.5px;
@@ -137,53 +173,58 @@
     }
 
     .btn-nav-ghost:hover {
-      border-color: var(--ink);
-      color: var(--ink);
-      background: #f0f2f4;
+      border-color: var(--lime);
+      color: var(--lime);
+      background: rgba(16, 185, 129, 0.08);
     }
 
-    .btn-nav-dark {
-      background: var(--dark-btn);
-      color: #ffffff;
+    .btn-nav-glow {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #042618;
       border: 0;
       padding: 10px 22px;
-      font: 700 11px 'JetBrains Mono';
-      letter-spacing: 1px;
+      font: 800 12px 'Barlow Condensed';
+      letter-spacing: 1.2px;
       cursor: pointer;
       text-decoration: none;
       border-radius: 4px;
-      transition: all 0.2s;
-      box-shadow: 0 2px 8px rgba(22, 27, 32, 0.16);
+      transition: all 0.25s;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .btn-nav-dark:hover {
-      background: var(--dark-hover);
+    .btn-nav-glow:hover {
+      background: linear-gradient(135deg, #34d399, #10b981);
+      box-shadow: 0 0 24px rgba(16, 185, 129, 0.6);
       transform: translateY(-1px);
-      box-shadow: 0 4px 14px rgba(22, 27, 32, 0.25);
     }
 
     /* ════════════════════════════════════════
-       HERO SECTION (SPLIT SCREEN MATCHING LOGIN THEME)
+       HERO SECTION (ALL-BLACK SPLIT SCREEN)
     ════════════════════════════════════════ */
     .hero {
+      position: relative;
+      z-index: 1;
       min-height: 100vh;
       display: flex;
       align-items: stretch;
-      padding-top: 68px;
+      padding-top: 70px;
+      background: var(--black);
     }
 
-    /* LEFT HERO PANEL (DARK INDUSTRIAL THEME) */
+    /* LEFT HERO PANEL (ALL-BLACK INDUSTRIAL) */
     .hero-left {
-      width: 48%;
-      background: var(--dark);
-      color: #fff;
-      padding: 52px 6%;
+      width: 50%;
+      background: #090d12;
+      padding: 50px 6%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       position: relative;
       overflow: hidden;
-      flex-shrink: 0;
+      border-right: 1px solid var(--border);
     }
 
     .hero-left::after {
@@ -194,28 +235,33 @@
       background: repeating-linear-gradient(
         120deg,
         transparent 0 42px,
-        #1b252a 43px 44px
+        #121921 43px 44px
       );
-      opacity: 0.45;
+      opacity: 0.5;
       transform: skewY(-8deg);
       pointer-events: none;
     }
 
-    .hero-badge-tag {
+    .hero-tag {
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      padding: 6px 12px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.28);
+      border-radius: 4px;
       font: 600 10px 'JetBrains Mono';
-      letter-spacing: 1.5px;
-      color: #607880;
+      letter-spacing: 1.3px;
+      color: var(--lime);
       margin-bottom: 20px;
+      width: fit-content;
       position: relative;
       z-index: 2;
     }
 
     .hero-heading {
-      font: 800 clamp(48px, 5.5vw, 76px)/0.90 'Barlow Condensed';
-      letter-spacing: 0.4px;
+      font: 800 clamp(48px, 5.5vw, 82px)/0.90 'Barlow Condensed';
+      letter-spacing: 0.5px;
       margin-bottom: 20px;
       text-transform: uppercase;
       position: relative;
@@ -223,7 +269,7 @@
     }
 
     .hero-heading .white-txt {
-      color: #ffffff;
+      color: var(--white);
       display: block;
     }
 
@@ -231,13 +277,14 @@
       color: var(--lime);
       display: block;
       font-style: italic;
+      text-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
     }
 
     .hero-desc {
       font-size: 14.5px;
       color: #94a3b8;
       line-height: 1.7;
-      max-width: 480px;
+      max-width: 500px;
       margin-bottom: 32px;
       position: relative;
       z-index: 2;
@@ -253,35 +300,35 @@
       z-index: 2;
     }
 
-    .btn-hero-primary {
-      background: var(--lime);
+    .btn-hero-main {
+      background: linear-gradient(135deg, #10b981, #059669);
       color: #042618;
       border: 0;
-      padding: 15px 32px;
-      font: 800 14px 'Barlow Condensed';
-      letter-spacing: 1.4px;
+      padding: 16px 36px;
+      font: 800 15px 'Barlow Condensed';
+      letter-spacing: 1.5px;
       cursor: pointer;
       text-decoration: none;
       border-radius: 4px;
-      transition: all 0.2s;
+      transition: all 0.25s;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+      gap: 10px;
     }
 
-    .btn-hero-primary:hover {
-      background: #0ea570;
+    .btn-hero-main:hover {
+      background: linear-gradient(135deg, #34d399, #10b981);
       transform: translateY(-2px);
-      box-shadow: 0 6px 22px rgba(16, 185, 129, 0.45);
+      box-shadow: 0 8px 30px rgba(16, 185, 129, 0.55);
     }
 
-    .btn-hero-outline {
-      background: transparent;
-      border: 1px solid #2a3a44;
+    .btn-hero-sec {
+      background: rgba(22, 30, 40, 0.7);
+      border: 1px solid var(--border-lit);
       color: #cbd5e1;
-      padding: 15px 24px;
-      font: 600 11px 'JetBrains Mono';
+      padding: 16px 26px;
+      font: 600 12px 'JetBrains Mono';
       letter-spacing: 0.5px;
       cursor: pointer;
       text-decoration: none;
@@ -292,122 +339,130 @@
       gap: 8px;
     }
 
-    .btn-hero-outline:hover {
-      border-color: #526f7e;
+    .btn-hero-sec:hover {
+      background: rgba(30, 41, 56, 0.9);
+      border-color: var(--muted-lit);
       color: #fff;
-      background: rgba(255, 255, 255, 0.04);
+      transform: translateY(-1px);
     }
 
-    /* Quick Demo Launch Pills */
-    .hero-demo-pills {
+    /* 1-Click Launch Role Pills */
+    .hero-pills-box {
       position: relative;
       z-index: 2;
       display: flex;
-      gap: 8px;
       flex-wrap: wrap;
+      gap: 8px;
       margin-bottom: 24px;
     }
 
-    .demo-pill {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid #24323c;
+    .hero-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-lit);
       color: #cbd5e1;
       padding: 7px 12px;
       border-radius: 4px;
       font: 600 11px 'JetBrains Mono';
-      text-decoration: none;
       cursor: pointer;
+      text-decoration: none;
       transition: all 0.2s;
       display: inline-flex;
       align-items: center;
       gap: 6px;
     }
 
-    .demo-pill:hover {
+    .hero-pill:hover {
+      background: rgba(16, 185, 129, 0.12);
       border-color: var(--lime);
       color: var(--lime);
-      background: rgba(16, 185, 129, 0.12);
     }
 
-    .hero-status-row {
+    .hero-status-bar {
       position: relative;
       z-index: 2;
-      font: 600 10px 'JetBrains Mono';
-      color: #8a979d;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .status-item {
       display: flex;
       align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
-      padding-top: 18px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font: 500 11px 'JetBrains Mono';
+      color: var(--muted-lit);
     }
 
-    .dot-live {
+    .live-dot {
       width: 7px;
       height: 7px;
-      background: var(--lime);
       border-radius: 50%;
-      box-shadow: 0 0 0 3px #123e30;
-      animation: blink 1.8s infinite;
+      background: var(--lime);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+      animation: pulse-dot 1.8s infinite;
     }
 
-    /* RIGHT HERO PANEL (CLEAN LIGHT PAPER THEME) */
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+    }
+
+    /* RIGHT HERO PANEL (ALL-BLACK CYBER HUD) */
     .hero-right {
-      flex: 1;
-      background: var(--paper);
-      padding: 48px 6%;
+      width: 50%;
+      background: #080c10;
+      padding: 44px 5%;
       display: flex;
       flex-direction: column;
       justify-content: center;
       position: relative;
     }
 
-    .hud-box-container {
-      width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
+    .hud-frame {
+      background: rgba(15, 21, 28, 0.85);
+      border: 1px solid var(--border-lit);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
+      position: relative;
     }
 
-    .hud-top-row {
+    .hud-topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 18px;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
     }
 
-    .hud-title-wrap {
+    .hud-top-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
-    .hud-icon-box {
-      width: 40px;
-      height: 40px;
-      background: var(--emerald-bg);
-      display: grid;
-      place-items: center;
-      border-radius: 6px;
+    .hud-top-left strong {
+      font: 800 18px 'Barlow Condensed';
+      letter-spacing: 1px;
+      color: var(--white);
     }
 
-    .hud-title-wrap h2 {
-      font: 800 24px/1 'Barlow Condensed';
-      color: var(--ink);
-      letter-spacing: 0.5px;
+    .hud-top-left span {
+      font: 600 10px 'JetBrains Mono';
+      color: var(--lime);
     }
 
-    .hud-title-wrap p {
-      font-size: 11px;
-      color: var(--muted);
-      font-family: 'JetBrains Mono';
-      margin-top: 2px;
-    }
-
-    .sim-badge {
-      background: #161b20;
-      color: #ffffff;
-      padding: 6px 14px;
-      border-radius: 16px;
+    .sim-mode-badge {
+      background: #141b22;
+      border: 1px solid var(--border-lit);
+      color: #93c5fd;
+      padding: 4px 12px;
+      border-radius: 14px;
       font: 600 10px 'JetBrains Mono';
       letter-spacing: 1px;
       display: inline-flex;
@@ -415,14 +470,14 @@
       gap: 6px;
     }
 
-    .sim-badge .blue-dot {
+    .sim-mode-badge .dot {
       width: 6px;
       height: 6px;
-      background: #60a5fa;
+      background: #3b82f6;
       border-radius: 50%;
     }
 
-    /* 4-Card Telemetry Grid in White Paper Theme */
+    /* 4-Card Dark Telemetry Grid */
     .hud-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -431,74 +486,73 @@
     }
 
     .hud-card {
-      background: var(--white);
-      border: 1px solid var(--line);
-      border-radius: 4px;
-      padding: 16px;
-      transition: all 0.2s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      background: #131a23;
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+      border-radius: 6px;
+      transition: all 0.25s;
     }
 
     .hud-card:hover {
-      border-color: #cbd5e1;
+      border-color: var(--border-lit);
+      background: #18222e;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
 
     .hud-label {
-      font: 600 9.5px 'JetBrains Mono';
+      font: 600 10px 'JetBrains Mono';
       letter-spacing: 1px;
-      color: var(--muted-dark);
+      color: var(--muted);
       display: flex;
       justify-content: space-between;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .hud-val {
-      font: 800 34px/1 'Barlow Condensed';
-      color: var(--ink);
+      font: 800 36px/1 'Barlow Condensed';
+      color: var(--white);
       display: flex;
       align-items: flex-end;
       gap: 4px;
     }
 
     .hud-val .unit {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--muted);
       margin-bottom: 2px;
       font-family: 'JetBrains Mono';
       font-weight: 500;
     }
 
-    .hud-bar-wrap {
+    .hud-bar-bg {
       margin-top: 10px;
       height: 4px;
-      background: #eef2f5;
+      background: #090e13;
       border-radius: 2px;
       overflow: hidden;
     }
 
-    .hud-bar {
+    .hud-bar-fill {
       height: 100%;
-      background: var(--emerald);
+      background: var(--lime);
       border-radius: 2px;
       transition: width 0.6s ease;
     }
 
     .hud-sub {
       font: 500 10px 'JetBrains Mono';
-      color: var(--muted);
+      color: var(--muted-lit);
       margin-top: 6px;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
     }
 
-    /* Risk Engine Card */
-    .hud-risk-box {
-      background: var(--emerald-bg);
-      border: 1px solid rgba(7, 134, 93, 0.28);
-      border-radius: 4px;
+    /* Dynamic Risk Engine Card */
+    .hud-risk-card {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 6px;
       padding: 16px 18px;
       display: flex;
       align-items: center;
@@ -508,66 +562,83 @@
       transition: all 0.3s;
     }
 
-    .hud-risk-text .tag {
+    .hud-risk-info .tag {
       font: 700 9px 'JetBrains Mono';
       letter-spacing: 1.2px;
-      color: var(--emerald);
+      color: #6ee7b7;
     }
 
-    .hud-risk-text h3 {
-      font: 800 26px/1.1 'Barlow Condensed';
-      color: var(--emerald);
-      letter-spacing: 0.4px;
+    .hud-risk-info h3 {
+      font: 800 28px 'Barlow Condensed';
+      color: var(--lime);
+      letter-spacing: 0.5px;
       margin: 2px 0;
     }
 
-    .hud-risk-text p {
-      font: 500 10.5px 'JetBrains Mono';
-      color: #2e594b;
+    .hud-risk-info p {
+      font: 500 11px 'JetBrains Mono';
+      color: #94a3b8;
     }
 
-    .hud-risk-pill {
-      background: #ffffff;
-      border: 1px solid rgba(7, 134, 93, 0.3);
+    .hud-score-pill {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: var(--lime);
       padding: 8px 16px;
       border-radius: 4px;
       text-align: center;
-      color: var(--emerald);
     }
 
-    .hud-risk-pill strong {
-      font: 800 30px/1 'Barlow Condensed';
+    .hud-score-pill strong {
+      font: 800 32px/1 'Barlow Condensed';
       display: block;
     }
 
-    .hud-risk-pill span {
-      font: 700 8.5px 'JetBrains Mono';
+    .hud-score-pill span {
+      font: 600 8.5px 'JetBrains Mono';
       letter-spacing: 1px;
+      color: #6ee7b7;
       display: block;
-      color: var(--muted-dark);
     }
 
-    /* Radar Strip */
+    /* Live Radar Scanner Strip */
     .hud-radar-strip {
-      background: var(--white);
-      border: 1px solid var(--line);
-      border-radius: 4px;
+      background: #10161e;
+      border: 1px solid var(--border);
+      border-radius: 6px;
       padding: 12px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 14px;
     }
 
     .radar-left {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+    }
+
+    .radar-svg-box {
+      width: 44px;
+      height: 44px;
+      position: relative;
+    }
+
+    .radar-svg-box svg {
+      width: 100%;
+      height: 100%;
+      animation: radar-sweep 3.5s linear infinite;
+    }
+
+    @keyframes radar-sweep {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
     .radar-left strong {
-      font: 700 13.5px 'Barlow Condensed';
-      color: var(--ink);
+      font: 700 14px 'Barlow Condensed';
+      color: var(--white);
       display: block;
     }
 
@@ -578,16 +649,18 @@
     }
 
     /* ════════════════════════════════════════
-       SPECS STRIP
+       SPECS STRIP (DARK BLACK)
     ════════════════════════════════════════ */
     .specs-strip {
-      background: var(--paper);
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
+      background: #0a0e13;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
       padding: 24px 6%;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 20px;
+      position: relative;
+      z-index: 1;
     }
 
     .spec-item {
@@ -599,17 +672,18 @@
     .spec-icon-box {
       width: 38px;
       height: 38px;
-      background: var(--emerald-bg);
-      color: var(--emerald);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: var(--lime);
       display: grid;
       place-items: center;
-      border-radius: 4px;
+      border-radius: 6px;
       flex-shrink: 0;
     }
 
     .spec-meta strong {
-      font: 800 17px/1.1 'Barlow Condensed';
-      color: var(--ink);
+      font: 800 18px/1.1 'Barlow Condensed';
+      color: var(--white);
       display: block;
       letter-spacing: 0.4px;
     }
@@ -622,12 +696,14 @@
     }
 
     /* ════════════════════════════════════════
-       INTERACTIVE LIVE SIMULATOR SECTION
+       INTERACTIVE LIVE SIMULATOR SECTION (DARK)
     ════════════════════════════════════════ */
     .section-sim {
       padding: 90px 6%;
-      background: #ffffff;
-      border-bottom: 1px solid var(--line);
+      background: radial-gradient(circle at 50% 10%, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+      position: relative;
+      z-index: 1;
+      border-bottom: 1px solid var(--border);
     }
 
     .section-header {
@@ -639,41 +715,41 @@
     .section-tag {
       font: 700 11px 'JetBrains Mono';
       letter-spacing: 1.6px;
-      color: var(--emerald);
+      color: var(--lime);
       margin-bottom: 10px;
       text-transform: uppercase;
       display: block;
     }
 
     .section-title {
-      font: 800 clamp(36px, 4.5vw, 54px)/0.96 'Barlow Condensed';
-      color: var(--ink);
+      font: 800 clamp(36px, 4.5vw, 56px)/0.95 'Barlow Condensed';
+      color: var(--white);
       margin-bottom: 14px;
       text-transform: uppercase;
     }
 
     .section-title em {
-      color: var(--emerald);
+      color: var(--lime);
       font-style: normal;
     }
 
     .section-desc {
       font-size: 14px;
-      color: var(--muted);
+      color: #94a3b8;
       line-height: 1.7;
     }
 
     .sim-card-box {
       max-width: 1040px;
       margin: 0 auto;
-      background: var(--paper);
-      border: 1px solid var(--line);
+      background: var(--dark-card);
+      border: 1px solid var(--border-lit);
       border-radius: 8px;
       padding: 34px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 34px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     }
 
     .sim-slider-group {
@@ -683,9 +759,9 @@
     }
 
     .slider-item {
-      background: var(--white);
-      border: 1px solid var(--line);
-      border-radius: 4px;
+      background: #17202c;
+      border: 1px solid var(--border);
+      border-radius: 6px;
       padding: 16px 18px;
     }
 
@@ -698,17 +774,17 @@
 
     .slider-label {
       font: 600 11px 'JetBrains Mono';
-      color: var(--muted-dark);
+      color: #cbd5e1;
     }
 
     .slider-val {
       font: 800 20px 'Barlow Condensed';
-      color: var(--ink);
+      color: var(--lime);
     }
 
     .range-input {
       width: 100%;
-      accent-color: var(--emerald);
+      accent-color: var(--lime);
       cursor: pointer;
     }
 
@@ -721,9 +797,9 @@
     }
 
     .sim-result-panel {
-      background: var(--white);
-      border: 1px solid var(--line);
-      border-radius: 4px;
+      background: #17202c;
+      border: 1px solid var(--border);
+      border-radius: 6px;
       padding: 24px;
       display: flex;
       flex-direction: column;
@@ -731,14 +807,14 @@
     }
 
     .sim-result-head {
-      border-bottom: 1px solid var(--line);
+      border-bottom: 1px solid var(--border);
       padding-bottom: 12px;
       margin-bottom: 16px;
     }
 
     .sim-result-head strong {
       font: 800 18px 'Barlow Condensed';
-      color: var(--ink);
+      color: var(--white);
       display: block;
     }
 
@@ -755,8 +831,8 @@
     }
 
     .sim-metric-card {
-      background: var(--paper);
-      border: 1px solid var(--line);
+      background: #111720;
+      border: 1px solid var(--border);
       border-radius: 4px;
       padding: 12px 14px;
     }
@@ -770,23 +846,23 @@
 
     .sim-metric-card b {
       font: 800 24px 'Barlow Condensed';
-      color: var(--ink);
+      color: var(--white);
       display: block;
       line-height: 1;
     }
 
     .sim-formula-box {
-      background: var(--paper);
-      border: 1px dashed var(--line);
+      background: #0f151d;
+      border: 1px dashed var(--border-lit);
       border-radius: 4px;
       padding: 10px 14px;
       font: 500 10px 'JetBrains Mono';
-      color: var(--muted-dark);
+      color: #94a3b8;
       margin-bottom: 18px;
     }
 
     .sim-formula-box code {
-      color: var(--emerald);
+      color: var(--lime);
       display: block;
       margin-top: 4px;
       font-weight: 600;
@@ -794,22 +870,23 @@
 
     .btn-apply-sim {
       width: 100%;
-      background: var(--dark-btn);
-      color: #ffffff;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #042618;
       border: 0;
       padding: 14px;
-      font: 700 12px 'JetBrains Mono';
-      letter-spacing: 1px;
+      font: 800 14px 'Barlow Condensed';
+      letter-spacing: 1.2px;
       cursor: pointer;
       text-decoration: none;
       border-radius: 4px;
       text-align: center;
       transition: all 0.2s;
+      font-weight: 700;
     }
 
     .btn-apply-sim:hover {
-      background: var(--dark-hover);
-      transform: translateY(-1px);
+      background: linear-gradient(135deg, #34d399, #10b981);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
     }
 
     /* ════════════════════════════════════════
@@ -817,8 +894,10 @@
     ════════════════════════════════════════ */
     .section-how {
       padding: 90px 6%;
-      background: var(--paper);
-      border-bottom: 1px solid var(--line);
+      background: #090d12;
+      position: relative;
+      z-index: 1;
+      border-bottom: 1px solid var(--border);
     }
 
     .steps-grid {
@@ -830,8 +909,8 @@
     }
 
     .step-card {
-      background: var(--white);
-      border: 1px solid var(--line);
+      background: var(--dark-card);
+      border: 1px solid var(--border);
       padding: 28px 24px;
       border-radius: 6px;
       position: relative;
@@ -839,14 +918,14 @@
     }
 
     .step-card:hover {
-      border-color: #cbd5e1;
+      border-color: rgba(16, 185, 129, 0.4);
+      background: #17202c;
       transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.05);
     }
 
     .step-num {
       font: 800 48px/1 'Barlow Condensed';
-      color: rgba(7, 134, 93, 0.12);
+      color: rgba(16, 185, 129, 0.12);
       position: absolute;
       top: 18px;
       right: 20px;
@@ -855,8 +934,9 @@
     .step-icon {
       width: 42px;
       height: 42px;
-      background: var(--emerald-bg);
-      color: var(--emerald);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: var(--lime);
       display: grid;
       place-items: center;
       border-radius: 4px;
@@ -865,24 +945,26 @@
 
     .step-title {
       font: 800 19px 'Barlow Condensed';
-      color: var(--ink);
+      color: var(--white);
       margin-bottom: 8px;
       letter-spacing: 0.4px;
     }
 
     .step-desc {
       font-size: 13px;
-      color: var(--muted);
+      color: #94a3b8;
       line-height: 1.65;
     }
 
     /* ════════════════════════════════════════
-       SCENARIOS SECTION
+       SCENARIOS SECTION (DARK)
     ════════════════════════════════════════ */
     .section-scenarios {
       padding: 90px 6%;
-      background: #ffffff;
-      border-bottom: 1px solid var(--line);
+      background: var(--black);
+      position: relative;
+      z-index: 1;
+      border-bottom: 1px solid var(--border);
     }
 
     .scenarios-grid {
@@ -894,8 +976,8 @@
     }
 
     .scenario-card {
-      background: var(--white);
-      border: 1px solid var(--line);
+      background: var(--dark-card);
+      border: 1px solid var(--border);
       border-radius: 6px;
       padding: 26px 22px;
       cursor: pointer;
@@ -923,8 +1005,8 @@
 
     .scenario-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 10px 28px rgba(0,0,0,0.07);
-      border-color: #cbd5e1;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+      border-color: var(--border-lit);
     }
 
     .scen-vis {
@@ -932,21 +1014,21 @@
       margin-bottom: 6px;
     }
 
-    .scenario-card.clear .scen-vis { color: var(--emerald); }
+    .scenario-card.clear .scen-vis { color: var(--lime); }
     .scenario-card.dust .scen-vis { color: var(--amber); }
     .scenario-card.poor .scen-vis { color: #f97316; }
     .scenario-card.emergency .scen-vis { color: var(--red); }
 
     .scen-name {
       font: 800 17px 'Barlow Condensed';
-      color: var(--ink);
+      color: var(--white);
       letter-spacing: 0.4px;
       margin-bottom: 6px;
     }
 
     .scen-desc {
       font: 500 11px 'JetBrains Mono';
-      color: var(--muted);
+      color: #94a3b8;
       line-height: 1.6;
     }
 
@@ -956,17 +1038,19 @@
       gap: 6px;
       font: 700 11px 'Barlow Condensed';
       letter-spacing: 1px;
-      color: var(--emerald);
+      color: var(--lime);
       margin-top: 16px;
     }
 
     /* ════════════════════════════════════════
-       HARDWARE STACK SECTION
+       HARDWARE STACK SECTION (DARK)
     ════════════════════════════════════════ */
     .section-hardware {
       padding: 90px 6%;
-      background: var(--paper);
-      border-bottom: 1px solid var(--line);
+      background: #090d12;
+      position: relative;
+      z-index: 1;
+      border-bottom: 1px solid var(--border);
     }
 
     .hw-grid {
@@ -978,8 +1062,8 @@
     }
 
     .hw-card {
-      background: var(--white);
-      border: 1px solid var(--line);
+      background: var(--dark-card);
+      border: 1px solid var(--border);
       border-radius: 6px;
       padding: 22px;
       display: flex;
@@ -988,15 +1072,16 @@
     }
 
     .hw-card:hover {
-      border-color: #cbd5e1;
+      border-color: var(--border-lit);
+      background: #17202c;
       transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.04);
     }
 
     .hw-icon {
       width: 42px;
       height: 42px;
-      background: #eff6ff;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
       color: var(--blue);
       display: grid;
       place-items: center;
@@ -1006,31 +1091,33 @@
 
     .hw-meta strong {
       font: 800 18px 'Barlow Condensed';
-      color: var(--ink);
+      color: var(--white);
       display: block;
       margin-bottom: 4px;
     }
 
     .hw-meta p {
       font-size: 12.5px;
-      color: var(--muted);
+      color: #94a3b8;
       line-height: 1.55;
     }
 
     .hw-meta span {
       font: 600 10px 'JetBrains Mono';
-      color: var(--emerald);
+      color: var(--lime);
       display: block;
       margin-top: 6px;
     }
 
     /* ════════════════════════════════════════
-       FINAL CTA SECTION
+       FINAL CTA SECTION (ALL-BLACK RADIAL GLOW)
     ════════════════════════════════════════ */
     .section-cta {
       padding: 100px 6%;
       text-align: center;
-      background: #ffffff;
+      background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 65%);
+      position: relative;
+      z-index: 1;
     }
 
     .cta-box {
@@ -1040,20 +1127,20 @@
 
     .cta-heading {
       font: 800 clamp(44px, 5.5vw, 72px)/0.92 'Barlow Condensed';
-      color: var(--ink);
+      color: var(--white);
       margin-bottom: 18px;
       text-transform: uppercase;
     }
 
     .cta-heading em {
-      color: var(--emerald);
+      color: var(--lime);
       font-style: normal;
       display: block;
     }
 
     .cta-desc {
       font-size: 14.5px;
-      color: var(--muted);
+      color: #94a3b8;
       max-width: 520px;
       margin: 0 auto 34px;
       line-height: 1.7;
@@ -1066,69 +1153,27 @@
       flex-wrap: wrap;
     }
 
-    .btn-cta-dark {
-      background: var(--dark-btn);
-      color: #ffffff;
-      border: 0;
-      padding: 16px 36px;
-      font: 800 14px 'Barlow Condensed';
-      letter-spacing: 1.4px;
-      cursor: pointer;
-      text-decoration: none;
-      border-radius: 4px;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 14px rgba(22, 27, 32, 0.18);
-    }
-
-    .btn-cta-dark:hover {
-      background: var(--dark-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(22, 27, 32, 0.25);
-    }
-
-    .btn-cta-outline {
-      background: var(--white);
-      border: 1px solid var(--line);
-      color: var(--ink);
-      padding: 16px 28px;
-      font: 600 11px 'JetBrains Mono';
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      text-decoration: none;
-      border-radius: 4px;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-cta-outline:hover {
-      border-color: var(--ink);
-      background: #f8fafc;
-    }
-
     /* ════════════════════════════════════════
-       FOOTER
+       FOOTER (BLACK)
     ════════════════════════════════════════ */
     footer {
-      border-top: 1px solid var(--line);
+      border-top: 1px solid var(--border);
       padding: 30px 6%;
-      background: var(--paper);
+      background: #06090d;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 20px;
+      position: relative;
+      z-index: 1;
     }
 
     .footer-brand {
       display: flex;
       align-items: center;
       gap: 10px;
-      color: var(--ink);
+      color: var(--white);
       text-decoration: none;
     }
 
@@ -1160,13 +1205,13 @@
 
     .footer-links a {
       font: 500 11px 'JetBrains Mono';
-      color: var(--muted);
+      color: var(--muted-lit);
       text-decoration: none;
       transition: color 0.2s;
     }
 
     .footer-links a:hover {
-      color: var(--ink);
+      color: var(--lime);
     }
 
     .footer-copy {
@@ -1185,6 +1230,10 @@
   </style>
 </head>
 <body>
+
+  <!-- Ambient Grid & Glow -->
+  <div class="bg-grid"></div>
+  <div class="ambient-glow"></div>
 
   <!-- ════════ NAV BAR ════════ -->
   <nav>
@@ -1211,18 +1260,18 @@
 
     <div class="nav-actions">
       <a href="login.html" class="btn-nav-ghost">SIGN IN</a>
-      <a href="index.html" class="btn-nav-dark">GET STARTED</a>
+      <a href="index.html" class="btn-nav-glow">GET STARTED</a>
     </div>
   </nav>
 
-  <!-- ════════ HERO SECTION ════════ -->
+  <!-- ════════ HERO SECTION (ALL-BLACK FIRST PAGE) ════════ -->
   <section class="hero">
 
-    <!-- LEFT ASIDE: DARK INDUSTRIAL BRANDING -->
+    <!-- LEFT: ALL-BLACK INDUSTRIAL HERO -->
     <div class="hero-left">
       <div>
-        <div class="hero-badge-tag">
-          <span class="dot-live"></span>
+        <div class="hero-tag">
+          <span class="live-dot"></span>
           <span>ESP32 SENSOR FUSION · MV-07 READY · SIH 2025</span>
         </div>
 
@@ -1237,73 +1286,72 @@
 
         <!-- Primary Call To Actions -->
         <div class="hero-cta-group">
-          <a href="index.html" class="btn-hero-primary">
+          <a href="index.html" class="btn-hero-main">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             <span>ENTER SAFETY CONSOLE</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
           </a>
-          <a href="#simulator" class="btn-hero-outline">
-            <span>TEST SIMULATOR</span>
+          <a href="#simulator" class="btn-hero-sec">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m10 8 4 4-4 4"/></svg>
+            <span>TEST SIMULATOR</span>
           </a>
         </div>
 
-        <!-- Demo Quick Pills -->
-        <div class="hero-demo-pills">
-          <a href="index.html" class="demo-pill" onclick="setDemoPreset('clear')"><b>🚛</b> Driver Cockpit</a>
-          <a href="index.html#analytics" class="demo-pill" onclick="setDemoPreset('clear')"><b>📊</b> Safety Analytics</a>
-          <a href="index.html" class="demo-pill" onclick="setDemoPreset('dust')"><b>🌫️</b> Dust Hazard</a>
-          <a href="index.html" class="demo-pill" onclick="setDemoPreset('emergency')"><b>🚨</b> Emergency Stop</a>
+        <!-- 1-Click Launch Role Pills -->
+        <div class="hero-pills-box">
+          <a href="index.html" class="hero-pill" onclick="setDemoPreset('clear')"><b>🚛</b> Driver Cockpit</a>
+          <a href="index.html#analytics" class="hero-pill" onclick="setDemoPreset('clear')"><b>📊</b> Safety Analytics</a>
+          <a href="index.html" class="hero-pill" onclick="setDemoPreset('dust')"><b>🌫️</b> Dust Hazard</a>
+          <a href="index.html" class="hero-pill" onclick="setDemoPreset('emergency')"><b>🚨</b> Emergency Stop</a>
         </div>
       </div>
 
       <!-- Status Bar -->
-      <div class="hero-status-row">
-        <span class="dot-live"></span>
-        <span>6 SENSORS ACTIVE</span>
-        <b style="color:#475569">·</b>
-        <span>100ms SAFETY LOOP</span>
-        <b style="color:#475569">·</b>
-        <span>SUPABASE CLOUD READY</span>
+      <div class="hero-status-bar">
+        <div class="status-item">
+          <span class="live-dot"></span>
+          <span>6 SENSORS ACTIVE</span>
+        </div>
+        <div class="status-item">
+          <span class="live-dot" style="background:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.25)"></span>
+          <span>100ms SAFETY LOOP</span>
+        </div>
+        <div class="status-item">
+          <span class="live-dot" style="background:#06b6d4;box-shadow:0 0 0 3px rgba(6,182,212,0.25)"></span>
+          <span>SUPABASE CLOUD READY</span>
+        </div>
       </div>
     </div>
 
-    <!-- RIGHT MAIN: CLEAN LIGHT PAPER THEME HUD -->
+    <!-- RIGHT: ALL-BLACK CYBER HUD COCKPIT -->
     <div class="hero-right">
-      <div class="hud-box-container">
+      <div class="hud-frame">
         
-        <div class="hud-top-row">
-          <div class="hud-title-wrap">
-            <div class="hud-icon-box">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#07865d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                <path d="m9 12 2 2 4-4"/>
-              </svg>
-            </div>
-            <div>
-              <h2>Vehicle MV-07 HUD</h2>
-              <p>Live Telemetry & Safety Margin</p>
-            </div>
+        <div class="hud-topbar">
+          <div class="hud-top-left">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <strong>VEHICLE MV-07 HUD</strong>
+            <span>• LIVE</span>
           </div>
-          <div class="sim-badge">
-            <span class="blue-dot"></span>
+          <div class="sim-mode-badge">
+            <span class="dot"></span>
             <span>SIMULATION MODE</span>
           </div>
         </div>
 
-        <!-- 4-Gauge Metric Cards -->
+        <!-- 4 Dark Telemetry Metric Cards -->
         <div class="hud-grid">
           
           <div class="hud-card">
             <div class="hud-label">
               <span>OPTICAL VISIBILITY</span>
-              <span style="color:var(--emerald)">● LIVE</span>
+              <span style="color:var(--lime)">● LIVE</span>
             </div>
             <div class="hud-val">
-              <span id="hudVis" style="color:var(--emerald)">85</span>
+              <span id="hudVis" style="color:var(--lime)">85</span>
               <span class="unit">%</span>
             </div>
-            <div class="hud-bar-wrap">
-              <div class="hud-bar" id="hudVisBar" style="width: 85%;"></div>
+            <div class="hud-bar-bg">
+              <div class="hud-bar-fill" id="hudVisBar" style="width: 85%;"></div>
             </div>
             <div class="hud-sub" id="hudVisSub">
               <span>●</span> Clear haul corridor
@@ -1313,14 +1361,14 @@
           <div class="hud-card">
             <div class="hud-label">
               <span>NEAREST OBSTACLE</span>
-              <span style="color:var(--muted)">HC-SR04</span>
+              <span style="color:#94a3b8">HC-SR04</span>
             </div>
             <div class="hud-val">
               <span id="hudDist">4.20</span>
               <span class="unit">m</span>
             </div>
-            <div class="hud-bar-wrap">
-              <div class="hud-bar" id="hudDistBar" style="width: 75%;"></div>
+            <div class="hud-bar-bg">
+              <div class="hud-bar-fill" id="hudDistBar" style="width: 75%;"></div>
             </div>
             <div class="hud-sub">
               <span>●</span> Forward sweep
@@ -1330,16 +1378,16 @@
           <div class="hud-card">
             <div class="hud-label">
               <span>VEHICLE SPEED</span>
-              <span style="color:var(--muted)">HALL SENSOR</span>
+              <span style="color:#94a3b8">HALL SENSOR</span>
             </div>
             <div class="hud-val">
               <span id="hudSpeed">8.2</span>
               <span class="unit">m/s</span>
             </div>
-            <div class="hud-bar-wrap">
-              <div class="hud-bar" id="hudSpeedBar" style="width: 68%;"></div>
+            <div class="hud-bar-bg">
+              <div class="hud-bar-fill" id="hudSpeedBar" style="width: 68%;"></div>
             </div>
-            <div class="hud-sub" id="hudSpeedSub">
+            <div class="hud-sub">
               <span>●</span> Unrestricted
             </div>
           </div>
@@ -1353,8 +1401,8 @@
               <span id="hudBrake">1.8</span>
               <span class="unit">m</span>
             </div>
-            <div class="hud-bar-wrap">
-              <div class="hud-bar" id="hudBrakeBar" style="width: 36%;"></div>
+            <div class="hud-bar-bg">
+              <div class="hud-bar-fill" id="hudBrakeBar" style="width: 36%;"></div>
             </div>
             <div class="hud-sub">
               <span>●</span> Fog-weighted buffer
@@ -1363,14 +1411,14 @@
 
         </div>
 
-        <!-- Dynamic Risk Engine Card -->
-        <div class="hud-risk-box" id="hudRiskBox">
-          <div class="hud-risk-text">
+        <!-- Dynamic Risk Engine Output Card -->
+        <div class="hud-risk-card" id="hudRiskCard">
+          <div class="hud-risk-info">
             <div class="tag">DYNAMIC RISK ENGINE / OUTPUT</div>
             <h3 id="hudRiskTitle">SAFE CORRIDOR</h3>
             <p id="hudRiskDesc">All 6 sensors reporting nominal · full speed permitted</p>
           </div>
-          <div class="hud-risk-pill" id="hudRiskPill">
+          <div class="hud-score-pill" id="hudScorePill">
             <strong id="hudRiskScore">12</strong>
             <span>/ 100 RISK</span>
           </div>
@@ -1379,7 +1427,23 @@
         <!-- Radar Status Strip -->
         <div class="hud-radar-strip">
           <div class="radar-left">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#07865d" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div class="radar-svg-box">
+              <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+                <circle cx="50" cy="50" r="30" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+                <circle cx="50" cy="50" r="15" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+                <line x1="50" y1="5" x2="50" y2="95" stroke="#1e293b" stroke-width="1"/>
+                <line x1="5" y1="50" x2="95" y2="50" stroke="#1e293b" stroke-width="1"/>
+                <polygon points="50,50 85,15 95,30" fill="url(#radarGradient)"/>
+                <circle cx="68" cy="28" r="4" fill="#10b981"/>
+                <defs>
+                  <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(16,185,129,0.4)"/>
+                    <stop offset="100%" stop-color="transparent"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
             <div>
               <strong>Forward Path Clear · Sector 01-04</strong>
               <span>Adaptive braking threshold active</span>
@@ -1511,7 +1575,7 @@
           <div class="sim-data-grid">
             <div class="sim-metric-card">
               <small>CALCULATED RISK SCORE</small>
-              <b id="simScoreText" style="color:var(--emerald)">12 / 100</b>
+              <b id="simScoreText" style="color:var(--lime)">12 / 100</b>
             </div>
             <div class="sim-metric-card">
               <small>DYNAMIC BRAKING BUFFER</small>
@@ -1728,7 +1792,7 @@
     </div>
   </section>
 
-  <!-- ════════ FINAL CTA SECTION ════════ -->
+  <!-- ════════ FINAL CTA SECTION (RADIAL GLOW) ════════ -->
   <section class="section-cta">
     <div class="cta-box">
       <span class="section-tag">MINE VEHICLE ADAS DEPLOYMENT</span>
@@ -1741,11 +1805,11 @@
       </p>
 
       <div class="cta-buttons">
-        <a href="index.html" class="btn-cta-dark">
+        <a href="index.html" class="btn-hero-main">
           <span>ENTER SAFETY CONSOLE</span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         </a>
-        <a href="login.html" class="btn-cta-outline">
+        <a href="login.html" class="btn-hero-sec">
           <span>SIGN IN TO CONSOLE</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
         </a>
@@ -1836,27 +1900,34 @@
 
       const riskTitle = document.getElementById('hudRiskTitle');
       const riskDesc = document.getElementById('hudRiskDesc');
-      const riskBox = document.getElementById('hudRiskBox');
+      const riskCard = document.getElementById('hudRiskCard');
+      const scorePill = document.getElementById('hudScorePill');
 
-      if (riskTitle && riskDesc && riskBox) {
+      if (riskTitle && riskDesc && riskCard && scorePill) {
         if (score >= 80) {
           riskTitle.textContent = 'EMERGENCY STOP';
           riskTitle.style.color = 'var(--red)';
           riskDesc.textContent = 'Proximity hazard in low visibility · automatic vehicle halt';
-          riskBox.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-          riskBox.style.background = '#fef2f2';
+          riskCard.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+          riskCard.style.background = 'rgba(239, 68, 68, 0.12)';
+          scorePill.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+          scorePill.style.color = 'var(--red)';
         } else if (score >= 50) {
           riskTitle.textContent = 'HIGH RISK';
           riskTitle.style.color = 'var(--amber)';
           riskDesc.textContent = 'Adaptive motor speed governor engaged';
-          riskBox.style.borderColor = 'rgba(245, 158, 11, 0.4)';
-          riskBox.style.background = '#fffbeb';
+          riskCard.style.borderColor = 'rgba(245, 158, 11, 0.5)';
+          riskCard.style.background = 'rgba(245, 158, 11, 0.12)';
+          scorePill.style.borderColor = 'rgba(245, 158, 11, 0.5)';
+          scorePill.style.color = 'var(--amber)';
         } else {
           riskTitle.textContent = 'SAFE CORRIDOR';
-          riskTitle.style.color = 'var(--emerald)';
+          riskTitle.style.color = 'var(--lime)';
           riskDesc.textContent = 'All 6 sensors reporting nominal · full speed permitted';
-          riskBox.style.borderColor = 'rgba(7, 134, 93, 0.28)';
-          riskBox.style.background = 'var(--emerald-bg)';
+          riskCard.style.borderColor = 'rgba(16, 185, 129, 0.35)';
+          riskCard.style.background = 'rgba(16, 185, 129, 0.08)';
+          scorePill.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+          scorePill.style.color = 'var(--lime)';
         }
       }
     }
@@ -1892,7 +1963,7 @@
         scoreEl.textContent = `${score} / 100`;
         if (score >= 80) scoreEl.style.color = 'var(--red)';
         else if (score >= 50) scoreEl.style.color = 'var(--amber)';
-        else scoreEl.style.color = 'var(--emerald)';
+        else scoreEl.style.color = 'var(--lime)';
       }
 
       if (brakeEl) {
