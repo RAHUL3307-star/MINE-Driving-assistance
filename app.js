@@ -41,6 +41,17 @@ const state = {
   
   // User Session
   operator: 'Rahul Sharma (OP-402)',
+
+  // Weather & Pit Meteorology Subsystem
+  weather: {
+    apiKey: localStorage.getItem('oreguard_weather_api_key') || '',
+    provider: localStorage.getItem('oreguard_weather_provider') || 'openweathermap',
+    location: localStorage.getItem('oreguard_weather_location') || 'Dhanbad,IN',
+    customLocation: localStorage.getItem('oreguard_weather_custom_location') || '',
+    isLive: false,
+    lastFetched: 0,
+    data: null
+  }
 };
 
 // Preset scenarios from reference
@@ -830,6 +841,7 @@ function navigateTo(viewId) {
   // Update topbar title
   const titles = {
     dashboard: 'Live operations',
+    weather: 'Mine Meteorology & Predictions',
     analytics: 'Analytics & history',
     settings: 'System settings',
   };
@@ -837,6 +849,12 @@ function navigateTo(viewId) {
 
   if (viewId === 'analytics') {
     renderAnalyticsView();
+  } else if (viewId === 'weather') {
+    if (state.weather && state.weather.data) {
+      renderWeatherUI(state.weather.data);
+    } else {
+      fetchWeatherData();
+    }
   }
 
   toggleMobileNav(false);
@@ -1071,9 +1089,860 @@ function showApp() {
 }
 
 // ─────────────────────────────────────────────────────────────
+// WEATHER & METEOROLOGICAL PREDICTION MODULE
+// ─────────────────────────────────────────────────────────────
+
+function getLocationQuery() {
+  if (state.weather.location === 'custom') {
+    return state.weather.customLocation || 'Dhanbad,IN';
+  }
+  return state.weather.location || 'Dhanbad,IN';
+}
+
+function getLocationDisplayName() {
+  const map = {
+    'Dhanbad,IN': 'Dhanbad (Jharia Coalfield Pit 03)',
+    'Korba,IN': 'Korba (Gevra Open Cast Mine)',
+    'Singrauli,IN': 'Singrauli (NCL Coal Basin)',
+    'Talcher,IN': 'Talcher (MCL Open Pit Mine)',
+    'Ranchi,IN': 'Ranchi (CCLB Mining Zone)',
+    'Pilbara,AU': 'Pilbara (Iron Ore Basin, Australia)',
+    'Sudbury,CA': 'Sudbury (Nickel Basin, Canada)'
+  };
+  if (state.weather.location === 'custom') {
+    return state.weather.customLocation || 'Custom Mine Location';
+  }
+  return map[state.weather.location] || state.weather.location;
+}
+
+function handleLocationPresetChange(val) {
+  const customWrap = document.getElementById('cfgCustomLocWrapper');
+  if (customWrap) {
+    customWrap.style.display = val === 'custom' ? 'block' : 'none';
+  }
+}
+
+function toggleWeatherKeyVis() {
+  const input = document.getElementById('cfgWeatherApiKey');
+  if (input) {
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+}
+
+async function fetchWeatherData(force = false) {
+  const query = getLocationQuery();
+  const apiKey = state.weather.apiKey ? state.weather.apiKey.trim() : '';
+  const provider = state.weather.provider || 'openweathermap';
+
+  // 1. If API Key is present and provider is not forced simulation -> Attempt Live Fetch
+  if (apiKey && provider !== 'simulation') {
+    try {
+      if (provider === 'openweathermap') {
+        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(query)}&units=metric&appid=${apiKey}`);
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.message || `HTTP ${res.status}`);
+        }
+        const currentData = await res.json();
+
+        // Also fetch forecast
+        let forecastList = [];
+        try {
+          const fRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(query)}&units=metric&appid=${apiKey}`);
+          if (fRes.ok) {
+            const fData = await fRes.json();
+            forecastList = fData.list || [];
+          }
+        } catch(e) {}
+
+        const parsed = parseOpenWeatherResponse(currentData, forecastList);
+        state.weather.data = parsed;
+        state.weather.isLive = true;
+        state.weather.lastFetched = Date.now();
+        renderWeatherUI(parsed);
+        return { success: true, isLive: true };
+      } else if (provider === 'weatherapi') {
+        const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${encodeURIComponent(query)}&days=2&aqi=yes`);
+        if (!res.ok) throw new Error(`WeatherAPI error: ${res.statusText}`);
+        const data = await res.json();
+        const parsed = parseWeatherApiResponse(data);
+        state.weather.data = parsed;
+        state.weather.isLive = true;
+        state.weather.lastFetched = Date.now();
+        renderWeatherUI(parsed);
+        return { success: true, isLive: true };
+      }
+    } catch(err) {
+      console.warn('[Weather] Live API fetch failed:', err.message, 'Falling back to predictive simulation.');
+      const simulated = generateSimulatedMineWeather(query);
+      state.weather.data = simulated;
+      state.weather.isLive = false;
+      renderWeatherUI(simulated);
+      return { success: false, error: err.message };
+    }
+  }
+
+  // 2. Fallback to Autonomous Mine Meteorological Simulation
+  const simulated = generateSimulatedMineWeather(query);
+  state.weather.data = simulated;
+  state.weather.isLive = false;
+  state.weather.lastFetched = Date.now();
+  renderWeatherUI(simulated);
+  return { success: true, isLive: false };
+}
+
+function parseOpenWeatherResponse(cur, forecastList) {
+  const temp = cur.main ? cur.main.temp : 28.5;
+  const feelsLike = cur.main ? cur.main.feels_like : temp + 2.5;
+  const humidity = cur.main ? cur.main.humidity : 60;
+  const visMeters = cur.visibility !== undefined ? cur.visibility : 8000;
+  const visKm = parseFloat((visMeters / 1000).toFixed(1));
+  const windSpeedKmh = cur.wind ? parseFloat((cur.wind.speed * 3.6).toFixed(1)) : 12.0;
+  const windDeg = cur.wind && cur.wind.deg ? getWindDirection(cur.wind.deg) : 'ENE';
+  const windGust = cur.wind && cur.wind.gust ? parseFloat((cur.wind.gust * 3.6).toFixed(1)) : parseFloat((windSpeedKmh * 1.35).toFixed(1));
+  const condition = (cur.weather && cur.weather[0]) ? cur.weather[0].main : 'Clear';
+  const description = (cur.weather && cur.weather[0]) ? cur.weather[0].description : 'Clear sky';
+
+  // Dew point approximation: Td = T - ((100 - RH)/5)
+  const dewPoint = parseFloat((temp - ((100 - humidity) / 5)).toFixed(1));
+
+  // Transmittance %
+  const transPercent = Math.round(Math.min(100, Math.max(10, (visKm / 10.0) * 100)));
+  const extinction = parseFloat((3.912 / Math.max(0.2, visKm)).toFixed(2));
+
+  // Parse Hourly from 3-hour forecast
+  const hourly = [];
+  if (forecastList && forecastList.length > 0) {
+    forecastList.slice(0, 8).forEach(item => {
+      const dt = new Date(item.dt * 1000);
+      const timeStr = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+      const hTemp = Math.round(item.main.temp);
+      const hVisKm = item.visibility ? (item.visibility / 1000).toFixed(1) : (visKm * 0.95).toFixed(1);
+      const hCond = item.weather[0] ? item.weather[0].main : 'Clear';
+      const hVisPct = Math.round(Math.min(100, Math.max(15, (hVisKm / 10.0) * 100)));
+      hourly.push({
+        time: timeStr,
+        temp: `${hTemp}°C`,
+        icon: getWeatherIcon(hCond),
+        visKm: `${hVisKm}km`,
+        visPercent: `${hVisPct}%`,
+        status: hVisPct < 40 ? 'FOG ALERT' : hVisPct < 70 ? 'MODERATE' : 'CLEAR',
+        statusColor: hVisPct < 40 ? '#ef4444' : hVisPct < 70 ? '#f59e0b' : '#10b981',
+        statusBg: hVisPct < 40 ? '#fef2f2' : hVisPct < 70 ? '#fffbeb' : '#ecfdf5'
+      });
+    });
+  } else {
+    hourly.push(...generateSyntheticHourly(temp, visKm));
+  }
+
+  return {
+    locationName: cur.name || getLocationDisplayName(),
+    temp: temp.toFixed(1),
+    feelsLike: feelsLike.toFixed(1),
+    humidity,
+    dewPoint,
+    visKm,
+    visPercent: transPercent,
+    extinction,
+    windSpeed: windSpeedKmh,
+    windDirection: windDeg,
+    windGust,
+    condition,
+    description: capitalize(description),
+    icon: getWeatherIcon(condition),
+    hourly
+  };
+}
+
+function parseWeatherApiResponse(data) {
+  const cur = data.current || {};
+  const loc = data.location || {};
+  const temp = cur.temp_c !== undefined ? cur.temp_c : 30.0;
+  const feelsLike = cur.feelslike_c !== undefined ? cur.feelslike_c : temp + 2.0;
+  const humidity = cur.humidity !== undefined ? cur.humidity : 55;
+  const visKm = cur.vis_km !== undefined ? cur.vis_km : 8.0;
+  const windSpeed = cur.wind_kph !== undefined ? cur.wind_kph : 14.0;
+  const windDeg = cur.wind_dir || 'ENE';
+  const windGust = cur.gust_kph !== undefined ? cur.gust_kph : windSpeed * 1.3;
+  const condition = (cur.condition && cur.condition.text) ? cur.condition.text : 'Clear';
+  const dewPoint = parseFloat((temp - ((100 - humidity) / 5)).toFixed(1));
+  const transPercent = Math.round(Math.min(100, Math.max(10, (visKm / 10.0) * 100)));
+  const extinction = parseFloat((3.912 / Math.max(0.2, visKm)).toFixed(2));
+
+  const hourly = [];
+  const hours = (data.forecast && data.forecast.forecastday && data.forecast.forecastday[0]) ? data.forecast.forecastday[0].hour : [];
+  if (hours.length > 0) {
+    const currentHour = new Date().getHours();
+    const nextHours = hours.filter(h => new Date(h.time).getHours() >= currentHour).slice(0, 8);
+    nextHours.forEach(h => {
+      const timeStr = h.time.split(' ')[1] || '00:00';
+      const hVis = h.vis_km || 8.0;
+      const hPct = Math.round(Math.min(100, (hVis / 10.0) * 100));
+      hourly.push({
+        time: timeStr,
+        temp: `${Math.round(h.temp_c)}°C`,
+        icon: getWeatherIcon(h.condition.text),
+        visKm: `${hVis}km`,
+        visPercent: `${hPct}%`,
+        status: hPct < 40 ? 'FOG ALERT' : hPct < 70 ? 'MODERATE' : 'CLEAR',
+        statusColor: hPct < 40 ? '#ef4444' : hPct < 70 ? '#f59e0b' : '#10b981',
+        statusBg: hPct < 40 ? '#fef2f2' : hPct < 70 ? '#fffbeb' : '#ecfdf5'
+      });
+    });
+  }
+
+  return {
+    locationName: loc.name ? `${loc.name}, ${loc.country}` : getLocationDisplayName(),
+    temp: temp.toFixed(1),
+    feelsLike: feelsLike.toFixed(1),
+    humidity,
+    dewPoint,
+    visKm,
+    visPercent: transPercent,
+    extinction,
+    windSpeed,
+    windDirection: windDeg,
+    windGust,
+    condition,
+    description: condition,
+    icon: getWeatherIcon(condition),
+    hourly: hourly.length > 0 ? hourly : generateSyntheticHourly(temp, visKm)
+  };
+}
+
+function generateSimulatedMineWeather(query) {
+  const now = new Date();
+  const hour = now.getHours();
+
+  // Mine atmospheric daily model
+  const isNight = hour < 6 || hour > 19;
+  const isEarlyMorning = hour >= 4 && hour <= 8;
+  const isMidday = hour >= 11 && hour <= 16;
+
+  let baseTemp = 31.5;
+  let humidity = 58;
+  let visKm = 8.5;
+  let condition = 'Clear';
+  let description = 'Clear Atmospheric Corridor';
+
+  if (isEarlyMorning) {
+    baseTemp = 22.4;
+    humidity = 84;
+    visKm = 3.2; // Morning fog / thermal inversion in deep pit
+    condition = 'Fog';
+    description = 'Morning Thermal Inversion & Pit Mist';
+  } else if (isMidday) {
+    baseTemp = 36.8;
+    humidity = 42;
+    visKm = 7.4; // Haul dust kickup
+    condition = 'Haze';
+    description = 'Dry Haul Road Dust Dispersion';
+  } else if (isNight) {
+    baseTemp = 24.5;
+    humidity = 72;
+    visKm = 6.8;
+    condition = 'Clear';
+    description = 'Cool Stable Night Atmosphere';
+  }
+
+  const dewPoint = parseFloat((baseTemp - ((100 - humidity) / 5)).toFixed(1));
+  const transPercent = Math.round(Math.min(100, Math.max(10, (visKm / 10.0) * 100)));
+  const extinction = parseFloat((3.912 / Math.max(0.2, visKm)).toFixed(2));
+
+  return {
+    locationName: getLocationDisplayName(),
+    temp: baseTemp.toFixed(1),
+    feelsLike: (baseTemp + 2.8).toFixed(1),
+    humidity,
+    dewPoint,
+    visKm,
+    visPercent: transPercent,
+    extinction,
+    windSpeed: 14.5,
+    windDirection: 'ENE',
+    windGust: 22.4,
+    condition,
+    description,
+    icon: getWeatherIcon(condition),
+    hourly: generateSyntheticHourly(baseTemp, visKm)
+  };
+}
+
+function generateSyntheticHourly(baseTemp, baseVisKm) {
+  const hourly = [];
+  const now = new Date();
+  for (let i = 1; i <= 8; i++) {
+    const future = new Date(now.getTime() + i * 3 * 3600 * 1000);
+    const hour = future.getHours();
+    const timeStr = `${hour.toString().padStart(2, '0')}:00`;
+    
+    let tempMod = Math.sin((hour - 8) * (Math.PI / 12)) * 6;
+    let hTemp = Math.round(parseFloat(baseTemp) + tempMod);
+    
+    let hVis = parseFloat(baseVisKm);
+    let cond = 'Clear';
+    if (hour >= 3 && hour <= 7) {
+      hVis = Math.max(1.8, hVis * 0.45);
+      cond = 'Fog';
+    } else if (hour >= 12 && hour <= 16) {
+      hVis = hVis * 0.9;
+      cond = 'Haze';
+    }
+    hVis = parseFloat(hVis.toFixed(1));
+    const hPct = Math.round(Math.min(100, (hVis / 10.0) * 100));
+
+    hourly.push({
+      time: timeStr,
+      temp: `${hTemp}°C`,
+      icon: getWeatherIcon(cond),
+      visKm: `${hVis}km`,
+      visPercent: `${hPct}%`,
+      status: hPct < 40 ? 'FOG ALERT' : hPct < 70 ? 'MODERATE' : 'CLEAR',
+      statusColor: hPct < 40 ? '#ef4444' : hPct < 70 ? '#f59e0b' : '#10b981',
+      statusBg: hPct < 40 ? '#fef2f2' : hPct < 70 ? '#fffbeb' : '#ecfdf5'
+    });
+  }
+  return hourly;
+}
+
+function getWeatherIcon(cond) {
+  const c = (cond || '').toLowerCase();
+  if (c.includes('fog') || c.includes('mist')) return '🌁';
+  if (c.includes('dust') || c.includes('sand') || c.includes('haze') || c.includes('smoke')) return '🌫️';
+  if (c.includes('rain') || c.includes('drizzle')) return '🌧️';
+  if (c.includes('thunder') || c.includes('storm')) return '⛈️';
+  if (c.includes('cloud')) return '⛅';
+  if (c.includes('snow')) return '❄️';
+  return '☀️';
+}
+
+function getWindDirection(deg) {
+  const dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+  const idx = Math.round(deg / 22.5) % 16;
+  return dirs[idx];
+}
+
+function capitalize(s) {
+  return s && s[0].toUpperCase() + s.slice(1);
+}
+
+function renderWeatherUI(d) {
+  if (!d) return;
+
+  // 1. Dashboard Widget Elements
+  const elLocName = document.getElementById('weatherLocName');
+  if (elLocName) elLocName.textContent = d.locationName;
+
+  const elSourceText = document.getElementById('weatherSourceText');
+  const elSourceBadge = document.getElementById('weatherSourceBadge');
+  const elLiveDot = document.getElementById('weatherLiveDot');
+  if (elSourceText && elSourceBadge) {
+    if (state.weather.isLive) {
+      elSourceText.textContent = 'LIVE METEO SYNC';
+      elSourceBadge.style.background = '#ecfdf5';
+      elSourceBadge.style.borderColor = '#a7f3d0';
+      elSourceBadge.style.color = '#047857';
+      if (elLiveDot) elLiveDot.style.background = '#10b981';
+    } else {
+      elSourceText.textContent = 'PREDICTIVE MODEL (SIM)';
+      elSourceBadge.style.background = '#f8fafc';
+      elSourceBadge.style.borderColor = '#cbd5e1';
+      elSourceBadge.style.color = '#475569';
+      if (elLiveDot) elLiveDot.style.background = '#94a3b8';
+    }
+  }
+
+  const elTemp = document.getElementById('weatherTemp');
+  if (elTemp) elTemp.textContent = d.temp;
+
+  const elFeels = document.getElementById('weatherFeelsLike');
+  if (elFeels) elFeels.textContent = `${d.feelsLike}°C`;
+
+  const elCondText = document.getElementById('weatherConditionText');
+  if (elCondText) elCondText.textContent = d.description || d.condition;
+
+  const elCondIcon = document.getElementById('weatherConditionIcon');
+  if (elCondIcon) elCondIcon.textContent = d.icon;
+
+  const elVisDist = document.getElementById('weatherVisDist');
+  if (elVisDist) elVisDist.textContent = d.visKm;
+
+  const elVisPct = document.getElementById('weatherVisPercent');
+  if (elVisPct) elVisPct.textContent = `${d.visPercent}%`;
+
+  const elExtinct = document.getElementById('weatherExtinction');
+  if (elExtinct) elExtinct.textContent = `${d.extinction} km⁻¹`;
+
+  const elVisTag = document.getElementById('weatherVisTag');
+  if (elVisTag) {
+    if (d.visPercent >= 75) {
+      elVisTag.textContent = 'OPTIMAL';
+      elVisTag.style.background = '#e4f7ef';
+      elVisTag.style.color = '#07865d';
+    } else if (d.visPercent >= 45) {
+      elVisTag.textContent = 'MODERATE';
+      elVisTag.style.background = '#fffbeb';
+      elVisTag.style.color = '#b45309';
+    } else {
+      elVisTag.textContent = 'POOR / FOG';
+      elVisTag.style.background = '#fef2f2';
+      elVisTag.style.color = '#b91c1c';
+    }
+  }
+
+  const elHumid = document.getElementById('weatherHumidity');
+  if (elHumid) elHumid.textContent = d.humidity;
+
+  const elDew = document.getElementById('weatherDewPoint');
+  if (elDew) elDew.textContent = `${d.dewPoint}°C`;
+
+  const elFogTag = document.getElementById('weatherFogTag');
+  const elInversion = document.getElementById('weatherInversion');
+  const tempDiff = parseFloat(d.temp) - parseFloat(d.dewPoint);
+  if (elFogTag && elInversion) {
+    if (tempDiff <= 2.5 && d.humidity >= 78) {
+      elFogTag.textContent = 'HIGH RISK';
+      elFogTag.style.background = '#fef2f2';
+      elFogTag.style.color = '#b91c1c';
+      elInversion.textContent = 'Active Fog Cloud';
+      elInversion.style.color = '#ef4444';
+    } else if (tempDiff <= 4.5 || d.humidity >= 68) {
+      elFogTag.textContent = 'MODERATE';
+      elFogTag.style.background = '#fffbeb';
+      elFogTag.style.color = '#b45309';
+      elInversion.textContent = 'Potential Inversion';
+      elInversion.style.color = '#f59e0b';
+    } else {
+      elFogTag.textContent = 'LOW RISK';
+      elFogTag.style.background = '#e4f7ef';
+      elFogTag.style.color = '#07865d';
+      elInversion.textContent = 'Unlikely';
+      elInversion.style.color = '#07865d';
+    }
+  }
+
+  const elWind = document.getElementById('weatherWindSpeed');
+  if (elWind) elWind.textContent = d.windSpeed;
+
+  const elWindTag = document.getElementById('weatherWindTag');
+  if (elWindTag) elWindTag.textContent = d.windDirection;
+
+  const elGust = document.getElementById('weatherWindGust');
+  if (elGust) elGust.textContent = `${d.windGust} km/h`;
+
+  const elDisp = document.getElementById('weatherDustDispersion');
+  if (elDisp) elDisp.textContent = `Toward ${d.windDirection} Sector`;
+
+  // Render Dashboard Hourly Cards
+  const hourlyStrip = document.getElementById('weatherHourlyStrip');
+  if (hourlyStrip && d.hourly) {
+    hourlyStrip.innerHTML = d.hourly.map(h => `
+      <div class="hourly-card">
+        <span class="h-time">${h.time}</span>
+        <span class="h-icon">${h.icon}</span>
+        <strong class="h-temp">${h.temp}</strong>
+        <span class="h-vis">Vis: ${h.visKm} (${h.visPercent})</span>
+        <span class="h-badge" style="background:${h.statusBg};color:${h.statusColor}">${h.status}</span>
+      </div>
+    `).join('');
+  }
+
+  // Dashboard ADAS Advice Notice
+  const elNotice = document.getElementById('weatherAdasNotice');
+  if (elNotice) {
+    if (d.visPercent < 45) {
+      elNotice.textContent = `⚠️ Low optical visibility (${d.visKm}km). ADAS stopping distance expanded by +1.5m. Speed governor active.`;
+    } else if (d.visPercent < 70) {
+      elNotice.textContent = `ℹ️ Moderate haze detected (${d.visKm}km). ADAS dynamic risk scaling factor active (+0.6m buffer).`;
+    } else {
+      elNotice.textContent = `✅ Clear visibility (${d.visKm}km). Full nominal haul speed permitted. Standard safety envelopes active.`;
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // 2. DEDICATED WEATHER PAGE VIEW (#view-weather) ELEMENTS
+  // ─────────────────────────────────────────────────────────────
+  const wPageLocSelect = document.getElementById('weatherPageLocSelect');
+  if (wPageLocSelect && state.weather.location) {
+    wPageLocSelect.value = state.weather.location;
+  }
+
+  const wPageSourceText = document.getElementById('weatherPageSourceText');
+  const wPageSourceBadge = document.getElementById('weatherPageSourceBadge');
+  const wPageLiveDot = document.getElementById('weatherPageLiveDot');
+  if (wPageSourceText && wPageSourceBadge) {
+    if (state.weather.isLive) {
+      wPageSourceText.textContent = 'LIVE METEO SYNC';
+      wPageSourceBadge.style.background = '#ecfdf5';
+      wPageSourceBadge.style.borderColor = '#a7f3d0';
+      wPageSourceBadge.style.color = '#047857';
+      if (wPageLiveDot) wPageLiveDot.style.background = '#10b981';
+    } else {
+      wPageSourceText.textContent = 'PREDICTIVE MODEL (SIM)';
+      wPageSourceBadge.style.background = '#f8fafc';
+      wPageSourceBadge.style.borderColor = '#cbd5e1';
+      wPageSourceBadge.style.color = '#475569';
+      if (wPageLiveDot) wPageLiveDot.style.background = '#94a3b8';
+    }
+  }
+
+  const wPageTemp = document.getElementById('wPageTemp');
+  if (wPageTemp) wPageTemp.textContent = d.temp;
+
+  const wPageFeelsLike = document.getElementById('wPageFeelsLike');
+  if (wPageFeelsLike) wPageFeelsLike.textContent = `${d.feelsLike}°C`;
+
+  const wPageCondText = document.getElementById('wPageCondText');
+  if (wPageCondText) wPageCondText.textContent = d.description || d.condition;
+
+  const wPageCondIcon = document.getElementById('wPageCondIcon');
+  if (wPageCondIcon) wPageCondIcon.textContent = d.icon;
+
+  const wPageVisDist = document.getElementById('wPageVisDist');
+  if (wPageVisDist) wPageVisDist.textContent = d.visKm;
+
+  const wPageVisPercent = document.getElementById('wPageVisPercent');
+  if (wPageVisPercent) wPageVisPercent.textContent = `${d.visPercent}%`;
+
+  const wPageExtinct = document.getElementById('wPageExtinct');
+  if (wPageExtinct) wPageExtinct.textContent = `${d.extinction} km⁻¹`;
+
+  const wPageVisTag = document.getElementById('wPageVisTag');
+  if (wPageVisTag) {
+    if (d.visPercent >= 75) {
+      wPageVisTag.textContent = 'OPTIMAL';
+      wPageVisTag.style.background = '#e4f7ef';
+      wPageVisTag.style.color = '#07865d';
+    } else if (d.visPercent >= 45) {
+      wPageVisTag.textContent = 'MODERATE';
+      wPageVisTag.style.background = '#fffbeb';
+      wPageVisTag.style.color = '#b45309';
+    } else {
+      wPageVisTag.textContent = 'POOR / FOG';
+      wPageVisTag.style.background = '#fef2f2';
+      wPageVisTag.style.color = '#b91c1c';
+    }
+  }
+
+  const wPageHumidity = document.getElementById('wPageHumidity');
+  if (wPageHumidity) wPageHumidity.textContent = d.humidity;
+
+  const wPageDewPoint = document.getElementById('wPageDewPoint');
+  if (wPageDewPoint) wPageDewPoint.textContent = `${d.dewPoint}°C`;
+
+  const wPageFogTag = document.getElementById('wPageFogTag');
+  const wPageInversion = document.getElementById('wPageInversion');
+  if (wPageFogTag && wPageInversion) {
+    if (tempDiff <= 2.5 && d.humidity >= 78) {
+      wPageFogTag.textContent = 'HIGH RISK';
+      wPageFogTag.style.background = '#fef2f2';
+      wPageFogTag.style.color = '#b91c1c';
+      wPageInversion.textContent = 'Active Fog Cloud';
+      wPageInversion.style.color = '#ef4444';
+    } else if (tempDiff <= 4.5 || d.humidity >= 68) {
+      wPageFogTag.textContent = 'MODERATE';
+      wPageFogTag.style.background = '#fffbeb';
+      wPageFogTag.style.color = '#b45309';
+      wPageInversion.textContent = 'Potential Inversion';
+      wPageInversion.style.color = '#f59e0b';
+    } else {
+      wPageFogTag.textContent = 'LOW RISK';
+      wPageFogTag.style.background = '#e4f7ef';
+      wPageFogTag.style.color = '#07865d';
+      wPageInversion.textContent = 'Unlikely';
+      wPageInversion.style.color = '#07865d';
+    }
+  }
+
+  const wPageWindSpeed = document.getElementById('wPageWindSpeed');
+  if (wPageWindSpeed) wPageWindSpeed.textContent = d.windSpeed;
+
+  const wPageWindTag = document.getElementById('wPageWindTag');
+  if (wPageWindTag) wPageWindTag.textContent = d.windDirection;
+
+  const wPageWindGust = document.getElementById('wPageWindGust');
+  if (wPageWindGust) wPageWindGust.textContent = `${d.windGust} km/h`;
+
+  const wPageDustDisp = document.getElementById('wPageDustDisp');
+  if (wPageDustDisp) wPageDustDisp.textContent = `Toward ${d.windDirection} Sector`;
+
+  // Render Dedicated Page Hourly Cards
+  const pageHourlyStrip = document.getElementById('weatherPageHourlyStrip');
+  if (pageHourlyStrip && d.hourly) {
+    pageHourlyStrip.innerHTML = d.hourly.map(h => `
+      <div class="hourly-card">
+        <span class="h-time">${h.time}</span>
+        <span class="h-icon">${h.icon}</span>
+        <strong class="h-temp">${h.temp}</strong>
+        <span class="h-vis">Vis: ${h.visKm} (${h.visPercent})</span>
+        <span class="h-badge" style="background:${h.statusBg};color:${h.statusColor}">${h.status}</span>
+      </div>
+    `).join('');
+  }
+
+  // Render 7-Day Outlook Strip
+  const strip7Day = document.getElementById('weather7DayStrip');
+  if (strip7Day) {
+    const days7 = generate7DayForecast(parseFloat(d.temp), parseFloat(d.visKm));
+    strip7Day.innerHTML = days7.map(day => `
+      <div class="day-forecast-card">
+        <span class="d-name">${day.dayName}</span>
+        <span style="font:600 10px 'JetBrains Mono';color:#94a3b8;">${day.dateStr}</span>
+        <span class="d-icon">${day.icon}</span>
+        <strong class="d-temp">${day.minTemp}° / ${day.maxTemp}°</strong>
+        <span style="font:500 10.5px 'Inter';color:#334155;">${day.condition}</span>
+        <span class="d-vis">Vis: ${day.visPercent}%</span>
+        <span class="d-shift-pill" style="background:${day.pillBg};color:${day.pillColor}">${day.shiftStatus}</span>
+      </div>
+    `).join('');
+  }
+
+  // Update Dynamic ADAS Envelope numbers on weather page
+  const fogBuffer = d.visPercent < 45 ? 1.50 : d.visPercent < 70 ? 0.60 : 0.20;
+  const totalSafe = parseFloat((0.68 + 1.14 + fogBuffer).toFixed(2));
+  
+  const wPageFogVal = document.getElementById('wPageFogVal');
+  if (wPageFogVal) wPageFogVal.textContent = `+${fogBuffer.toFixed(2)} m`;
+  
+  const wPageTotalVal = document.getElementById('wPageTotalVal');
+  if (wPageTotalVal) wPageTotalVal.textContent = `${totalSafe.toFixed(2)} m`;
+
+  const wPageGovAdvice = document.getElementById('wPageGovAdvice');
+  if (wPageGovAdvice) {
+    if (d.visPercent < 45) {
+      wPageGovAdvice.textContent = 'CRITICAL SPEED GOVERNOR: Max 4.5 m/s (16 km/h)';
+      wPageGovAdvice.style.color = '#dc2626';
+    } else if (d.visPercent < 70) {
+      wPageGovAdvice.textContent = 'MODERATE SPEED ADVISORY: Max 7.5 m/s (27 km/h)';
+      wPageGovAdvice.style.color = '#d97706';
+    } else {
+      wPageGovAdvice.textContent = 'Nominal haul road speed allowed (Max 12.0 m/s)';
+      wPageGovAdvice.style.color = '#059669';
+    }
+  }
+
+  const wPageLampAdvice = document.getElementById('wPageLampAdvice');
+  if (wPageLampAdvice) {
+    if (d.visPercent < 45) {
+      wPageLampAdvice.textContent = 'High-Beam Strobe & Laser Guidance Beacon MANDATORY';
+      wPageLampAdvice.style.color = '#dc2626';
+    } else if (d.visPercent < 70) {
+      wPageLampAdvice.textContent = 'Low-Angle Yellow Fog Lamps Activated';
+      wPageLampAdvice.style.color = '#d97706';
+    } else {
+      wPageLampAdvice.textContent = 'Standard Daytime Running Mode';
+      wPageLampAdvice.style.color = '#64748b';
+    }
+  }
+
+  // Quick config fields sync
+  const wQuickApiKey = document.getElementById('wQuickApiKey');
+  if (wQuickApiKey && state.weather.apiKey) wQuickApiKey.value = state.weather.apiKey;
+
+  const wQuickProvider = document.getElementById('wQuickProvider');
+  if (wQuickProvider && state.weather.provider) wQuickProvider.value = state.weather.provider;
+}
+
+function generate7DayForecast(baseTemp, baseVisKm) {
+  const days = [];
+  const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  const now = new Date();
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(now.getTime() + i * 24 * 3600 * 1000);
+    const dayName = i === 0 ? 'TODAY' : dayNames[d.getDay()];
+    const dateStr = `${d.getDate()} ${monthNames[d.getMonth()]}`;
+    
+    // Cycle patterns
+    let cond = 'Clear Pit';
+    let icon = '☀️';
+    let visPct = 90;
+    let minT = Math.round(baseTemp - 6 + (Math.sin(i) * 2));
+    let maxT = Math.round(baseTemp + 4 + (Math.cos(i) * 3));
+    let shiftStatus = 'NOMINAL OPS';
+    let pillBg = '#ecfdf5';
+    let pillColor = '#047857';
+
+    if (i === 1 || i === 4) {
+      cond = 'Dust Haze';
+      icon = '🌫️';
+      visPct = 68;
+      shiftStatus = 'DUST ADVISORY';
+      pillBg = '#fffbeb';
+      pillColor = '#b45309';
+    } else if (i === 3) {
+      cond = 'Morning Fog';
+      icon = '🌁';
+      visPct = 42;
+      shiftStatus = 'FOG SPEED GOV';
+      pillBg = '#fef2f2';
+      pillColor = '#b91c1c';
+    } else if (i === 5) {
+      cond = 'Pit Rain Showers';
+      icon = '🌧️';
+      visPct = 74;
+      shiftStatus = 'WET TIRE MU';
+      pillBg = '#f0f9ff';
+      pillColor = '#0369a1';
+    }
+
+    days.push({
+      dayName,
+      dateStr,
+      condition: cond,
+      icon,
+      minTemp: minT,
+      maxTemp: maxT,
+      visPercent: visPct,
+      shiftStatus,
+      pillBg,
+      pillColor
+    });
+  }
+  return days;
+}
+
+function switchWeatherPageLocation(val) {
+  state.weather.location = val;
+  localStorage.setItem('oreguard_weather_location', val);
+  
+  const cfgLoc = document.getElementById('cfgWeatherLocation');
+  if (cfgLoc) {
+    cfgLoc.value = val;
+    handleLocationPresetChange(val);
+  }
+  fetchWeatherData(true);
+}
+
+function saveQuickWeatherSettings() {
+  const apiKey = document.getElementById('wQuickApiKey').value.trim();
+  const provider = document.getElementById('wQuickProvider').value;
+  state.weather.apiKey = apiKey;
+  state.weather.provider = provider;
+  localStorage.setItem('oreguard_weather_api_key', apiKey);
+  localStorage.setItem('oreguard_weather_provider', provider);
+
+  const cfgApiKey = document.getElementById('cfgWeatherApiKey');
+  const cfgProvider = document.getElementById('cfgWeatherProvider');
+  if (cfgApiKey) cfgApiKey.value = apiKey;
+  if (cfgProvider) cfgProvider.value = provider;
+
+  const msg = document.getElementById('wQuickMsg');
+  if (msg) {
+    msg.textContent = 'Syncing...';
+    msg.style.color = '#0284c7';
+  }
+
+  fetchWeatherData(true).then(res => {
+    if (msg) {
+      msg.textContent = res.isLive ? '✅ Key Verified & Live Sync!' : '✅ Saved! Simulation Active.';
+      msg.style.color = res.isLive ? '#059669' : '#0284c7';
+      setTimeout(() => { msg.textContent = ''; }, 4000);
+    }
+  });
+}
+
+function refreshWeatherData() {
+  const btns = document.querySelectorAll('.btn-weather-refresh');
+  btns.forEach(b => {
+    b.style.transform = 'rotate(360deg)';
+    b.style.transition = 'transform 0.6s ease';
+    setTimeout(() => { b.style.transform = ''; }, 600);
+  });
+  fetchWeatherData(true);
+}
+
+function saveWeatherSettings() {
+  const apiKey = document.getElementById('cfgWeatherApiKey').value.trim();
+  const provider = document.getElementById('cfgWeatherProvider').value;
+  const location = document.getElementById('cfgWeatherLocation').value;
+  const customLoc = document.getElementById('cfgWeatherCustomLocation').value.trim();
+
+  state.weather.apiKey = apiKey;
+  state.weather.provider = provider;
+  state.weather.location = location;
+  state.weather.customLocation = customLoc;
+
+  localStorage.setItem('oreguard_weather_api_key', apiKey);
+  localStorage.setItem('oreguard_weather_provider', provider);
+  localStorage.setItem('oreguard_weather_location', location);
+  localStorage.setItem('oreguard_weather_custom_location', customLoc);
+
+  const msg = document.getElementById('weatherConnMsg');
+  if (msg) {
+    msg.textContent = 'Settings saved. Refreshing weather data...';
+    msg.style.color = '#059669';
+  }
+
+  fetchWeatherData(true).then(res => {
+    if (msg) {
+      if (res.isLive) {
+        msg.textContent = '✅ Saved & Live Weather Synchronized!';
+        msg.style.color = '#059669';
+      } else {
+        msg.textContent = '✅ Saved! Running autonomous mine predictive model.';
+        msg.style.color = '#0284c7';
+      }
+    }
+  });
+}
+
+async function testWeatherApiConnection() {
+  const apiKey = document.getElementById('cfgWeatherApiKey').value.trim();
+  const msg = document.getElementById('weatherConnMsg');
+  if (!apiKey) {
+    if (msg) {
+      msg.textContent = 'ℹ️ No API key entered. Running local mine simulation mode.';
+      msg.style.color = '#b45309';
+    }
+    return;
+  }
+
+  if (msg) {
+    msg.textContent = 'Testing connection to Weather API...';
+    msg.style.color = '#64748b';
+  }
+
+  state.weather.apiKey = apiKey;
+  const res = await fetchWeatherData(true);
+  if (res.success && res.isLive) {
+    if (msg) {
+      msg.textContent = '✅ Connection successful! Live weather feed active.';
+      msg.style.color = '#059669';
+    }
+  } else {
+    if (msg) {
+      msg.textContent = `⚠️ Connection failed: ${res.error || 'Invalid API Key'}`;
+      msg.style.color = '#dc2626';
+    }
+  }
+}
+
+function initWeatherSettingsUI() {
+  const apiKeyInput = document.getElementById('cfgWeatherApiKey');
+  const providerSelect = document.getElementById('cfgWeatherProvider');
+  const locSelect = document.getElementById('cfgWeatherLocation');
+  const customLocInput = document.getElementById('cfgWeatherCustomLocation');
+
+  if (apiKeyInput && state.weather.apiKey) apiKeyInput.value = state.weather.apiKey;
+  if (providerSelect && state.weather.provider) providerSelect.value = state.weather.provider;
+  if (locSelect && state.weather.location) {
+    locSelect.value = state.weather.location;
+    handleLocationPresetChange(state.weather.location);
+  }
+  if (customLocInput && state.weather.customLocation) customLocInput.value = state.weather.customLocation;
+}
+
+// ─────────────────────────────────────────────────────────────
 // INITIALIZATION
 // ─────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize Weather Engine
+  initWeatherSettingsUI();
+  fetchWeatherData();
+  setInterval(() => fetchWeatherData(), 600000); // 10 minute polling
+
   // Initialize Supabase
   if (window.initSupabase) {
     window.initSupabase();

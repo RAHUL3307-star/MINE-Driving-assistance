@@ -7,6 +7,10 @@
   <meta name="description" content="Visibility-aware collision prevention system for underground and surface mine vehicles. Real-time sensor fusion with dynamic risk recalculation." />
   <!-- Times New Roman is a built-in system serif font, no import needed -->
   
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
   <style>
     :root {
       --ink:       #161b20;
@@ -21,6 +25,9 @@
       --amber:     #f59e0b;
       --red:       #ef4444;
       --blue:      #2563eb;
+      --cyan:      #00e5ff;
+      --cyan-bright: #00d2ff;
+      --dark-bg:   #090d12;
       --dark:      #101419;
       --dark2:     #172027;
       --dark-btn:  #161b20;
@@ -38,560 +45,452 @@
     }
 
     body {
-      font-family: 'Times New Roman', Times, serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background: #ffffff;
       color: var(--ink);
       line-height: 1.6;
       overflow-x: hidden;
       font-size: 16px;
-      /* Sharp crisp rendering */
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
-      font-feature-settings: "kern" 1, "liga" 1;
     }
 
     /* ════════════════════════════════════════
-       NAVIGATION BAR
+       DARK FUTURISTIC NAVIGATION BAR (FIGMA RECREATED)
     ════════════════════════════════════════ */
-    nav {
+    nav.nav-dark-oreguard {
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 6%;
-      height: 68px;
-      background: rgba(255, 255, 255, 0.94);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--line);
+      padding: 0 5%;
+      height: 72px;
+      background: rgba(9, 13, 18, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
     }
 
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      text-decoration: none;
-      color: var(--ink);
-    }
-
-    .nav-mark {
-      width: 36px;
-      height: 36px;
-      background: var(--lime);
-      color: #062b1d;
-      display: grid;
-      place-items: center;
-      border-radius: 4px;
-      flex-shrink: 0;
-    }
-
-    .nav-brand strong {
-      font: bold 19px/1 'Times New Roman', Times, serif;
-      letter-spacing: 1.5px;
-      display: block;
-    }
-
-    .nav-brand sub {
-      font: 600 9px 'Times New Roman', Times, serif;
-      letter-spacing: 1.1px;
-      color: var(--muted);
-      display: block;
-      margin-top: 2px;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 28px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      font: 600 12px 'Times New Roman', Times, serif;
-      letter-spacing: 0.8px;
-      color: var(--muted);
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover {
-      color: var(--ink);
-    }
-
-    .nav-actions {
+    .nav-brand-dark {
       display: flex;
       align-items: center;
       gap: 12px;
-    }
-
-    .btn-nav-ghost {
-      background: transparent;
-      border: 1px solid var(--line);
-      color: var(--muted-dark);
-      padding: 9px 18px;
-      font: 600 12px 'Times New Roman', Times, serif;
-      letter-spacing: 0.5px;
-      cursor: pointer;
       text-decoration: none;
-      border-radius: 4px;
-      transition: all 0.2s;
     }
 
-    .btn-nav-ghost:hover {
-      border-color: var(--ink);
-      color: var(--ink);
-      background: #f0f2f4;
+    .nav-brand-dark .nav-hex-icon {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.6));
+      transition: transform 0.3s ease;
     }
 
-    .btn-nav-dark {
-      background: var(--dark-btn);
+    .nav-brand-dark:hover .nav-hex-icon {
+      transform: scale(1.08) rotate(15deg);
+    }
+
+    .nav-brand-dark .nav-logo-text {
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 23px;
+      letter-spacing: 3.5px;
       color: #ffffff;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-links-dark {
+      display: flex;
+      gap: 34px;
+      list-style: none;
+    }
+
+    .nav-links-dark a {
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 14.5px;
+      color: #94a3b8;
+      letter-spacing: 0.3px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .nav-links-dark a:hover {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+    }
+
+    .nav-links-dark a::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      transition: width 0.25s ease;
+    }
+
+    .nav-links-dark a:hover::after {
+      width: 100%;
+    }
+
+    .btn-nav-cyan {
+      background: var(--cyan-bright);
+      color: #06090e;
       border: 0;
       padding: 10px 22px;
-      font: 700 12px 'Times New Roman', Times, serif;
-      letter-spacing: 1px;
+      font-family: 'JetBrains Mono', 'Chakra Petch', monospace;
+      font-weight: 800;
+      font-size: 12.5px;
+      letter-spacing: 1.2px;
       cursor: pointer;
       text-decoration: none;
       border-radius: 4px;
-      transition: all 0.2s;
-      box-shadow: 0 2px 8px rgba(22, 27, 32, 0.16);
-    }
-
-    .btn-nav-dark:hover {
-      background: var(--dark-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 14px rgba(22, 27, 32, 0.25);
-    }
-
-    /* ════════════════════════════════════════
-       HERO SECTION (SPLIT SCREEN MATCHING LOGIN THEME)
-    /* ════════════════════════════════════════
-       HERO SECTION (ELEGANT WHITE THEME WITH CRISP TYPOGRAPHY)
-    ════════════════════════════════════════ */
-    .hero {
-      min-height: calc(100vh - 68px);
-      display: flex;
+      transition: all 0.22s ease;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding-top: 68px;
-      background: #ffffff;
-      position: relative;
+      box-shadow: 0 0 16px rgba(0, 210, 255, 0.45);
+      text-transform: uppercase;
     }
 
-    /* FULL WIDTH CENTERED WHITE HERO PANEL */
-    .hero-left {
-      width: 100%;
-      max-width: 1180px;
-      margin: 0 auto;
-      background: #ffffff;
-      color: var(--ink);
-      padding: 75px 6% 85px;
+    .btn-nav-cyan:hover {
+      background: #38bdf8;
+      transform: translateY(-1.5px);
+      box-shadow: 0 0 26px rgba(0, 210, 255, 0.8);
+      color: #000000;
+    }
+
+    /* ════════════════════════════════════════
+       HERO SECTION — PIXEL PERFECT MATCH
+    ════════════════════════════════════════ */
+    .hero-oreguard {
+      position: relative;
+      height: 100vh;
+      min-height: 620px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      position: relative;
+      padding-top: 72px;
+      background-color: #050a0f;
+      background-image:
+        linear-gradient(180deg, rgba(5,10,15,0.55) 0%, rgba(5,10,15,0.72) 55%, rgba(5,10,15,0.92) 100%),
+        url('hero_bg.jpg');
+      background-size: cover;
+      background-position: center 40%;
+      background-repeat: no-repeat;
+      color: #ffffff;
+      overflow: hidden;
     }
 
-    .hero-left::after {
-      content: "";
+    /* Dark left-heavy vignette overlay */
+    .hero-oreguard::before {
+      content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.05) 0%, transparent 65%);
+      background:
+        linear-gradient(105deg, rgba(5,10,15,0.88) 0%, rgba(5,10,15,0.60) 50%, rgba(5,10,15,0.18) 100%);
       pointer-events: none;
       z-index: 1;
     }
 
-    .hero-badge-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      font: 700 11px/1 'Times New Roman', Times, serif;
-      letter-spacing: 1.8px;
-      color: #047857;
-      background: #ecfdf5;
-      border: 1px solid #a7f3d0;
-      padding: 7px 18px;
-      border-radius: 24px;
-      margin-bottom: 24px;
-      position: relative;
-      z-index: 2;
-      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.08);
-    }
-
-    .hero-heading {
-      font: 800 clamp(44px, 5.8vw, 76px)/0.94 'Times New Roman', Times, serif;
-      letter-spacing: 0.5px;
-      margin-bottom: 22px;
-      text-transform: uppercase;
-      position: relative;
-      z-index: 2;
-      max-width: 880px;
-    }
-
-    .hero-heading .white-txt {
-      color: #0f172a;
-      display: block;
-      letter-spacing: 1px;
-    }
-
-    .hero-heading .lime-txt {
-      color: #059669;
-      display: block;
-      font-style: italic;
-      letter-spacing: 1.2px;
-    }
-
-    .hero-desc {
-      font-size: 16.5px;
-      color: #475569;
-      line-height: 1.72;
-      max-width: 690px;
-      margin: 0 auto 36px;
-      position: relative;
-      z-index: 2;
-      font-weight: 400;
-      text-align: center;
-    }
-
-    .hero-cta-group {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      margin-bottom: 34px;
-      position: relative;
+    /* Crosshatch grid overlay — exact match to screenshot */
+    .hero-oreguard::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
       z-index: 2;
     }
 
-    .btn-hero-primary {
-      background: #059669;
-      color: #ffffff;
-      border: 1px solid #047857;
-      padding: 16px 36px;
-      font: bold 14px 'Times New Roman', Times, serif;
-      letter-spacing: 1.4px;
-      cursor: pointer;
-      text-decoration: none;
-      border-radius: 5px;
-      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.28);
-    }
-
-    .btn-hero-primary:hover {
-      background: #047857;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 22px rgba(5, 150, 105, 0.38);
-      color: #ffffff;
-    }
-
-    .btn-hero-outline {
-      background: #ffffff;
-      border: 1.5px solid #cbd5e1;
-      color: #1e293b;
-      padding: 16px 28px;
-      font: 600 13px 'Times New Roman', Times, serif;
-      letter-spacing: 0.8px;
-      cursor: pointer;
-      text-decoration: none;
-      border-radius: 5px;
-      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    }
-
-    .btn-hero-outline:hover {
-      border-color: #0f172a;
-      color: #0f172a;
-      background: #f8fafc;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    /* Quick Demo Launch Pills */
-    .hero-demo-pills {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-bottom: 30px;
-    }
-
-    .demo-pill {
-      background: #ffffff;
-      border: 1.5px solid #e2e8f0;
-      color: #334155;
-      padding: 9px 16px;
-      border-radius: 6px;
-      font: 600 13px 'Times New Roman', Times, serif;
-      letter-spacing: 0.3px;
-      text-decoration: none;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    }
-
-    .demo-pill:hover {
-      border-color: #10b981;
-      color: #047857;
-      background: #ecfdf5;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.15);
-    }
-
-    .hero-status-row {
-      position: relative;
-      z-index: 2;
-      font: 600 12px 'Times New Roman', Times, serif;
-      letter-spacing: 1px;
-      color: #64748b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      padding-top: 24px;
-      border-top: 1px solid #e2e8f0;
+    /* Canvas radar overlay */
+    .hero-canvas {
+      position: absolute;
+      inset: 0;
       width: 100%;
-      max-width: 720px;
+      height: 100%;
+      pointer-events: none;
+      z-index: 3;
     }
 
-    .dot-live {
-      width: 8px;
-      height: 8px;
-      background: var(--lime);
-      border-radius: 50%;
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
-      animation: blink 1.8s infinite;
-    }
-
-    .hud-box-container {
-      width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    .hud-top-row {
+    /* Main content flex row */
+    .hero-container {
+      position: relative;
+      z-index: 4;
+      flex: 1;
       display: flex;
+      align-items: center;
       justify-content: space-between;
+      padding: 0 5%;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      gap: 20px;
+    }
+
+    .hero-main-content {
+      max-width: 55%;
+      flex: 1;
+    }
+
+    /* Badge: • INTELLIGENT ADAS — MINING VEHICLES */
+    .hero-tech-badge {
+      display: inline-flex;
       align-items: center;
+      gap: 10px;
+      padding: 6px 16px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(0, 229, 255, 0.40);
+      border-radius: 3px;
+      margin-bottom: 22px;
+      backdrop-filter: blur(10px);
+    }
+
+    .pulse-cyan-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--cyan);
+      animation: pulseTealDot 1.8s infinite ease-in-out;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulseTealDot {
+      0%, 100% { transform: scale(0.85); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 10px var(--cyan), 0 0 0 5px rgba(0,229,255,0); }
+    }
+
+    .hero-tech-badge .badge-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 11.5px;
+      letter-spacing: 1.8px;
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+
+    /* Headline — Impact-weight bold condensed matching screenshot */
+    .hero-headline {
+      font-family: 'Outfit', 'Inter', Impact, sans-serif;
+      font-size: clamp(56px, 8vw, 96px);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .hero-headline .text-white-line {
+      display: block;
+      color: #ffffff;
+    }
+
+    .hero-headline .text-cyan-line {
+      display: block;
+      color: var(--cyan-bright);
+      text-shadow: 0 0 40px rgba(0, 210, 255, 0.45);
+    }
+
+    /* Subtitle */
+    .hero-subtext {
+      font-family: 'Inter', sans-serif;
+      font-size: 15.5px;
+      font-weight: 400;
+      color: #8fa3b8;
+      line-height: 1.65;
+      max-width: 480px;
+      margin-bottom: 34px;
+    }
+
+    /* CTA buttons */
+    .hero-button-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-cyan-solid {
+      background: var(--cyan-bright);
+      color: #050a0f;
+      border: 2px solid var(--cyan-bright);
+      padding: 14px 30px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 12.5px;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      text-decoration: none;
+      border-radius: 3px;
+      transition: all 0.22s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+    }
+
+    .btn-cyan-solid:hover {
+      background: transparent;
+      color: var(--cyan-bright);
+      box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+    }
+
+    .btn-cyan-outline {
+      background: transparent;
+      border: 1.5px solid rgba(0, 229, 255, 0.45);
+      color: rgba(0, 229, 255, 0.9);
+      padding: 14px 28px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 12.5px;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      text-decoration: none;
+      border-radius: 3px;
+      transition: all 0.22s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+    }
+
+    .btn-cyan-outline:hover {
+      background: rgba(0, 229, 255, 0.10);
+      border-color: var(--cyan);
+      color: #ffffff;
+    }
+
+    /* ════════════════════════════════════════
+       RIGHT HERO: LIVE RISK HUD — matches screenshot exactly
+    ════════════════════════════════════════ */
+    .hero-risk-hud {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding-bottom: 60px;
+      flex-shrink: 0;
+    }
+
+    .risk-hud-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .risk-score-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(52px, 5vw, 72px);
+      font-weight: 700;
+      line-height: 1;
+      color: #10b981;
+      text-shadow: 0 0 24px rgba(16, 185, 129, 0.55);
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+      transition: color 0.4s ease, text-shadow 0.4s ease;
+    }
+
+    .risk-score-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: #4e6070;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .risk-score-badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.10);
+      border: 1px solid rgba(16, 185, 129, 0.40);
+      padding: 3px 16px;
+      border-radius: 3px;
+      text-transform: uppercase;
       margin-bottom: 18px;
     }
 
-    .hud-title-wrap {
+    .risk-score-caption {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 1.8px;
+      color: #2e3f4e;
+      text-transform: uppercase;
+    }
+
+    /* ════════════════════════════════════════
+       BOTTOM FEATURE BADGES TICKER
+    ════════════════════════════════════════ */
+    .hero-bottom-ticker {
+      position: relative;
+      z-index: 4;
+      width: 100%;
+      padding: 0 5% 28px;
       display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
       align-items: center;
-      gap: 12px;
     }
 
-    .hud-icon-box {
-      width: 40px;
-      height: 40px;
-      background: var(--emerald-bg);
-      display: grid;
-      place-items: center;
-      border-radius: 6px;
-    }
-
-    .hud-title-wrap h2 {
-      font: 800 24px/1 'Barlow Condensed';
-      color: var(--ink);
-      letter-spacing: 0.5px;
-    }
-
-    .hud-title-wrap p {
-      font-size: 11px;
-      color: var(--muted);
-      font-family: 'JetBrains Mono';
-      margin-top: 2px;
-    }
-
-    .sim-badge {
-      background: #161b20;
-      color: #ffffff;
-      padding: 6px 14px;
-      border-radius: 16px;
-      font: 600 10px 'JetBrains Mono';
-      letter-spacing: 1px;
+    .ticker-pill {
+      background: rgba(5, 10, 20, 0.68);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 9px 16px;
+      border-radius: 3px;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      backdrop-filter: blur(10px);
+      transition: border-color 0.2s, transform 0.2s;
     }
 
-    .sim-badge .blue-dot {
-      width: 6px;
-      height: 6px;
-      background: #60a5fa;
-      border-radius: 50%;
+    .ticker-pill:hover {
+      border-color: rgba(0, 229, 255, 0.35);
+      transform: translateY(-1px);
     }
 
-    /* 4-Card Telemetry Grid in White Paper Theme */
-    .hud-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .hud-card {
-      background: var(--white);
-      border: 1px solid var(--line);
-      border-radius: 4px;
-      padding: 16px;
-      transition: all 0.2s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-    }
-
-    .hud-card:hover {
-      border-color: #cbd5e1;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-    }
-
-    .hud-label {
-      font: 600 9.5px 'JetBrains Mono';
-      letter-spacing: 1px;
-      color: var(--muted-dark);
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .hud-val {
-      font: 800 34px/1 'Barlow Condensed';
-      color: var(--ink);
-      display: flex;
-      align-items: flex-end;
-      gap: 4px;
-    }
-
-    .hud-val .unit {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 2px;
-      font-family: 'JetBrains Mono';
+    .ticker-pill .ticker-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
       font-weight: 500;
-    }
-
-    .hud-bar-wrap {
-      margin-top: 10px;
-      height: 4px;
-      background: #eef2f5;
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .hud-bar {
-      height: 100%;
-      background: var(--emerald);
-      border-radius: 2px;
-      transition: width 0.6s ease;
-    }
-
-    .hud-sub {
-      font: 500 10px 'JetBrains Mono';
-      color: var(--muted);
-      margin-top: 6px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* Risk Engine Card */
-    .hud-risk-box {
-      background: var(--emerald-bg);
-      border: 1px solid rgba(7, 134, 93, 0.28);
-      border-radius: 4px;
-      padding: 16px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 14px;
-      transition: all 0.3s;
-    }
-
-    .hud-risk-text .tag {
-      font: 700 9px 'JetBrains Mono';
-      letter-spacing: 1.2px;
-      color: var(--emerald);
-    }
-
-    .hud-risk-text h3 {
-      font: 800 26px/1.1 'Barlow Condensed';
-      color: var(--emerald);
-      letter-spacing: 0.4px;
-      margin: 2px 0;
-    }
-
-    .hud-risk-text p {
-      font: 500 10.5px 'JetBrains Mono';
-      color: #2e594b;
-    }
-
-    .hud-risk-pill {
-      background: #ffffff;
-      border: 1px solid rgba(7, 134, 93, 0.3);
-      padding: 8px 16px;
-      border-radius: 4px;
-      text-align: center;
-      color: var(--emerald);
-    }
-
-    .hud-risk-pill strong {
-      font: 800 30px/1 'Barlow Condensed';
-      display: block;
-    }
-
-    .hud-risk-pill span {
-      font: 700 8.5px 'JetBrains Mono';
       letter-spacing: 1px;
-      display: block;
-      color: var(--muted-dark);
+      color: #4a6070;
+      text-transform: uppercase;
     }
 
-    /* Radar Strip */
-    .hud-radar-strip {
-      background: var(--white);
-      border: 1px solid var(--line);
-      border-radius: 4px;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+    .ticker-pill .ticker-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: var(--cyan);
+      text-transform: uppercase;
     }
 
-    .radar-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .radar-left strong {
-      font: 700 13.5px 'Barlow Condensed';
-      color: var(--ink);
-      display: block;
-    }
-
-    .radar-left span {
-      font: 500 10px 'JetBrains Mono';
-      color: var(--muted);
-      display: block;
+    @media (max-width: 980px) {
+      .hero-container { flex-direction: column; align-items: flex-start; padding-top: 30px; }
+      .hero-main-content { max-width: 100%; }
+      .hero-risk-hud { align-self: flex-start; padding-bottom: 20px; }
+      .nav-links-dark { display: none; }
     }
 
     /* ════════════════════════════════════════
@@ -1204,87 +1103,101 @@
 </head>
 <body>
 
-  <!-- ════════ NAV BAR ════════ -->
-  <nav>
-    <a href="landing.html" class="nav-brand">
-      <div class="nav-mark">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          <path d="m9 12 2 2 4-4"/>
+  <!-- ════════ DARK FUTURISTIC NAV BAR (FIGMA EXACT) ════════ -->
+  <nav class="nav-dark-oreguard">
+    <a href="landing.html" class="nav-brand-dark">
+      <div class="nav-hex-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <polygon points="12,2 22,7.5 22,16.5 12,22 2,16.5 2,7.5" stroke="#00e5ff" stroke-width="1.8" fill="rgba(0, 229, 255, 0.08)" />
+          <circle cx="12" cy="12" r="4" stroke="#00e5ff" stroke-width="1.4" />
+          <line x1="12" y1="4" x2="12" y2="20" stroke="#00e5ff" stroke-width="1.4" stroke-linecap="round" />
+          <line x1="4" y1="12" x2="20" y2="12" stroke="#00e5ff" stroke-width="1.4" stroke-linecap="round" />
         </svg>
       </div>
-      <div>
-        <strong>OREGUARD</strong>
-        <sub>ADAS CONTROL</sub>
-      </div>
+      <span class="nav-logo-text">OREGUARD</span>
     </a>
 
-    <ul class="nav-links">
-      <li><a href="#how-it-works">HOW IT WORKS</a></li>
-      <li><a href="#simulator">PHYSICS ENGINE</a></li>
-      <li><a href="#scenarios">SCENARIOS</a></li>
-      <li><a href="#hardware">HARDWARE STACK</a></li>
-      <li><a href="index.html">DASHBOARD</a></li>
+    <ul class="nav-links-dark">
+      <li><a href="#how-it-works">Technology</a></li>
+      <li><a href="#scenarios">Safety Levels</a></li>
+      <li><a href="#hardware">Architecture</a></li>
+      <li><a href="#simulator">About</a></li>
     </ul>
 
-    <div class="nav-actions">
-      <a href="login.html" class="btn-nav-ghost">SIGN IN</a>
-      <a href="index.html" class="btn-nav-dark">GET STARTED</a>
+    <div class="nav-actions-dark">
+      <a href="index.html" class="btn-nav-cyan">OPEN COMMAND</a>
     </div>
   </nav>
 
-  <!-- ════════ HERO SECTION ════════ -->
-  <section class="hero">
+  <!-- ════════ HERO SECTION — PIXEL-PERFECT MATCH ════════ -->
+  <section class="hero-oreguard">
+    <!-- Radar canvas animation layer -->
+    <canvas id="heroRadarCanvas" class="hero-canvas"></canvas>
 
-    <!-- LEFT ASIDE: DARK INDUSTRIAL BRANDING -->
-    <div class="hero-left">
-      <div>
-        <div class="hero-badge-tag">
-          <span class="dot-live"></span>
-          <span>ESP32 SENSOR FUSION · MV-07 READY · SIH 2025</span>
+    <div class="hero-container">
+      <!-- LEFT: Main Content -->
+      <div class="hero-main-content">
+
+        <!-- Top badge pill: • INTELLIGENT ADAS — MINING VEHICLES -->
+        <div class="hero-tech-badge">
+          <span class="pulse-cyan-dot"></span>
+          <span class="badge-text">INTELLIGENT ADAS — MINING VEHICLES</span>
         </div>
 
-        <h1 class="hero-heading">
-          <span class="white-txt">See the risk</span>
-          <span class="lime-txt">before it arrives.</span>
+        <!-- Big bold headline -->
+        <h1 class="hero-headline">
+          <span class="text-white-line">See the Risk.</span>
+          <span class="text-cyan-line">Stop the Collision.</span>
         </h1>
 
-        <p class="hero-desc">
-          Visibility-aware protection for every movement below the surface. OREGUARD fuses real-time LDR optical attenuation with HC-SR04 ultrasonic distance sweeping to calculate dynamic, speed-governed stopping buffers in sub-100ms edge loops.
+        <!-- Subtitle -->
+        <p class="hero-subtext">
+          Dynamic visibility-aware collision protection for heavy mining
+          vehicles. Real-time edge intelligence that adapts to every dust
+          cloud, fog bank, and tight-corner approach.
         </p>
 
-        <!-- Primary Call To Actions -->
-        <div class="hero-cta-group">
-          <a href="index.html" class="btn-hero-primary">
-            <span>ENTER SAFETY CONSOLE</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-          </a>
-          <a href="#simulator" class="btn-hero-outline">
-            <span>TEST SIMULATOR</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m10 8 4 4-4 4"/></svg>
-          </a>
-        </div>
-
-        <!-- Demo Quick Pills -->
-        <div class="hero-demo-pills">
-          <a href="index.html" class="demo-pill" onclick="setDemoPreset('clear')"><b>🚛</b> Driver Cockpit</a>
-          <a href="index.html#analytics" class="demo-pill" onclick="setDemoPreset('clear')"><b>📊</b> Safety Analytics</a>
-          <a href="index.html" class="demo-pill" onclick="setDemoPreset('dust')"><b>🌫️</b> Dust Hazard</a>
-          <a href="index.html" class="demo-pill" onclick="setDemoPreset('emergency')"><b>🚨</b> Emergency Stop</a>
+        <!-- CTA Buttons -->
+        <div class="hero-button-group">
+          <a href="index.html" class="btn-cyan-solid">OPEN SAFETY COMMAND</a>
+          <a href="#simulator" class="btn-cyan-outline">EXPLORE TECHNOLOGY</a>
         </div>
       </div>
 
-      <!-- Status Bar -->
-      <div class="hero-status-row">
-        <span class="dot-live"></span>
-        <span>6 SENSORS ACTIVE</span>
-        <b style="color:#475569">·</b>
-        <span>100ms SAFETY LOOP</span>
-        <b style="color:#475569">·</b>
-        <span>SUPABASE CLOUD READY</span>
+      <!-- RIGHT: Live Risk HUD -->
+      <div class="hero-risk-hud">
+        <div class="risk-hud-inner">
+          <div class="risk-score-display" id="heroLiveRisk">8</div>
+          <div class="risk-score-label">RISK INDEX</div>
+          <div class="risk-score-badge" id="heroRiskBadge">SAFE</div>
+          <div class="risk-score-caption">LIVE SIMULATION PREVIEW.</div>
+        </div>
       </div>
     </div>
 
+    <!-- Bottom feature ticker strips -->
+    <div class="hero-bottom-ticker">
+      <div class="ticker-pill">
+        <span class="ticker-label">EDGE DECISION ENGINE</span>
+        <span class="ticker-val">&lt;2ms</span>
+      </div>
+      <div class="ticker-pill">
+        <span class="ticker-label">DYNAMIC RISK SCORING</span>
+        <span class="ticker-val">9-100</span>
+      </div>
+      <div class="ticker-pill">
+        <span class="ticker-label">4-TIER SAFETY STATE</span>
+        <span class="ticker-val">L1–L4</span>
+      </div>
+      <div class="ticker-pill">
+        <span class="ticker-label">AUTONOMOUS E-STOP</span>
+        <span class="ticker-val">ARMED</span>
+      </div>
+      <div class="ticker-pill">
+        <span class="ticker-label">OFFLINE EDGE PROTECT</span>
+        <span class="ticker-val">ACTIVE</span>
+      </div>
+    </div>
   </section>
 
   <!-- ════════ SPECS STRIP ════════ -->
@@ -1675,89 +1588,236 @@
     </div>
   </footer>
 
-  <!-- ════════ JAVASCRIPT: LIVE TELEMETRY & SIMULATOR LOGIC ════════ -->
+  <!-- ════════ JAVASCRIPT: HERO RADAR ANIMATION, TELEMETRY & SIMULATOR ════════ -->
   <script>
-    // Live Hero HUD Dynamic Ticking
-    let hudTick = 0;
-    const baseVis = 85, baseDist = 4.20, baseSpeed = 8.2;
+    /* ══════════════════════════════════════════════════════════════
+       1. 360° RADAR SWEEP & MINE DUST PARTICLE CANVAS ANIMATION
+       ══════════════════════════════════════════════════════════════ */
+    (function initHeroRadarCanvas() {
+      const canvas = document.getElementById('heroRadarCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let animId = null;
+      let width = 0, height = 0;
+      let sweepAngle = 0;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-    function updateHeroHUD() {
-      hudTick++;
-      const t = hudTick * 0.09;
+      // Radar Obstacle Blips (polar coordinates: distance & angle)
+      const blips = [
+        { rRatio: 0.28, angle: 0.45,  size: 3.5, ping: 0 },
+        { rRatio: 0.52, angle: 1.85,  size: 4.0, ping: 0 },
+        { rRatio: 0.72, angle: 3.40,  size: 4.5, ping: 0 },
+        { rRatio: 0.38, angle: 4.60,  size: 3.0, ping: 0 },
+        { rRatio: 0.85, angle: 5.40,  size: 4.0, ping: 0 },
+        { rRatio: 0.64, angle: 0.95,  size: 3.5, ping: 0 }
+      ];
 
-      const vis = Math.round(Math.max(15, Math.min(98, baseVis + Math.sin(t * 0.6) * 4.0 + (Math.random() - 0.5) * 1.5)));
-      const dist = parseFloat(Math.max(0.4, Math.min(5.0, baseDist + Math.sin(t * 1.1) * 0.30 + (Math.random() - 0.5) * 0.1)).toFixed(2));
-      const speed = parseFloat(Math.max(0, Math.min(11.5, baseSpeed + Math.sin(t * 0.4) * 0.35)).toFixed(1));
+      // Floating Mine Dust Particles
+      const particles = [];
+      const PARTICLE_COUNT = 45;
 
-      // Calculate risk and dynamic braking
-      const visNorm = vis / 100;
-      const distNorm = dist / 5.0;
-      const spdNorm = speed / 12.0;
-      const visHazard = 1.0 - visNorm;
-      const proxHazard = Math.pow(1.0 - distNorm, 2.3);
-      const rawRisk = (visHazard * 0.35) + (proxHazard * 0.50) + (spdNorm * 0.15);
-      const score = Math.round(Math.min(100, Math.max(0, rawRisk * 1.8 * 100)));
-      const brk = parseFloat((1.2 + (speed * 0.18) + (1.0 - visNorm) * 1.5).toFixed(1));
+      function resize() {
+        const rect = canvas.getBoundingClientRect();
+        width = rect.width;
+        height = rect.height;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.scale(dpr, dpr);
 
-      // Update HUD elements
-      const elVis = document.getElementById('hudVis');
-      const elDist = document.getElementById('hudDist');
-      const elSpeed = document.getElementById('hudSpeed');
-      const elBrake = document.getElementById('hudBrake');
-      const elScore = document.getElementById('hudRiskScore');
-
-      if (elVis) elVis.textContent = vis;
-      if (elDist) elDist.textContent = dist.toFixed(2);
-      if (elSpeed) elSpeed.textContent = speed.toFixed(1);
-      if (elBrake) elBrake.textContent = brk.toFixed(1);
-      if (elScore) elScore.textContent = score;
-
-      const barVis = document.getElementById('hudVisBar');
-      const barDist = document.getElementById('hudDistBar');
-      const barSpeed = document.getElementById('hudSpeedBar');
-      const barBrake = document.getElementById('hudBrakeBar');
-
-      if (barVis) barVis.style.width = `${vis}%`;
-      if (barDist) barDist.style.width = `${Math.min(100, (dist / 5.0) * 100)}%`;
-      if (barSpeed) barSpeed.style.width = `${Math.min(100, (speed / 12.0) * 100)}%`;
-      if (barBrake) barBrake.style.width = `${Math.min(100, (brk / 4.5) * 100)}%`;
-
-      // Status text updates
-      const subVis = document.getElementById('hudVisSub');
-      if (subVis) {
-        subVis.innerHTML = vis > 70 ? '<span>●</span> Clear haul corridor' : vis > 40 ? '<span>●</span> Moderate dust haze' : '<span>●</span> Dense fog active';
-      }
-
-      const riskTitle = document.getElementById('hudRiskTitle');
-      const riskDesc = document.getElementById('hudRiskDesc');
-      const riskBox = document.getElementById('hudRiskBox');
-
-      if (riskTitle && riskDesc && riskBox) {
-        if (score >= 80) {
-          riskTitle.textContent = 'EMERGENCY STOP';
-          riskTitle.style.color = 'var(--red)';
-          riskDesc.textContent = 'Proximity hazard in low visibility · automatic vehicle halt';
-          riskBox.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-          riskBox.style.background = '#fef2f2';
-        } else if (score >= 50) {
-          riskTitle.textContent = 'HIGH RISK';
-          riskTitle.style.color = 'var(--amber)';
-          riskDesc.textContent = 'Adaptive motor speed governor engaged';
-          riskBox.style.borderColor = 'rgba(245, 158, 11, 0.4)';
-          riskBox.style.background = '#fffbeb';
-        } else {
-          riskTitle.textContent = 'SAFE CORRIDOR';
-          riskTitle.style.color = 'var(--emerald)';
-          riskDesc.textContent = 'All 6 sensors reporting nominal · full speed permitted';
-          riskBox.style.borderColor = 'rgba(7, 134, 93, 0.28)';
-          riskBox.style.background = 'var(--emerald-bg)';
+        if (particles.length === 0) {
+          for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push({
+              x: Math.random() * width,
+              y: Math.random() * height,
+              vx: (Math.random() - 0.5) * 0.4,
+              vy: (Math.random() - 0.5) * 0.35,
+              radius: Math.random() * 2.0 + 0.8,
+              alpha: Math.random() * 0.55 + 0.25,
+              color: Math.random() > 0.4 ? '#00e5ff' : '#ffffff'
+            });
+          }
         }
       }
-    }
 
-    setInterval(updateHeroHUD, 800);
+      window.addEventListener('resize', () => {
+        resize();
+      });
+      resize();
 
-    // Interactive Simulator Calculation
+      function drawRadar(cx, cy, maxRadius) {
+        // 1. Concentric Range Rings
+        const rings = [0.2, 0.4, 0.6, 0.8, 1.0];
+        rings.forEach((ratio, idx) => {
+          const r = maxRadius * ratio;
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.strokeStyle = idx === rings.length - 1 
+            ? 'rgba(0, 229, 255, 0.28)' 
+            : 'rgba(0, 229, 255, 0.12)';
+          ctx.lineWidth = idx === rings.length - 1 ? 1.5 : 1;
+          ctx.stroke();
+
+          // Subtle range tick crosshairs
+          ctx.fillStyle = 'rgba(0, 229, 255, 0.35)';
+          ctx.font = '9px "JetBrains Mono", monospace';
+          if (idx > 0) {
+            ctx.fillText(`${(ratio * 4.0).toFixed(1)}m`, cx + r + 4, cy - 3);
+          }
+        });
+
+        // 2. Radial Axis Guide Lines
+        const spokes = 12;
+        for (let i = 0; i < spokes; i++) {
+          const angle = (i * Math.PI * 2) / spokes;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + Math.cos(angle) * maxRadius, cy + Math.sin(angle) * maxRadius);
+          ctx.strokeStyle = 'rgba(0, 229, 255, 0.07)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+
+        // 3. Rotating 360° Radar Sweep Sector with Fading Trail
+        const trailAngle = Math.PI / 3.5; // ~50° sector trail
+        const steps = 30;
+        for (let i = 0; i < steps; i++) {
+          const a1 = sweepAngle - (trailAngle * (i / steps));
+          const a2 = sweepAngle - (trailAngle * ((i + 1) / steps));
+          const alpha = (1 - (i / steps)) * 0.18;
+
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.arc(cx, cy, maxRadius, a2, a1);
+          ctx.closePath();
+          ctx.fillStyle = `rgba(0, 229, 255, ${alpha})`;
+          ctx.fill();
+        }
+
+        // 4. Sharp Leading Sweep Line
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(sweepAngle) * maxRadius, cy + Math.sin(sweepAngle) * maxRadius);
+        ctx.strokeStyle = '#00e5ff';
+        ctx.lineWidth = 2;
+        ctx.shadowColor = '#00e5ff';
+        ctx.shadowBlur = 12;
+        ctx.stroke();
+        ctx.shadowBlur = 0; // reset shadow
+
+        // 5. Radar Detection Blips
+        blips.forEach(blip => {
+          const bx = cx + Math.cos(blip.angle) * (maxRadius * blip.rRatio);
+          const by = cy + Math.sin(blip.angle) * (maxRadius * blip.rRatio);
+
+          // Check if sweep line just crossed blip angle
+          const angleDiff = Math.abs((sweepAngle % (Math.PI * 2)) - (blip.angle % (Math.PI * 2)));
+          if (angleDiff < 0.05) {
+            blip.ping = 1.0;
+          }
+
+          // Base blip dot
+          ctx.beginPath();
+          ctx.arc(bx, by, blip.size, 0, Math.PI * 2);
+          ctx.fillStyle = blip.ping > 0.2 ? '#00e5ff' : 'rgba(0, 229, 255, 0.45)';
+          ctx.fill();
+
+          // Expanding ping echo ring
+          if (blip.ping > 0.02) {
+            const rippleR = blip.size + (1.0 - blip.ping) * 22;
+            ctx.beginPath();
+            ctx.arc(bx, by, rippleR, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(0, 229, 255, ${blip.ping * 0.7})`;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            blip.ping *= 0.94; // Fade out
+          }
+        });
+      }
+
+      function drawParticles() {
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+
+          // Wrap edges
+          if (p.x < 0) p.x = width;
+          if (p.x > width) p.x = 0;
+          if (p.y < 0) p.y = height;
+          if (p.y > height) p.y = 0;
+
+          // Draw particle
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color === '#00e5ff' 
+            ? `rgba(0, 229, 255, ${p.alpha})` 
+            : `rgba(255, 255, 255, ${p.alpha})`;
+          ctx.fill();
+
+          // Subtle dynamic constellation lines between close particles
+          for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const dx = p.x - p2.x;
+            const dy = p.y - p2.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 85) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.strokeStyle = `rgba(0, 229, 255, ${(1 - dist / 85) * 0.12})`;
+              ctx.lineWidth = 0.8;
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      function renderLoop() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Position radar center slightly to the right side (matching Figma layout)
+        const isMobile = width < 980;
+        const cx = isMobile ? width * 0.5 : width * 0.78;
+        const cy = isMobile ? height * 0.55 : height * 0.48;
+        const maxRadius = Math.min(width * 0.42, height * 0.52, 420);
+
+        // Draw radar and particles
+        drawRadar(cx, cy, maxRadius);
+        drawParticles();
+
+        // Increment continuous sweep angle
+        sweepAngle = (sweepAngle + 0.022) % (Math.PI * 2);
+
+        animId = requestAnimationFrame(renderLoop);
+      }
+
+      renderLoop();
+    })();
+
+    /* ══════════════════════════════════════════════════════════════
+       2. LIVE HERO RISK SCORE MICRO-FLUCTUATION (16 - 21)
+       ══════════════════════════════════════════════════════════════ */
+    (function initHeroRiskUpdater() {
+      const riskEl = document.getElementById('heroLiveRisk');
+      const badgeEl = document.getElementById('heroRiskBadge');
+      if (!riskEl) return;
+      let baseScore = 8;
+      let tick = 0;
+
+      setInterval(() => {
+        tick++;
+        const delta = Math.sin(tick * 0.5) * 1.5 + (Math.random() - 0.5) * 0.8;
+        const currentVal = Math.round(Math.max(6, Math.min(14, baseScore + delta)));
+        riskEl.textContent = currentVal;
+        if (badgeEl) {
+          badgeEl.textContent = currentVal > 50 ? 'WARNING' : 'SAFE';
+        }
+      }, 1600);
+    })();
+
+    /* ══════════════════════════════════════════════════════════════
+       3. INTERACTIVE SIMULATOR PLAYGROUND LOGIC
+       ══════════════════════════════════════════════════════════════ */
     function runSimCalc() {
       const vis = parseFloat(document.getElementById('simVisRange').value);
       const dist = parseFloat(document.getElementById('simDistRange').value);
@@ -1776,8 +1836,8 @@
       const rawRisk = (visHazard * 0.35) + (proxHazard * 0.50) + (spdNorm * 0.15);
       const score = Math.round(Math.min(100, Math.max(0, rawRisk * 1.8 * 100)));
 
-      // Stopping distance formula
-      const brakeBuffer = parseFloat(((speed * speed) / (2 * 0.6 * 9.81) + (speed * 0.3) * (1 + (1 - visNorm) * 1.5) + 0.8).toFixed(2));
+      // Dynamic Stopping Distance Formula
+      const brakeBuffer = parseFloat((1.2 + (speed * 0.18) + (1.0 - visNorm) * 1.5).toFixed(2));
 
       const scoreEl = document.getElementById('simScoreText');
       const brakeEl = document.getElementById('simBrakeText');

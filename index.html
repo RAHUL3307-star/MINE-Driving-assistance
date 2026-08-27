@@ -111,6 +111,10 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
           Live dashboard
         </a>
+        <a href="#weather" id="nav-weather" onclick="navigateTo('weather')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 2v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M2 12h2"/><path d="M19.07 4.93l-1.41 1.41"/></svg>
+          Weather & predictions
+        </a>
         <a href="#analytics" id="nav-analytics" onclick="navigateTo('analytics')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
           Analytics & history
@@ -585,6 +589,119 @@
 
         </div>
 
+        <!-- ════════ MINE PIT WEATHER & VISIBILITY PREDICTION ════════ -->
+        <div class="weather-prediction-card" id="weatherCard">
+          <div class="panel-heading">
+            <div>
+              <span class="section-label">ATMOSPHERIC HAZARD FORECASTER</span>
+              <h3>Mine Pit Meteorology & Optical Visibility Prediction</h3>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <span class="weather-location-badge" id="weatherLocationDisplay">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span id="weatherLocName">Dhanbad, IN (Jharia Pit 03)</span>
+              </span>
+              <span class="weather-source-badge" id="weatherSourceBadge">
+                <span class="live-dot" id="weatherLiveDot"></span>
+                <span id="weatherSourceText">PREDICTIVE MODEL (SIM)</span>
+              </span>
+              <button type="button" class="btn-weather-refresh" onclick="refreshWeatherData()" title="Refresh Weather Data">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Current Weather Metrics Row -->
+          <div class="weather-current-grid">
+            <!-- Metric 1: Temp & Condition -->
+            <div class="weather-metric-box">
+              <div class="weather-metric-top">
+                <span class="w-label">TEMPERATURE & SKY</span>
+                <span class="w-icon" id="weatherConditionIcon">☀️</span>
+              </div>
+              <div class="w-main-val">
+                <span id="weatherTemp">32.4</span><small>°C</small>
+              </div>
+              <div class="w-sub-meta">
+                <span>Feels like: <b id="weatherFeelsLike">35.1°C</b></span>
+                <span id="weatherConditionText">Clear Pit Sky</span>
+              </div>
+            </div>
+
+            <!-- Metric 2: Optical Visibility & Dust Extinction -->
+            <div class="weather-metric-box">
+              <div class="weather-metric-top">
+                <span class="w-label">ATMOSPHERIC VISIBILITY</span>
+                <span class="w-tag" id="weatherVisTag" style="background:#e4f7ef;color:#07865d;">OPTIMAL</span>
+              </div>
+              <div class="w-main-val">
+                <span id="weatherVisDist">8.5</span><small>km</small>
+              </div>
+              <div class="w-sub-meta">
+                <span>Transmittance: <b id="weatherVisPercent">88%</b></span>
+                <span>Extinction: <b id="weatherExtinction">0.12 km⁻¹</b></span>
+              </div>
+            </div>
+
+            <!-- Metric 3: Relative Humidity & Fog Inversion -->
+            <div class="weather-metric-box">
+              <div class="weather-metric-top">
+                <span class="w-label">HUMIDITY & FOG RISK</span>
+                <span class="w-tag" id="weatherFogTag" style="background:#e4f7ef;color:#07865d;">LOW RISK</span>
+              </div>
+              <div class="w-main-val">
+                <span id="weatherHumidity">54</span><small>%</small>
+              </div>
+              <div class="w-sub-meta">
+                <span>Dew Point: <b id="weatherDewPoint">21.8°C</b></span>
+                <span>Inversion: <b id="weatherInversion">Unlikely</b></span>
+              </div>
+            </div>
+
+            <!-- Metric 4: Haul Road Wind & Plume Drift -->
+            <div class="weather-metric-box">
+              <div class="weather-metric-top">
+                <span class="w-label">PIT WIND & DUST DRIFT</span>
+                <span class="w-tag" id="weatherWindTag">ENE</span>
+              </div>
+              <div class="w-main-val">
+                <span id="weatherWindSpeed">14.2</span><small>km/h</small>
+              </div>
+              <div class="w-sub-meta">
+                <span>Gusts: <b id="weatherWindGust">21.0 km/h</b></span>
+                <span>Drift: <b id="weatherDustDispersion">West Quarry</b></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 24-Hour Predictive Weather & ADAS Impact Timeline -->
+          <div class="weather-timeline-wrap">
+            <div class="weather-timeline-header">
+              <span>24-HOUR MINE METEOROLOGICAL FORECAST & ADAS HAZARD PROJECTION</span>
+              <small>Hourly predictive visibility attenuation & safety buffer scaling</small>
+            </div>
+            <div class="weather-hourly-strip" id="weatherHourlyStrip">
+              <!-- Dynamically populated by JS -->
+            </div>
+          </div>
+
+          <!-- Integration Notice & Quick Config Trigger -->
+          <div class="weather-footer-bar">
+            <div class="w-footer-left">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <span id="weatherAdasNotice">Predicted clear visibility over next 6 hours · Nominal ADAS speed limits apply.</span>
+            </div>
+            <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+              <a href="#weather" class="w-config-link" style="color:#07865d; font-weight:700;" onclick="navigateTo('weather')">
+                View Full Predictions & 7-Day Outlook →
+              </a>
+              <a href="#settings" class="w-config-link" onclick="navigateTo('settings')">
+                Configure API Key ⚙️
+              </a>
+            </div>
+          </div>
+        </div>
+
         <!-- ════════ IN-CABIN OLED DRIVER HUD SIMULATOR ════════ -->
         <div class="oled-container-card">
           <div class="oled-meta-left">
@@ -688,6 +805,229 @@
 
         </div>
 
+      </main>
+
+      <!-- ════════ VIEW: MINE WEATHER & PREDICTIONS CONSOLE ════════ -->
+      <main class="page view-section" id="view-weather">
+        <!-- Header & Action Row -->
+        <div class="weather-header-row">
+          <div>
+            <span class="section-label">METEOROLOGICAL INTELLIGENCE & FORECASTING</span>
+            <h2>Pit Atmospheric Weather & Optical Predictions</h2>
+            <p>Real-time atmospheric analysis, thermal inversion fog risks, dust plume dispersion modeling, and 7-day mine shift outlook.</p>
+          </div>
+
+          <div class="weather-header-actions">
+            <select class="weather-loc-select" id="weatherPageLocSelect" onchange="switchWeatherPageLocation(this.value)">
+              <option value="Dhanbad,IN">📍 Dhanbad (Jharia Pit 03)</option>
+              <option value="Korba,IN">📍 Korba (Gevra Open Cast Mine)</option>
+              <option value="Singrauli,IN">📍 Singrauli (NCL Coal Basin)</option>
+              <option value="Talcher,IN">📍 Talcher (MCL Open Pit Mine)</option>
+              <option value="Ranchi,IN">📍 Ranchi (CCLB Mining Zone)</option>
+              <option value="Pilbara,AU">📍 Pilbara (Iron Ore Basin, Australia)</option>
+              <option value="Sudbury,CA">📍 Sudbury (Nickel Basin, Canada)</option>
+              <option value="custom">📍 Custom Mine Location</option>
+            </select>
+
+            <span class="weather-source-badge" id="weatherPageSourceBadge">
+              <span class="live-dot" id="weatherPageLiveDot"></span>
+              <span id="weatherPageSourceText">PREDICTIVE MODEL (SIM)</span>
+            </span>
+
+            <button type="button" class="btn-weather-refresh" onclick="refreshWeatherData()" title="Refresh Meteorological Data">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KPI Telemetry Cards -->
+        <div class="weather-current-grid" style="margin-bottom: 24px;">
+          <!-- Card 1: Temp & Condition -->
+          <div class="weather-metric-box">
+            <div class="weather-metric-top">
+              <span class="w-label">TEMPERATURE & SKY</span>
+              <span class="w-icon" id="wPageCondIcon">☀️</span>
+            </div>
+            <div class="w-main-val">
+              <span id="wPageTemp">32.4</span><small>°C</small>
+            </div>
+            <div class="w-sub-meta">
+              <span>Feels like: <b id="wPageFeelsLike">35.1°C</b></span>
+              <span id="wPageCondText">Clear Pit Sky</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Optical Visibility & Transmittance -->
+          <div class="weather-metric-box">
+            <div class="weather-metric-top">
+              <span class="w-label">ATMOSPHERIC VISIBILITY</span>
+              <span class="w-tag" id="wPageVisTag" style="background:#e4f7ef;color:#07865d;">OPTIMAL</span>
+            </div>
+            <div class="w-main-val">
+              <span id="wPageVisDist">8.5</span><small>km</small>
+            </div>
+            <div class="w-sub-meta">
+              <span>Transmittance: <b id="wPageVisPercent">88%</b></span>
+              <span>Extinction: <b id="wPageExtinct">0.12 km⁻¹</b></span>
+            </div>
+          </div>
+
+          <!-- Card 3: Relative Humidity & Fog Inversion -->
+          <div class="weather-metric-box">
+            <div class="weather-metric-top">
+              <span class="w-label">HUMIDITY & FOG RISK</span>
+              <span class="w-tag" id="wPageFogTag" style="background:#e4f7ef;color:#07865d;">LOW RISK</span>
+            </div>
+            <div class="w-main-val">
+              <span id="wPageHumidity">54</span><small>%</small>
+            </div>
+            <div class="w-sub-meta">
+              <span>Dew Point: <b id="wPageDewPoint">21.8°C</b></span>
+              <span>Inversion: <b id="wPageInversion">Unlikely</b></span>
+            </div>
+          </div>
+
+          <!-- Card 4: Haul Road Wind & Plume Drift -->
+          <div class="weather-metric-box">
+            <div class="weather-metric-top">
+              <span class="w-label">PIT WIND & DUST DRIFT</span>
+              <span class="w-tag" id="wPageWindTag">ENE</span>
+            </div>
+            <div class="w-main-val">
+              <span id="wPageWindSpeed">14.2</span><small>km/h</small>
+            </div>
+            <div class="w-sub-meta">
+              <span>Gusts: <b id="wPageWindGust">21.0 km/h</b></span>
+              <span>Drift: <b id="wPageDustDisp">West Quarry</b></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 24-Hour Timeline Section -->
+        <div class="weather-timeline-wrap">
+          <div class="weather-timeline-header">
+            <span>24-HOUR PREDICTIVE METEOROLOGICAL & OPTICAL PROGRESSION</span>
+            <small>Continuous 3-hour interval visibility forecast with ADAS impact calculation</small>
+          </div>
+          <div class="weather-hourly-strip" id="weatherPageHourlyStrip">
+            <!-- Populated dynamically by JS -->
+          </div>
+        </div>
+
+        <!-- ADAS Dynamic Safety Envelope & Kinematics Adaptation -->
+        <div class="weather-adas-grid">
+          <div class="weather-subpanel">
+            <div class="panel-heading" style="margin-bottom:14px;">
+              <div>
+                <span class="section-label">ADAS ENVELOPE CALIBRATION</span>
+                <h3>Weather-Adaptive Stopping Kinematics</h3>
+              </div>
+              <span class="mini-tag">ACTIVE SYNC</span>
+            </div>
+
+            <div class="env-breakdown">
+              <div class="env-row">
+                <span>Baseline Reaction Distance:</span>
+                <div class="env-track"><span class="blue" id="wPageReactBar" style="width: 32%;"></span></div>
+                <strong id="wPageReactVal">0.68 m</strong>
+              </div>
+              <div class="env-row">
+                <span>Surface Road Friction Adjustment:</span>
+                <div class="env-track"><span id="wPageFrictBar" style="width: 45%;"></span></div>
+                <strong id="wPageFrictVal">1.14 m</strong>
+              </div>
+              <div class="env-row">
+                <span>Fog / Dust Extinction Attenuation Buffer:</span>
+                <div class="env-track"><span class="amber" id="wPageFogBar" style="width: 25%;"></span></div>
+                <strong id="wPageFogVal">+0.32 m</strong>
+              </div>
+              <div class="env-row" style="border-top:1px solid #dfe5e8;padding-top:8px;">
+                <span>Total Dynamic Stopping Buffer:</span>
+                <div class="env-track"><span class="lime" id="wPageTotalBar" style="width: 50%;"></span></div>
+                <strong id="wPageTotalVal" style="font-size:13px;color:#07865d;">1.82 m</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="weather-subpanel">
+            <div class="panel-heading" style="margin-bottom:14px;">
+              <div>
+                <span class="section-label">OPERATIONAL ADVISORIES</span>
+                <h3>Shift Safety Directives & Visibility Rules</h3>
+              </div>
+              <span class="sensor-status"><i></i> DGMS REG 171</span>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:10px; font-size:12.5px;">
+              <div style="background:#f8fafc; border:1px solid var(--line); border-radius:4px; padding:10px 12px; display:flex; align-items:center; gap:10px;">
+                <span style="font-size:18px;">🛑</span>
+                <div>
+                  <strong style="color:var(--ink); font-size:12px;">Automatic Speed Governor:</strong>
+                  <span id="wPageGovAdvice" style="color:#64748b; font-family:'JetBrains Mono'; display:block; font-size:11px;">Nominal speed allowed (Max 12.0 m/s)</span>
+                </div>
+              </div>
+              <div style="background:#f8fafc; border:1px solid var(--line); border-radius:4px; padding:10px 12px; display:flex; align-items:center; gap:10px;">
+                <span style="font-size:18px;">💡</span>
+                <div>
+                  <strong style="color:var(--ink); font-size:12px;">High-Intensity Fog Penetration Headlamps:</strong>
+                  <span id="wPageLampAdvice" style="color:#64748b; font-family:'JetBrains Mono'; display:block; font-size:11px;">Standard Daytime Running Mode</span>
+                </div>
+              </div>
+              <div style="background:#f8fafc; border:1px solid var(--line); border-radius:4px; padding:10px 12px; display:flex; align-items:center; gap:10px;">
+                <span style="font-size:18px;">📡</span>
+                <div>
+                  <strong style="color:var(--ink); font-size:12px;">V2V Proximity Mesh & Radar Ping Rate:</strong>
+                  <span style="color:#059669; font-family:'JetBrains Mono'; display:block; font-size:11px;">100Hz Active Ultrasound + Hall Odometry</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7-Day Shift Outlook -->
+        <div class="weather-subpanel" style="margin-bottom: 24px;">
+          <div class="panel-heading">
+            <div>
+              <span class="section-label">7-DAY MINE OUTLOOK</span>
+              <h3>Extended Weather Forecast & Shift Visibility Hazards</h3>
+            </div>
+            <span class="mini-tag">PLANNING HORIZON</span>
+          </div>
+
+          <div class="weather-7day-strip" id="weather7DayStrip">
+            <!-- Populated dynamically by JS -->
+          </div>
+        </div>
+
+        <!-- Quick Settings Card at the bottom of the weather page -->
+        <div class="weather-subpanel" style="background:#f8fafc;">
+          <div class="panel-heading">
+            <div>
+              <span class="section-label">CONFIGURATION SHORTCUT</span>
+              <h3>Weather API Key & Provider Configuration</h3>
+            </div>
+            <a href="#settings" class="text-link" onclick="navigateTo('settings')">Open Full System Settings →</a>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px;">
+            <div>
+              <label style="display: block; font: 600 11px 'JetBrains Mono'; color: #53636b; margin-bottom: 6px;">API PROVIDER</label>
+              <select id="wQuickProvider" style="width: 100%; padding: 10px; border: 1px solid #d5dfe2; background: #fff; font: 12px 'JetBrains Mono'; color: #161b20;">
+                <option value="openweathermap">OpenWeatherMap</option>
+                <option value="weatherapi">WeatherAPI.com</option>
+                <option value="simulation">Autonomous Simulation</option>
+              </select>
+            </div>
+            <div>
+              <label style="display: block; font: 600 11px 'JetBrains Mono'; color: #53636b; margin-bottom: 6px;">WEATHER API KEY</label>
+              <input type="password" id="wQuickApiKey" placeholder="Paste Weather API key..." style="width: 100%; padding: 10px; border: 1px solid #d5dfe2; background: #fff; font: 12px 'JetBrains Mono'; color: #161b20;" />
+            </div>
+            <div style="display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap;">
+              <button class="save-button" style="padding: 10px 20px; font-size: 11px; width: auto;" onclick="saveQuickWeatherSettings()">Save & Sync Key</button>
+              <span id="wQuickMsg" style="font: 11px 'JetBrains Mono'; color: #059669;"></span>
+            </div>
+          </div>
+        </div>
       </main>
 
       <!-- ════════ VIEW 2: ANALYTICS & HISTORY ════════ -->
@@ -875,6 +1215,62 @@
             <button class="outline-button" style="width: 100%; margin-top: 22px; justify-content: center;" onclick="resetCalibration()">
               Recalibrate Optical Zero
             </button>
+          </div>
+
+          <!-- Weather API & Mine Location Configuration -->
+          <div class="settings-section" style="grid-column: 1 / -1;">
+            <div class="settings-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+              <div>
+                <h3>Weather API & Mine Location Settings</h3>
+                <p>Configure your Weather API key (OpenWeatherMap / WeatherAPI) to stream live meteorological data and forecast fog/dust visibility for your mine pit.</p>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 18px 0 12px;">
+              <div>
+                <label style="display: block; font: 600 11px 'JetBrains Mono'; color: #53636b; margin-bottom: 6px;">WEATHER API PROVIDER</label>
+                <select id="cfgWeatherProvider" style="width: 100%; padding: 12px; border: 1px solid #d5dfe2; background: #fff; font: 12px 'JetBrains Mono'; color: #161b20;">
+                  <option value="openweathermap">OpenWeatherMap (Standard)</option>
+                  <option value="weatherapi">WeatherAPI.com</option>
+                  <option value="simulation">Autonomous Mine Model (Simulation)</option>
+                </select>
+              </div>
+              
+              <div>
+                <label style="display: block; font: 600 11px 'JetBrains Mono'; color: #53636b; margin-bottom: 6px;">WEATHER API KEY</label>
+                <div style="display: flex; gap: 6px;">
+                  <input type="password" id="cfgWeatherApiKey" placeholder="Paste your API key here..." style="width: 100%; padding: 12px; border: 1px solid #d5dfe2; background: #fff; font: 12px 'JetBrains Mono'; color: #161b20;" />
+                  <button type="button" class="outline-button" onclick="toggleWeatherKeyVis()" style="padding: 0 12px; margin-top: 0;" title="Show/Hide Key">👁️</button>
+                </div>
+              </div>
+
+              <div>
+                <label style="display: block; font: 600 11px 'JetBrains Mono'; color: #53636b; margin-bottom: 6px;">SELECT MINE LOCATION</label>
+                <select id="cfgWeatherLocation" onchange="handleLocationPresetChange(this.value)" style="width: 100%; padding: 12px; border: 1px solid #d5dfe2; background: #fff; font: 12px 'JetBrains Mono'; color: #161b20;">
+                  <option value="Dhanbad,IN">Dhanbad (Jharia Coalfield Pit 03)</option>
+                  <option value="Korba,IN">Korba (Gevra Open Cast Mine)</option>
+                  <option value="Singrauli,IN">Singrauli (NCL Coal Basin)</option>
+                  <option value="Talcher,IN">Talcher (MCL Open Pit Mine)</option>
+                  <option value="Ranchi,IN">Ranchi (CCLB Mining Zone)</option>
+                  <option value="Pilbara,AU">Pilbara (Iron Ore Basin, Australia)</option>
+                  <option value="Sudbury,CA">Sudbury (Nickel Basin, Canada)</option>
+                  <option value="custom">Custom Location / Coordinates...</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Custom Location Box if selected -->
+            <div id="cfgCustomLocWrapper" style="display: none; margin-bottom: 14px;">
+              <label style="display: block; font: 600 11px 'JetBrains Mono'; color: #53636b; margin-bottom: 6px;">CUSTOM CITY NAME OR LAT, LON</label>
+              <input type="text" id="cfgWeatherCustomLocation" placeholder="e.g. Dhanbad, Kolkata, Denver, Perth, or 23.7957,86.4304" style="width: 100%; max-width: 480px; padding: 12px; border: 1px solid #d5dfe2; background: #fff; font: 12px 'JetBrains Mono'; color: #161b20;" />
+            </div>
+
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+              <button class="save-button" style="width: auto; padding: 12px 24px;" onclick="saveWeatherSettings()">Save Weather Settings</button>
+              <button class="outline-button" onclick="testWeatherApiConnection()">Test API Connection</button>
+              <span id="weatherConnMsg" style="font: 11px 'JetBrains Mono'; color: #71808a;"></span>
+            </div>
           </div>
 
           <!-- Supabase Cloud Integration Panel -->
