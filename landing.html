@@ -1,1870 +1,1189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OREGUARD ADAS · Mine Vehicle Safety Intelligence & Collision Prevention</title>
-  <meta name="description" content="Visibility-aware collision prevention system for underground and surface mine vehicles. Real-time sensor fusion with dynamic risk recalculation." />
-  <!-- Times New Roman is a built-in system serif font, no import needed -->
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OREGUARD — Mine Vehicle ADAS & Safety Layer | SIH 2025</title>
+  <meta name="description" content="OREGUARD is a real-time collision prevention and visibility-aware risk system for heavy mine vehicles operating in zero-visibility underground conditions.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛏</text></svg>">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
 
   <style>
+    /* ─── DESIGN TOKENS ──────────────────────────────────────────────── */
     :root {
-      --ink:       #161b20;
-      --muted:     #71808a;
-      --muted-dark:#53636b;
-      --line:      #dfe5e8;
-      --paper:     #f4f7f8;
-      --white:     #ffffff;
-      --lime:      #10b981;
-      --emerald:   #07865d;
-      --emerald-bg:#e4f7ef;
-      --amber:     #f59e0b;
-      --red:       #ef4444;
-      --blue:      #2563eb;
-      --cyan:      #00e5ff;
-      --cyan-bright: #00d2ff;
-      --dark-bg:   #090d12;
-      --dark:      #101419;
-      --dark2:     #172027;
-      --dark-btn:  #161b20;
-      --dark-hover:#1f2937;
+      --mine-black:    #050810;
+      --mine-dark:     #090d17;
+      --mine-surface:  #0d1220;
+      --mine-card:     #111827;
+      --mine-border:   rgba(255,255,255,0.08);
+
+      --safe-500:      #10b981;
+      --safe-400:      #34d399;
+      --safe-glow:     rgba(16,185,129,0.25);
+      --safe-bg:       rgba(16,185,129,0.08);
+
+      --warn-500:      #f59e0b;
+      --warn-400:      #fbbf24;
+      --warn-glow:     rgba(245,158,11,0.25);
+      --warn-bg:       rgba(245,158,11,0.08);
+
+      --high-500:      #f97316;
+      --high-400:      #fb923c;
+      --high-glow:     rgba(249,115,22,0.25);
+      --high-bg:       rgba(249,115,22,0.08);
+
+      --crit-500:      #ef4444;
+      --crit-400:      #f87171;
+      --crit-glow:     rgba(239,68,68,0.35);
+      --crit-bg:       rgba(239,68,68,0.12);
+
+      --cyan-500:      #06b6d4;
+      --cyan-400:      #22d3ee;
+      --cyan-glow:     rgba(6,182,212,0.25);
+      --cyan-bg:       rgba(6,182,212,0.08);
+
+      --font-head:     'Barlow Condensed', sans-serif;
+      --font-body:     'Inter', sans-serif;
+      --font-mono:     'JetBrains Mono', monospace;
+
+      --sp-1: 0.25rem; --sp-2: 0.5rem; --sp-3: 0.75rem; --sp-4: 1rem;
+      --sp-6: 1.5rem; --sp-8: 2rem; --sp-12: 3rem; --sp-16: 4rem; --sp-24: 6rem;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html {
       scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: #ffffff;
-      color: var(--ink);
-      line-height: 1.6;
-      overflow-x: hidden;
       font-size: 16px;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
     }
 
-    /* ════════════════════════════════════════
-       DARK FUTURISTIC NAVIGATION BAR (FIGMA RECREATED)
-    ════════════════════════════════════════ */
-    nav.nav-dark-oreguard {
+    body {
+      background: var(--mine-black);
+      color: rgba(255,255,255,0.9);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Grain texture overlay */
+    body::before {
+      content: '';
       position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 5%;
-      height: 72px;
-      background: rgba(9, 13, 18, 0.88);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-    }
-
-    .nav-brand-dark {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-    }
-
-    .nav-brand-dark .nav-hex-icon {
-      width: 32px;
-      height: 32px;
-      display: grid;
-      place-items: center;
-      filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.6));
-      transition: transform 0.3s ease;
-    }
-
-    .nav-brand-dark:hover .nav-hex-icon {
-      transform: scale(1.08) rotate(15deg);
-    }
-
-    .nav-brand-dark .nav-logo-text {
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
-      font-weight: 800;
-      font-size: 23px;
-      letter-spacing: 3.5px;
-      color: #ffffff;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-    }
-
-    .nav-links-dark {
-      display: flex;
-      gap: 34px;
-      list-style: none;
-    }
-
-    .nav-links-dark a {
-      text-decoration: none;
-      font-family: 'Inter', sans-serif;
-      font-weight: 500;
-      font-size: 14.5px;
-      color: #94a3b8;
-      letter-spacing: 0.3px;
-      transition: all 0.2s ease;
-      position: relative;
-    }
-
-    .nav-links-dark a:hover {
-      color: #ffffff;
-      text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
-    }
-
-    .nav-links-dark a::after {
-      content: '';
-      position: absolute;
-      bottom: -6px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: var(--cyan);
-      box-shadow: 0 0 8px var(--cyan);
-      transition: width 0.25s ease;
-    }
-
-    .nav-links-dark a:hover::after {
-      width: 100%;
-    }
-
-    .btn-nav-cyan {
-      background: var(--cyan-bright);
-      color: #06090e;
-      border: 0;
-      padding: 10px 22px;
-      font-family: 'JetBrains Mono', 'Chakra Petch', monospace;
-      font-weight: 800;
-      font-size: 12.5px;
-      letter-spacing: 1.2px;
-      cursor: pointer;
-      text-decoration: none;
-      border-radius: 4px;
-      transition: all 0.22s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 16px rgba(0, 210, 255, 0.45);
-      text-transform: uppercase;
-    }
-
-    .btn-nav-cyan:hover {
-      background: #38bdf8;
-      transform: translateY(-1.5px);
-      box-shadow: 0 0 26px rgba(0, 210, 255, 0.8);
-      color: #000000;
-    }
-
-    /* ════════════════════════════════════════
-       HERO SECTION — PIXEL PERFECT MATCH
-    ════════════════════════════════════════ */
-    .hero-oreguard {
-      position: relative;
-      height: 100vh;
-      min-height: 620px;
-      display: flex;
-      flex-direction: column;
-      padding-top: 72px;
-      background-color: #050a0f;
-      background-image:
-        linear-gradient(180deg, rgba(5,10,15,0.55) 0%, rgba(5,10,15,0.72) 55%, rgba(5,10,15,0.92) 100%),
-        url('hero_bg.jpg');
-      background-size: cover;
-      background-position: center 40%;
-      background-repeat: no-repeat;
-      color: #ffffff;
-      overflow: hidden;
-    }
-
-    /* Dark left-heavy vignette overlay */
-    .hero-oreguard::before {
-      content: '';
-      position: absolute;
       inset: 0;
-      background:
-        linear-gradient(105deg, rgba(5,10,15,0.88) 0%, rgba(5,10,15,0.60) 50%, rgba(5,10,15,0.18) 100%);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
       pointer-events: none;
-      z-index: 1;
+      z-index: 9999;
+      opacity: 0.5;
     }
 
-    /* Crosshatch grid overlay — exact match to screenshot */
-    .hero-oreguard::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-      background-size: 60px 60px;
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--mine-black); }
+    ::-webkit-scrollbar-thumb { background: var(--safe-500); border-radius: 2px; }
+
+    /* Typography */
+    .t-display { font-family: var(--font-head); font-weight: 900; font-size: clamp(4rem, 12vw, 12rem); line-height: 0.9; text-transform: uppercase; }
+    .t-h1 { font-family: var(--font-head); font-weight: 800; font-size: clamp(2.5rem, 6vw, 5.5rem); line-height: 1; text-transform: uppercase; }
+    .t-h2 { font-family: var(--font-head); font-weight: 700; font-size: clamp(1.8rem, 4vw, 3.2rem); line-height: 1.05; text-transform: uppercase; }
+    .t-h3 { font-family: var(--font-head); font-weight: 600; font-size: clamp(1.1rem, 2vw, 1.6rem); text-transform: uppercase; letter-spacing: 0.04em; }
+    .t-label { font-family: var(--font-mono); font-size: 0.65rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.5; }
+    .t-data { font-family: var(--font-mono); font-weight: 700; }
+    .t-body { font-family: var(--font-body); font-size: 1rem; line-height: 1.7; opacity: 0.7; }
+
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 var(--sp-8); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-8); }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* Buttons & Pills */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+      padding: 14px 28px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.75rem;
+      font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;
+      cursor: pointer; transition: all 0.25s var(--ease-out); border: 1px solid transparent;
+    }
+    .btn--primary { background: var(--safe-500); color: #000; box-shadow: 0 0 25px var(--safe-glow); }
+    .btn--primary:hover { background: var(--safe-400); box-shadow: 0 0 40px var(--safe-glow); transform: translateY(-2px); }
+    .btn--cyan { background: var(--cyan-500); color: #000; box-shadow: 0 0 25px var(--cyan-glow); }
+    .btn--cyan:hover { background: var(--cyan-400); box-shadow: 0 0 40px var(--cyan-glow); transform: translateY(-2px); }
+    .btn--ghost { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.12); backdrop-filter: blur(8px); }
+    .btn--ghost:hover { border-color: rgba(255,255,255,0.3); color: #fff; background: rgba(255,255,255,0.06); }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 100px;
+      font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; border: 1px solid;
+    }
+    .pill--safe { background: var(--safe-bg); color: var(--safe-500); border-color: var(--safe-500); }
+    .pill--warn { background: var(--warn-bg); color: var(--warn-500); border-color: var(--warn-500); }
+    .pill--high { background: var(--high-bg); color: var(--high-500); border-color: var(--high-500); }
+    .pill--crit { background: var(--crit-bg); color: var(--crit-500); border-color: var(--crit-500); }
+    .pill--cyan { background: var(--cyan-bg); color: var(--cyan-400); border-color: var(--cyan-500); }
+
+    .card {
+      background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
+      padding: var(--sp-6); transition: all 0.3s;
+    }
+    .card:hover { border-color: rgba(255,255,255,0.2); }
+
+    /* ─── NAV ────────────────────────────────────────────────────────── */
+    #site-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: var(--sp-4) var(--sp-8); display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(to bottom, rgba(5,8,16,0.95) 0%, transparent 100%);
+      backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    #site-nav .logo { font-family: var(--font-head); font-weight: 900; font-size: 1.5rem; text-transform: uppercase; color: white; letter-spacing: 0.05em; }
+    #site-nav .logo span { color: var(--safe-500); }
+    .nav-links { display: flex; gap: var(--sp-6); list-style: none; align-items: center; }
+    .nav-links a { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.5); text-decoration: none; transition: all 0.2s; }
+    .nav-links a:hover { color: var(--safe-500); }
+    .nav-risk-badge { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700; color: var(--safe-500); }
+    .nav-risk-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--safe-500); animation: breathe 2s ease-in-out infinite; }
+    @keyframes breathe { 0%, 100% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.1); } }
+
+    /* ─── HERO ───────────────────────────────────────────────────────── */
+    #hero {
+      position: relative; height: 100vh; min-height: 700px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;
+    }
+    #hero-bg {
+      position: absolute; inset: 0; background-size: cover; background-position: center;
+      filter: brightness(0.35) saturate(0.8); transform: scale(1.05);
+      background-image: url('mine_hero.jpg');
+    }
+    #hero-canvas { position: absolute; inset: 0; pointer-events: none; }
+    .hero-content { position: relative; z-index: 2; text-align: center; padding: 0 var(--sp-8); }
+    .hero-eyebrow { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--safe-500); margin-bottom: var(--sp-6); }
+    .hero-wordmark { font-family: var(--font-head); font-weight: 900; font-size: clamp(5rem, 16vw, 16rem); line-height: 0.85; text-transform: uppercase; color: white; }
+    .hero-wordmark .ore { color: var(--safe-500); }
+    .hero-subtitle { font-family: var(--font-head); font-weight: 300; font-size: clamp(1rem, 3vw, 2rem); letter-spacing: 0.4em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-top: var(--sp-4); }
+    .hero-risk-meter { margin-top: var(--sp-8); }
+    .hero-risk-number { font-family: var(--font-mono); font-size: clamp(3rem, 7vw, 7rem); font-weight: 700; line-height: 1; color: var(--safe-500); transition: color 0.4s; }
+    .hero-risk-label { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-top: 8px; }
+    .hero-cta { margin-top: var(--sp-8); display: flex; gap: var(--sp-4); justify-content: center; flex-wrap: wrap; }
+    .hero-scroll-hint { position: absolute; bottom: var(--sp-8); left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; color: rgba(255,255,255,0.3); font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; }
+    .scroll-arrow { width: 1px; height: 35px; background: linear-gradient(to bottom, transparent, var(--safe-500)); }
+
+    /* ─── CHAPTERS ───────────────────────────────────────────────────── */
+    .chapter { padding: var(--sp-24) 0; position: relative; }
+    .chapter-tag { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--safe-500); margin-bottom: var(--sp-4); }
+
+    /* Problem Grid */
+    .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-12); align-items: start; }
+    @media (max-width: 900px) { .problem-grid { grid-template-columns: 1fr; } }
+    .problem-stat { border-left: 3px solid var(--safe-500); padding-left: var(--sp-4); margin-bottom: var(--sp-6); }
+    .problem-stat-number { font-family: var(--font-head); font-weight: 800; font-size: 3rem; line-height: 1; color: white; }
+    .problem-stat-text { font-family: var(--font-mono); font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-top: 4px; line-height: 1.5; }
+    .problem-image-wrap { position: relative; border-radius: 14px; overflow: hidden; height: 380px; box-shadow: 0 15px 35px -10px rgba(0,0,0,0.6); }
+    .problem-image-wrap img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.65); }
+    .problem-image-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: var(--sp-6); background: linear-gradient(to top, rgba(5,8,16,0.95), transparent); }
+
+    /* Level Cards */
+    .level-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-4); }
+    @media (max-width: 1000px) { .level-cards { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .level-cards { grid-template-columns: 1fr; } }
+    .level-card {
+      background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px; padding: var(--sp-6); position: relative; overflow: hidden; transition: all 0.3s;
+    }
+    .level-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.2); }
+    .level-card-top { position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .level-number { font-family: var(--font-mono); font-size: 2.2rem; font-weight: 700; opacity: 0.8; }
+    .level-name { font-family: var(--font-head); font-weight: 800; font-size: 1.4rem; text-transform: uppercase; margin-top: var(--sp-2); }
+    .level-range { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); margin: var(--sp-2) 0; }
+    .level-desc { font-size: 0.82rem; line-height: 1.6; color: rgba(255,255,255,0.6); margin-top: var(--sp-3); }
+
+    /* Formula */
+    .formula-display {
+      background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px; padding: var(--sp-8); font-family: var(--font-mono); position: relative; overflow: hidden;
+    }
+    .formula-display::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--safe-500), var(--warn-500), var(--high-500), var(--crit-500)); }
+    .formula-step { margin-bottom: var(--sp-4); padding-bottom: var(--sp-4); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .formula-step:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .formula-step-num { font-size: 0.6rem; letter-spacing: 0.2em; color: var(--safe-500); margin-bottom: 4px; }
+    .formula-eq { font-size: 0.92rem; color: rgba(255,255,255,0.9); line-height: 1.8; }
+    .var-green { color: var(--safe-500); }
+    .var-amber { color: var(--warn-500); }
+    .var-orange { color: var(--high-500); }
+    .var-red { color: var(--crit-500); }
+    .var-cyan { color: var(--cyan-400); }
+    .comment { color: rgba(255,255,255,0.3); font-size: 0.8em; }
+
+    /* Hardware Gallery */
+    .hardware-image-wrap { position: relative; border-radius: 14px; overflow: hidden; height: 420px; box-shadow: 0 15px 35px -10px rgba(0,0,0,0.6); }
+    .hardware-image-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .hw-annotation {
+      position: absolute; background: rgba(9,13,23,0.9); border: 1px solid var(--safe-500);
+      border-radius: 6px; padding: 6px 12px; font-family: var(--font-mono); font-size: 0.6rem;
+      color: var(--safe-500); backdrop-filter: blur(8px);
+    }
+
+    /* ─── CHAPTER 5: JOYSTICK CONTROLLER STYLES ──────────────────────── */
+    .joystick-panel {
+      background: rgba(13, 18, 32, 0.85); backdrop-filter: blur(20px);
+      border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 16px;
+      padding: var(--sp-8); position: relative; overflow: hidden;
+      box-shadow: 0 20px 45px -10px rgba(0,0,0,0.7), 0 0 30px rgba(6,182,212,0.05);
+    }
+    .joystick-panel::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--cyan-500), var(--safe-500), var(--warn-500));
+    }
+    .joystick-interactive-zone {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: var(--sp-6); margin: var(--sp-4) 0;
+    }
+    .joystick-base {
+      width: 220px; height: 220px; border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, #172033 0%, #0a0e1a 100%);
+      border: 3px solid rgba(6, 182, 212, 0.35); position: relative;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 0 25px rgba(6,182,212,0.15);
+      cursor: grab; user-select: none; touch-action: none;
+    }
+    .joystick-base:active { cursor: grabbing; }
+    .joystick-crosshair-h, .joystick-crosshair-v {
+      position: absolute; background: rgba(255,255,255,0.08); pointer-events: none;
+    }
+    .joystick-crosshair-h { width: 100%; height: 1px; }
+    .joystick-crosshair-v { height: 100%; width: 1px; }
+    .joystick-deadzone-ring {
+      position: absolute; width: 60px; height: 60px; border-radius: 50%;
+      border: 1px dashed rgba(255,255,255,0.2); pointer-events: none;
+    }
+    .joystick-knob {
+      width: 75px; height: 75px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #2a3b5c, #0f172a);
+      border: 2px solid var(--cyan-400); position: absolute;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.8), 0 0 15px var(--cyan-glow);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 0.65rem; font-weight: 800;
+      color: var(--cyan-400); transition: transform 0.05s ease-out;
       pointer-events: none;
-      z-index: 2;
     }
-
-    /* Canvas radar overlay */
-    .hero-canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 3;
-    }
-
-    /* Main content flex row */
-    .hero-container {
-      position: relative;
-      z-index: 4;
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 5%;
-      max-width: 1400px;
-      width: 100%;
-      margin: 0 auto;
-      gap: 20px;
-    }
-
-    .hero-main-content {
-      max-width: 55%;
-      flex: 1;
-    }
-
-    /* Badge: • INTELLIGENT ADAS — MINING VEHICLES */
-    .hero-tech-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 6px 16px;
-      background: rgba(0, 0, 0, 0.45);
-      border: 1px solid rgba(0, 229, 255, 0.40);
-      border-radius: 3px;
-      margin-bottom: 22px;
-      backdrop-filter: blur(10px);
-    }
-
-    .pulse-cyan-dot {
-      width: 7px;
-      height: 7px;
-      background: var(--cyan);
-      border-radius: 50%;
-      box-shadow: 0 0 6px var(--cyan);
-      animation: pulseTealDot 1.8s infinite ease-in-out;
-      flex-shrink: 0;
-    }
-
-    @keyframes pulseTealDot {
-      0%, 100% { transform: scale(0.85); opacity: 0.8; }
-      50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 10px var(--cyan), 0 0 0 5px rgba(0,229,255,0); }
-    }
-
-    .hero-tech-badge .badge-text {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 600;
-      font-size: 11.5px;
-      letter-spacing: 1.8px;
-      color: var(--cyan);
-      text-transform: uppercase;
-    }
-
-    /* Headline — Impact-weight bold condensed matching screenshot */
-    .hero-headline {
-      font-family: 'Outfit', 'Inter', Impact, sans-serif;
-      font-size: clamp(56px, 8vw, 96px);
-      font-weight: 900;
-      line-height: 1.0;
-      letter-spacing: -0.02em;
-      margin-bottom: 20px;
-    }
-
-    .hero-headline .text-white-line {
-      display: block;
-      color: #ffffff;
-    }
-
-    .hero-headline .text-cyan-line {
-      display: block;
-      color: var(--cyan-bright);
-      text-shadow: 0 0 40px rgba(0, 210, 255, 0.45);
-    }
-
-    /* Subtitle */
-    .hero-subtext {
-      font-family: 'Inter', sans-serif;
-      font-size: 15.5px;
-      font-weight: 400;
-      color: #8fa3b8;
-      line-height: 1.65;
-      max-width: 480px;
-      margin-bottom: 34px;
-    }
-
-    /* CTA buttons */
-    .hero-button-group {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .btn-cyan-solid {
-      background: var(--cyan-bright);
-      color: #050a0f;
-      border: 2px solid var(--cyan-bright);
-      padding: 14px 30px;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 800;
-      font-size: 12.5px;
-      letter-spacing: 1.5px;
-      cursor: pointer;
-      text-decoration: none;
-      border-radius: 3px;
-      transition: all 0.22s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-transform: uppercase;
-    }
-
-    .btn-cyan-solid:hover {
-      background: transparent;
-      color: var(--cyan-bright);
-      box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
-    }
-
-    .btn-cyan-outline {
-      background: transparent;
-      border: 1.5px solid rgba(0, 229, 255, 0.45);
-      color: rgba(0, 229, 255, 0.9);
-      padding: 14px 28px;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      font-size: 12.5px;
-      letter-spacing: 1.5px;
-      cursor: pointer;
-      text-decoration: none;
-      border-radius: 3px;
-      transition: all 0.22s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-transform: uppercase;
-    }
-
-    .btn-cyan-outline:hover {
-      background: rgba(0, 229, 255, 0.10);
-      border-color: var(--cyan);
-      color: #ffffff;
-    }
-
-    /* ════════════════════════════════════════
-       RIGHT HERO: LIVE RISK HUD — matches screenshot exactly
-    ════════════════════════════════════════ */
-    .hero-risk-hud {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      padding-bottom: 60px;
-      flex-shrink: 0;
-    }
-
-    .risk-hud-inner {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .risk-score-display {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: clamp(52px, 5vw, 72px);
-      font-weight: 700;
-      line-height: 1;
-      color: #10b981;
-      text-shadow: 0 0 24px rgba(16, 185, 129, 0.55);
-      letter-spacing: -0.02em;
-      margin-bottom: 4px;
-      transition: color 0.4s ease, text-shadow 0.4s ease;
-    }
-
-    .risk-score-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 3px;
-      color: #4e6070;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
-    .risk-score-badge {
-      display: inline-block;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: #10b981;
-      background: rgba(16, 185, 129, 0.10);
-      border: 1px solid rgba(16, 185, 129, 0.40);
-      padding: 3px 16px;
-      border-radius: 3px;
-      text-transform: uppercase;
-      margin-bottom: 18px;
-    }
-
-    .risk-score-caption {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 9.5px;
-      font-weight: 500;
-      letter-spacing: 1.8px;
-      color: #2e3f4e;
-      text-transform: uppercase;
-    }
-
-    /* ════════════════════════════════════════
-       BOTTOM FEATURE BADGES TICKER
-    ════════════════════════════════════════ */
-    .hero-bottom-ticker {
-      position: relative;
-      z-index: 4;
-      width: 100%;
-      padding: 0 5% 28px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .ticker-pill {
-      background: rgba(5, 10, 20, 0.68);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      padding: 9px 16px;
-      border-radius: 3px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      backdrop-filter: blur(10px);
-      transition: border-color 0.2s, transform 0.2s;
-    }
-
-    .ticker-pill:hover {
-      border-color: rgba(0, 229, 255, 0.35);
-      transform: translateY(-1px);
-    }
-
-    .ticker-pill .ticker-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10.5px;
-      font-weight: 500;
-      letter-spacing: 1px;
-      color: #4a6070;
-      text-transform: uppercase;
-    }
-
-    .ticker-pill .ticker-val {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.8px;
-      color: var(--cyan);
-      text-transform: uppercase;
-    }
-
-    @media (max-width: 980px) {
-      .hero-container { flex-direction: column; align-items: flex-start; padding-top: 30px; }
-      .hero-main-content { max-width: 100%; }
-      .hero-risk-hud { align-self: flex-start; padding-bottom: 20px; }
-      .nav-links-dark { display: none; }
-    }
-
-    /* ════════════════════════════════════════
-       SPECS STRIP
-    ════════════════════════════════════════ */
-    .specs-strip {
-      background: var(--paper);
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      padding: 24px 6%;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 20px;
-    }
-
-    .spec-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .spec-icon-box {
-      width: 38px;
-      height: 38px;
-      background: var(--emerald-bg);
-      color: var(--emerald);
-      display: grid;
-      place-items: center;
-      border-radius: 4px;
-      flex-shrink: 0;
-    }
-
-    .spec-meta strong {
-      font: bold 17px/1.1 'Times New Roman', Times, serif;
-      color: var(--ink);
-      display: block;
-      letter-spacing: 0.4px;
-    }
-
-    .spec-meta span {
-      font: 500 11px 'Times New Roman', Times, serif;
-      color: var(--muted);
-      display: block;
-      margin-top: 2px;
-    }
-
-    /* ════════════════════════════════════════
-       INTERACTIVE LIVE SIMULATOR SECTION
-    ════════════════════════════════════════ */
-    .section-sim {
-      padding: 90px 6%;
-      background: #ffffff;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .section-header {
-      text-align: center;
-      max-width: 680px;
-      margin: 0 auto 48px;
-    }
-
-    .section-tag {
-      font: 700 12px 'Times New Roman', Times, serif;
-      letter-spacing: 1.6px;
-      color: var(--emerald);
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      display: block;
-    }
-
-    .section-title {
-      font: bold clamp(36px, 4.5vw, 54px)/0.96 'Times New Roman', Times, serif;
-      color: var(--ink);
-      margin-bottom: 14px;
-      text-transform: uppercase;
-    }
-
-    .section-title em {
-      color: var(--emerald);
-      font-style: normal;
-    }
-
-    .section-desc {
-      font-size: 15px;
-      color: var(--muted);
-      line-height: 1.75;
-    }
-
-    .sim-card-box {
-      max-width: 1040px;
-      margin: 0 auto;
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 34px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 34px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    }
-
-    .sim-slider-group {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .slider-item {
-      background: var(--white);
-      border: 1px solid var(--line);
-      border-radius: 4px;
-      padding: 16px 18px;
-    }
-
-    .slider-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .slider-label {
-      font: 600 12px 'Times New Roman', Times, serif;
-      color: var(--muted-dark);
-    }
-
-    .slider-val {
-      font: bold 22px 'Times New Roman', Times, serif;
-      color: var(--ink);
-    }
-
-    .range-input {
-      width: 100%;
-      accent-color: var(--emerald);
-      cursor: pointer;
-    }
-
-    .slider-sub {
-      display: flex;
-      justify-content: space-between;
-      font: 500 10px 'Times New Roman', Times, serif;
-      color: var(--muted);
-      margin-top: 6px;
-    }
-
-    .sim-result-panel {
-      background: var(--white);
-      border: 1px solid var(--line);
-      border-radius: 4px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .sim-result-head {
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 12px;
-      margin-bottom: 16px;
-    }
-
-    .sim-result-head strong {
-      font: bold 18px 'Times New Roman', Times, serif;
-      color: var(--ink);
-      display: block;
-    }
-
-    .sim-result-head span {
-      font: 500 11px 'Times New Roman', Times, serif;
-      color: var(--muted);
-    }
-
-    .sim-data-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .sim-metric-card {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 4px;
-      padding: 12px 14px;
-    }
-
-    .sim-metric-card small {
-      font: 600 10px 'Times New Roman', Times, serif;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .sim-metric-card b {
-      font: bold 24px 'Times New Roman', Times, serif;
-      color: var(--ink);
-      display: block;
-      line-height: 1;
-    }
-
-    .sim-formula-box {
-      background: var(--paper);
-      border: 1px dashed var(--line);
-      border-radius: 4px;
-      padding: 10px 14px;
-      font: 500 11px 'Times New Roman', Times, serif;
-      color: var(--muted-dark);
-      margin-bottom: 18px;
-    }
-
-    .sim-formula-box code {
-      color: var(--emerald);
-      display: block;
-      margin-top: 4px;
-      font-weight: 600;
-      font-family: 'Times New Roman', Times, serif;
-    }
-
-    .btn-apply-sim {
-      width: 100%;
-      background: var(--dark-btn);
-      color: #ffffff;
-      border: 0;
-      padding: 14px;
-      font: bold 13px 'Times New Roman', Times, serif;
-      letter-spacing: 1px;
-      cursor: pointer;
-      text-decoration: none;
-      border-radius: 4px;
-      text-align: center;
-      transition: all 0.2s;
-    }
-
-    .btn-apply-sim:hover {
-      background: var(--dark-hover);
-      transform: translateY(-1px);
-    }
-
-    /* ════════════════════════════════════════
-       HOW IT WORKS (4-STEP PIPELINE)
-    ════════════════════════════════════════ */
-    .section-how {
-      padding: 90px 6%;
-      background: var(--paper);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .steps-grid {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 18px;
-    }
-
-    .step-card {
-      background: var(--white);
-      border: 1px solid var(--line);
-      padding: 28px 24px;
-      border-radius: 6px;
-      position: relative;
-      transition: all 0.25s;
-    }
-
-    .step-card:hover {
-      border-color: #cbd5e1;
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-    }
-
-    .step-num {
-      font: bold 48px/1 'Times New Roman', Times, serif;
-      color: rgba(7, 134, 93, 0.12);
-      position: absolute;
-      top: 18px;
-      right: 20px;
-    }
-
-    .step-icon {
-      width: 42px;
-      height: 42px;
-      background: var(--emerald-bg);
-      color: var(--emerald);
-      display: grid;
-      place-items: center;
-      border-radius: 4px;
-      margin-bottom: 18px;
-    }
-
-    .step-title {
-      font: bold 19px 'Times New Roman', Times, serif;
-      color: var(--ink);
-      margin-bottom: 8px;
-      letter-spacing: 0.4px;
-    }
-
-    .step-desc {
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    /* ════════════════════════════════════════
-       SCENARIOS SECTION
-    ════════════════════════════════════════ */
-    .section-scenarios {
-      padding: 90px 6%;
-      background: #ffffff;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .scenarios-grid {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 16px;
-    }
-
-    .scenario-card {
-      background: var(--white);
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 26px 22px;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.25s;
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .scenario-card::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-    }
-
-    .scenario-card.clear::before { background: var(--lime); }
-    .scenario-card.dust::before { background: var(--amber); }
-    .scenario-card.poor::before { background: #f97316; }
-    .scenario-card.emergency::before { background: var(--red); }
-
-    .scenario-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 28px rgba(0,0,0,0.07);
-      border-color: #cbd5e1;
-    }
-
-    .scen-vis {
-      font: 800 44px/1 'Barlow Condensed';
-      margin-bottom: 6px;
-    }
-
-    .scenario-card.clear .scen-vis { color: var(--emerald); }
-    .scenario-card.dust .scen-vis { color: var(--amber); }
-    .scenario-card.poor .scen-vis { color: #f97316; }
-    .scenario-card.emergency .scen-vis { color: var(--red); }
-
-    .scen-name {
-      font: 800 17px 'Barlow Condensed';
-      color: var(--ink);
-      letter-spacing: 0.4px;
-      margin-bottom: 6px;
-    }
-
-    .scen-desc {
-      font: 500 11px 'JetBrains Mono';
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .scen-link-txt {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font: 700 11px 'Barlow Condensed';
-      letter-spacing: 1px;
-      color: var(--emerald);
-      margin-top: 16px;
-    }
-
-    /* ════════════════════════════════════════
-       HARDWARE STACK SECTION
-    ════════════════════════════════════════ */
-    .section-hardware {
-      padding: 90px 6%;
-      background: var(--paper);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .hw-grid {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-      gap: 18px;
-    }
-
-    .hw-card {
-      background: var(--white);
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 22px;
-      display: flex;
-      gap: 16px;
-      transition: all 0.2s;
-    }
-
-    .hw-card:hover {
-      border-color: #cbd5e1;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.04);
-    }
-
-    .hw-icon {
-      width: 42px;
-      height: 42px;
-      background: #eff6ff;
-      color: var(--blue);
-      display: grid;
-      place-items: center;
-      border-radius: 4px;
-      flex-shrink: 0;
-    }
-
-    .hw-meta strong {
-      font: 800 18px 'Barlow Condensed';
-      color: var(--ink);
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .hw-meta p {
-      font-size: 12.5px;
-      color: var(--muted);
-      line-height: 1.55;
-    }
-
-    .hw-meta span {
-      font: 600 10px 'JetBrains Mono';
-      color: var(--emerald);
-      display: block;
-      margin-top: 6px;
-    }
-
-    /* ════════════════════════════════════════
-       FINAL CTA SECTION
-    ════════════════════════════════════════ */
-    .section-cta {
-      padding: 100px 6%;
-      text-align: center;
-      background: #ffffff;
-    }
-
-    .cta-box {
-      max-width: 720px;
-      margin: 0 auto;
-    }
-
-    .cta-heading {
-      font: 800 clamp(44px, 5.5vw, 72px)/0.92 'Barlow Condensed';
-      color: var(--ink);
-      margin-bottom: 18px;
-      text-transform: uppercase;
-    }
-
-    .cta-heading em {
-      color: var(--emerald);
-      font-style: normal;
-      display: block;
-    }
-
-    .cta-desc {
-      font-size: 14.5px;
-      color: var(--muted);
-      max-width: 520px;
-      margin: 0 auto 34px;
-      line-height: 1.7;
-    }
-
-    .cta-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .btn-cta-dark {
-      background: var(--dark-btn);
-      color: #ffffff;
-      border: 0;
-      padding: 16px 36px;
-      font: 800 14px 'Barlow Condensed';
-      letter-spacing: 1.4px;
-      cursor: pointer;
-      text-decoration: none;
-      border-radius: 4px;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 14px rgba(22, 27, 32, 0.18);
-    }
-
-    .btn-cta-dark:hover {
-      background: var(--dark-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(22, 27, 32, 0.25);
-    }
-
-    .btn-cta-outline {
-      background: var(--white);
-      border: 1px solid var(--line);
-      color: var(--ink);
-      padding: 16px 28px;
-      font: 600 11px 'JetBrains Mono';
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      text-decoration: none;
-      border-radius: 4px;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-cta-outline:hover {
-      border-color: var(--ink);
-      background: #f8fafc;
-    }
-
-    /* ════════════════════════════════════════
-       FOOTER
-    ════════════════════════════════════════ */
-    footer {
-      border-top: 1px solid var(--line);
-      padding: 30px 6%;
-      background: var(--paper);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .footer-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--ink);
-      text-decoration: none;
-    }
-
-    .footer-mark {
-      width: 28px;
-      height: 28px;
-      background: var(--lime);
-      color: #042618;
-      display: grid;
-      place-items: center;
-      border-radius: 4px;
-    }
-
-    .footer-brand strong {
-      font: 800 16px 'Barlow Condensed';
-      letter-spacing: 1px;
-    }
-
-    .footer-brand small {
-      font: 500 10px 'JetBrains Mono';
-      color: var(--muted);
-      display: block;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 24px;
-    }
-
-    .footer-links a {
-      font: 500 11px 'JetBrains Mono';
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .footer-links a:hover {
-      color: var(--ink);
-    }
-
-    .footer-copy {
-      font: 500 11px 'JetBrains Mono';
-      color: var(--muted);
-    }
-
-    @media (max-width: 900px) {
-      .hero { flex-direction: column; }
-      .hero-left, .hero-right { width: 100%; }
-      .hero-left { padding: 40px 6%; }
-      .hero-right { padding: 30px 6% 50px; }
-      .sim-card-box { grid-template-columns: 1fr; }
-      .nav-links { display: none; }
-    }
+    .joystick-dpad {
+      display: grid; grid-template-columns: repeat(3, 48px); grid-template-rows: repeat(3, 42px);
+      gap: 6px; justify-content: center;
+    }
+    .dpad-btn {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px; color: #fff; font-family: var(--font-mono); font-size: 0.75rem;
+      font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .dpad-btn:hover, .dpad-btn.active {
+      background: var(--cyan-500); color: #000; border-color: var(--cyan-400);
+      box-shadow: 0 0 15px var(--cyan-glow);
+    }
+    .telemetry-row {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3);
+      width: 100%; margin-top: var(--sp-4);
+    }
+    .telemetry-cell {
+      background: rgba(5,8,16,0.6); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px; padding: 8px 12px; text-align: center;
+    }
+    .packet-ticker {
+      background: #04060a; border: 1px solid rgba(6,182,212,0.2);
+      border-radius: 8px; padding: 10px 14px; font-family: var(--font-mono);
+      font-size: 0.7rem; color: var(--cyan-400); width: 100%;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      margin-top: var(--sp-4); display: flex; align-items: center; gap: 8px;
+    }
+    .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan-400); animation: breathe 0.5s infinite; }
+    
+    /* Code Viewer */
+    .code-viewer-wrap {
+      background: #050811; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
+      overflow: hidden; margin-top: var(--sp-4);
+    }
+    .code-header {
+      background: rgba(255,255,255,0.03); padding: 8px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: space-between; font-family: var(--font-mono); font-size: 0.65rem; color: rgba(255,255,255,0.6);
+    }
+    .code-body {
+      padding: var(--sp-4); font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.6;
+      color: rgba(255,255,255,0.85); overflow-x: auto; max-height: 280px;
+    }
+
+    /* Footer */
+    #site-footer { background: #020408; border-top: 1px solid rgba(255,255,255,0.06); padding: var(--sp-16) var(--sp-8); text-align: center; }
+    .footer-logo { font-family: var(--font-head); font-weight: 900; font-size: 2.5rem; text-transform: uppercase; color: white; margin-bottom: var(--sp-2); }
+    .footer-logo span { color: var(--safe-500); }
+    .footer-tagline { font-family: var(--font-body); font-size: 0.9rem; color: rgba(255,255,255,0.5); }
   </style>
 </head>
 <body>
 
-  <!-- ════════ DARK FUTURISTIC NAV BAR (FIGMA EXACT) ════════ -->
-  <nav class="nav-dark-oreguard">
-    <a href="landing.html" class="nav-brand-dark">
-      <div class="nav-hex-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <polygon points="12,2 22,7.5 22,16.5 12,22 2,16.5 2,7.5" stroke="#00e5ff" stroke-width="1.8" fill="rgba(0, 229, 255, 0.08)" />
-          <circle cx="12" cy="12" r="4" stroke="#00e5ff" stroke-width="1.4" />
-          <line x1="12" y1="4" x2="12" y2="20" stroke="#00e5ff" stroke-width="1.4" stroke-linecap="round" />
-          <line x1="4" y1="12" x2="20" y2="12" stroke="#00e5ff" stroke-width="1.4" stroke-linecap="round" />
-        </svg>
-      </div>
-      <span class="nav-logo-text">OREGUARD</span>
-    </a>
+<!-- ═══ NAVIGATION ═══════════════════════════════════════════════ -->
+<nav id="site-nav" role="navigation" aria-label="Main navigation">
+  <div class="logo">ORE<span>GUARD</span></div>
+  <ul class="nav-links">
+    <li><a href="#ch-problem">THE PROBLEM</a></li>
+    <li><a href="#ch-levels">RISK LEVELS</a></li>
+    <li><a href="#ch-perception">NEURAL VISION</a></li>
+    <li><a href="#ch-hardware">HARDWARE</a></li>
+    <li><a href="#ch-controller" style="color:var(--cyan-400)">CONTROLLER</a></li>
+    <li><a href="index.html" style="color:var(--safe-400); border: 1px solid rgba(16,185,129,0.3); padding: 4px 10px; border-radius: 4px; background: rgba(16,185,129,0.08);">LAUNCH CONSOLE ↗</a></li>
+  </ul>
+  <div class="nav-risk-badge">
+    <div class="nav-risk-dot" id="nav-dot"></div>
+    <span id="nav-risk-label">SYSTEM NOMINAL</span>
+    <span id="nav-risk-score" style="opacity:0.5">18</span>
+  </div>
+</nav>
 
-    <ul class="nav-links-dark">
-      <li><a href="#how-it-works">Technology</a></li>
-      <li><a href="#scenarios">Safety Levels</a></li>
-      <li><a href="#hardware">Architecture</a></li>
-      <li><a href="#simulator">About</a></li>
-    </ul>
+<!-- ═══ HERO: SIGNAL ═════════════════════════════════════════════ -->
+<section id="hero" aria-label="OREGUARD hero">
+  <div id="hero-bg"></div>
+  <canvas id="hero-canvas"></canvas>
 
-    <div class="nav-actions-dark">
-      <a href="index.html" class="btn-nav-cyan">OPEN COMMAND</a>
-    </div>
-  </nav>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Mine Vehicle ADAS &amp; Safety Layer — SIH 2025</div>
+    <h1 class="hero-wordmark"><span class="ore">ORE</span>GUARD</h1>
+    <div class="hero-subtitle">The Risk Score That Saves Lives</div>
 
-  <!-- ════════ HERO SECTION — PIXEL-PERFECT MATCH ════════ -->
-  <section class="hero-oreguard">
-    <!-- Radar canvas animation layer -->
-    <canvas id="heroRadarCanvas" class="hero-canvas"></canvas>
-
-    <div class="hero-container">
-      <!-- LEFT: Main Content -->
-      <div class="hero-main-content">
-
-        <!-- Top badge pill: • INTELLIGENT ADAS — MINING VEHICLES -->
-        <div class="hero-tech-badge">
-          <span class="pulse-cyan-dot"></span>
-          <span class="badge-text">INTELLIGENT ADAS — MINING VEHICLES</span>
-        </div>
-
-        <!-- Big bold headline -->
-        <h1 class="hero-headline">
-          <span class="text-white-line">See the Risk.</span>
-          <span class="text-cyan-line">Stop the Collision.</span>
-        </h1>
-
-        <!-- Subtitle -->
-        <p class="hero-subtext">
-          Dynamic visibility-aware collision protection for heavy mining
-          vehicles. Real-time edge intelligence that adapts to every dust
-          cloud, fog bank, and tight-corner approach.
-        </p>
-
-        <!-- CTA Buttons -->
-        <div class="hero-button-group">
-          <a href="index.html" class="btn-cyan-solid">OPEN SAFETY COMMAND</a>
-          <a href="#simulator" class="btn-cyan-outline">EXPLORE TECHNOLOGY</a>
-        </div>
-      </div>
-
-      <!-- RIGHT: Live Risk HUD -->
-      <div class="hero-risk-hud">
-        <div class="risk-hud-inner">
-          <div class="risk-score-display" id="heroLiveRisk">8</div>
-          <div class="risk-score-label">RISK INDEX</div>
-          <div class="risk-score-badge" id="heroRiskBadge">SAFE</div>
-          <div class="risk-score-caption">LIVE SIMULATION PREVIEW.</div>
-        </div>
-      </div>
+    <div class="hero-risk-meter">
+      <div class="hero-risk-number t-data" id="hero-counter">18</div>
+      <div class="hero-risk-label">LIVE SENSOR RISK SCORE / 100</div>
     </div>
 
-    <!-- Bottom feature ticker strips -->
-    <div class="hero-bottom-ticker">
-      <div class="ticker-pill">
-        <span class="ticker-label">EDGE DECISION ENGINE</span>
-        <span class="ticker-val">&lt;2ms</span>
-      </div>
-      <div class="ticker-pill">
-        <span class="ticker-label">DYNAMIC RISK SCORING</span>
-        <span class="ticker-val">9-100</span>
-      </div>
-      <div class="ticker-pill">
-        <span class="ticker-label">4-TIER SAFETY STATE</span>
-        <span class="ticker-val">L1–L4</span>
-      </div>
-      <div class="ticker-pill">
-        <span class="ticker-label">AUTONOMOUS E-STOP</span>
-        <span class="ticker-val">ARMED</span>
-      </div>
-      <div class="ticker-pill">
-        <span class="ticker-label">OFFLINE EDGE PROTECT</span>
-        <span class="ticker-val">ACTIVE</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════ SPECS STRIP ════════ -->
-  <div class="specs-strip">
-    <div class="spec-item">
-      <div class="spec-icon-box">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-      </div>
-      <div class="spec-meta">
-        <strong>6-Point Radar</strong>
-        <span>360° obstacle array</span>
-      </div>
-    </div>
-
-    <div class="spec-item">
-      <div class="spec-icon-box">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      </div>
-      <div class="spec-meta">
-        <strong>ESP32 Edge MCU</strong>
-        <span>Sub-100ms loop</span>
-      </div>
-    </div>
-
-    <div class="spec-item">
-      <div class="spec-icon-box">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
-      </div>
-      <div class="spec-meta">
-        <strong>Dynamic Risk</strong>
-        <span>Visibility-weighted</span>
-      </div>
-    </div>
-
-    <div class="spec-item">
-      <div class="spec-icon-box">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-      </div>
-      <div class="spec-meta">
-        <strong>OLED Cabin HUD</strong>
-        <span>SSD1306 driver screen</span>
-      </div>
-    </div>
-
-    <div class="spec-item">
-      <div class="spec-icon-box">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-      </div>
-      <div class="spec-meta">
-        <strong>Auto-Brake Relay</strong>
-        <span>Failsafe motor cutoff</span>
-      </div>
+    <div class="hero-cta">
+      <a href="index.html" class="btn btn--primary">⚡ Launch Live Console</a>
+      <a href="#ch-controller" class="btn btn--cyan">🕹 Teleop Controller</a>
+      <a href="#ch-problem" class="btn btn--ghost">⬇ Explore The System</a>
     </div>
   </div>
 
-  <!-- ════════ INTERACTIVE LIVE SIMULATOR ════════ -->
-  <section class="section-sim" id="simulator">
-    <div class="section-header">
-      <span class="section-tag">LIVE PHYSICS PLAYGROUND</span>
-      <h2 class="section-title">Test the Risk Engine <em>in Real Time</em></h2>
-      <p class="section-desc">
-        Drag the sliders below to simulate different mine environmental hazards and watch OREGUARD recalculate stopping distances, hazard scores, and automatic speed interventions.
-      </p>
-    </div>
+  <div class="hero-scroll-hint">
+    <span>SCROLL TO DESCEND</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
 
-    <div class="sim-card-box">
-      
-      <!-- Sliders Left -->
-      <div class="sim-slider-group">
-        
-        <div class="slider-item">
-          <div class="slider-header">
-            <span class="slider-label">🌫️ ATMOSPHERIC VISIBILITY</span>
-            <span class="slider-val" id="simVisVal">85%</span>
-          </div>
-          <input type="range" class="range-input" id="simVisRange" min="10" max="100" value="85" oninput="runSimCalc()" />
-          <div class="slider-sub">
-            <span>Dense Dust/Fog (10%)</span>
-            <span>Clear Pit (100%)</span>
-          </div>
-        </div>
-
-        <div class="slider-item">
-          <div class="slider-header">
-            <span class="slider-label">🚧 FORWARD OBSTACLE DISTANCE</span>
-            <span class="slider-val" id="simDistVal">4.20 m</span>
-          </div>
-          <input type="range" class="range-input" id="simDistRange" min="0.2" max="5.0" step="0.05" value="4.20" oninput="runSimCalc()" />
-          <div class="slider-sub">
-            <span>Critical (0.2m)</span>
-            <span>Far Range (5.0m)</span>
-          </div>
-        </div>
-
-        <div class="slider-item">
-          <div class="slider-header">
-            <span class="slider-label">🚚 VEHICLE SPEED</span>
-            <span class="slider-val" id="simSpeedVal">8.2 m/s</span>
-          </div>
-          <input type="range" class="range-input" id="simSpeedRange" min="0" max="12" step="0.2" value="8.2" oninput="runSimCalc()" />
-          <div class="slider-sub">
-            <span>Halted (0 m/s)</span>
-            <span>Full Speed (12 m/s)</span>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Real-Time Output Right -->
-      <div class="sim-result-panel">
-        
-        <div>
-          <div class="sim-result-head">
-            <strong>DYNAMIC SAFETY RECALCULATION</strong>
-            <span>Autonomous Sub-100ms Edge Calculation</span>
-          </div>
-
-          <div class="sim-data-grid">
-            <div class="sim-metric-card">
-              <small>CALCULATED RISK SCORE</small>
-              <b id="simScoreText" style="color:var(--emerald)">12 / 100</b>
-            </div>
-            <div class="sim-metric-card">
-              <small>DYNAMIC BRAKING BUFFER</small>
-              <b id="simBrakeText" style="color:var(--blue)">1.82 m</b>
-            </div>
-          </div>
-
-          <div class="sim-formula-box">
-            <strong>MATHEMATICAL FORMULATION:</strong>
-            <code>D_stop = (v² / 2μg) + v·t_react × [1 + (1 - Vis%) × 1.5]</code>
-            <code>Risk = (Vis_hazard × 0.35 + Prox_hazard × 0.50 + Spd × 0.15) × 1.8</code>
-          </div>
-        </div>
-
-        <a href="index.html" class="btn-apply-sim" onclick="transferSimValues()">
-          APPLY THESE VALUES TO LIVE CONSOLE →
-        </a>
-
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ════════ HOW IT WORKS ════════ -->
-  <section class="section-how" id="how-it-works">
-    <div class="section-header">
-      <span class="section-tag">ARCHITECTURE PIPELINE</span>
-      <h2 class="section-title">A Safety Layer Built for the <em>Underground</em></h2>
-      <p class="section-desc">
-        OREGUARD sits directly between the driver and the vehicle drivetrain — continuously sensing, evaluating, and intervening before human perception can react.
-      </p>
-    </div>
-
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-num">01</div>
-        <div class="step-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>
-        </div>
-        <div class="step-title">Multi-Sensor Fusion</div>
-        <p class="step-desc">6 ultrasonic sensors sweep 360° surroundings at 10Hz, while optical LDR sensors gauge ambient atmospheric clarity and MPU-6050 monitors haul road incline.</p>
-      </div>
-
-      <div class="step-card">
-        <div class="step-num">02</div>
-        <div class="step-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <div class="step-title">Optical Attenuation</div>
-        <p class="step-desc">Atmospheric particulate density from coal dust and mist is calibrated into a dynamic visibility coefficient, shifting safety thresholds earlier in poor conditions.</p>
-      </div>
-
-      <div class="step-card">
-        <div class="step-num">03</div>
-        <div class="step-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
-        </div>
-        <div class="step-title">Dynamic Risk Recalibration</div>
-        <p class="step-desc">The edge risk engine dynamically calculates required stopping distance based on road grade, current vehicle velocity, and ambient visibility reduction.</p>
-      </div>
-
-      <div class="step-card">
-        <div class="step-num">04</div>
-        <div class="step-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-        </div>
-        <div class="step-title">Autonomous Intervention</div>
-        <p class="step-desc">Triggers multi-stage responses: Green safe path, Yellow speed advisory, Amber motor governor, and Red automatic emergency brake cutoff.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════ OPERATIONAL SCENARIOS ════════ -->
-  <section class="section-scenarios" id="scenarios">
-    <div class="section-header">
-      <span class="section-tag">DEMO PRESETS</span>
-      <h2 class="section-title">Every Condition. <em>One Shield.</em></h2>
-      <p class="section-desc">
-        Click any scenario below to load the live ADAS console pre-configured to that exact underground environmental condition.
-      </p>
-    </div>
-
-    <div class="scenarios-grid">
-      
-      <a href="index.html" class="scenario-card clear" onclick="setDemoPreset('clear')">
-        <div>
-          <div class="scen-vis">85%</div>
-          <div class="scen-name">NORMAL CLEAR</div>
-          <div class="scen-desc">
-            Visibility: 85% · Obstacle: 4.20m<br>
-            ↳ Safe corridor · Full nominal speed permitted
-          </div>
-        </div>
-        <div class="scen-link-txt">TEST IN CONSOLE →</div>
-      </a>
-
-      <a href="index.html" class="scenario-card dust" onclick="setDemoPreset('dust')">
-        <div>
-          <div class="scen-vis">55%</div>
-          <div class="scen-name">DUST DEGRADED</div>
-          <div class="scen-desc">
-            Visibility: 55% · Obstacle: 2.80m<br>
-            ↳ Warning level · Speed advisory & alert chime
-          </div>
-        </div>
-        <div class="scen-link-txt">TEST IN CONSOLE →</div>
-      </a>
-
-      <a href="index.html" class="scenario-card poor" onclick="setDemoPreset('poor')">
-        <div>
-          <div class="scen-vis">35%</div>
-          <div class="scen-name">POOR FOG / SMOKE</div>
-          <div class="scen-desc">
-            Visibility: 35% · Obstacle: 1.80m<br>
-            ↳ High risk · Automatic speed governor active
-          </div>
-        </div>
-        <div class="scen-link-txt">TEST IN CONSOLE →</div>
-      </a>
-
-      <a href="index.html" class="scenario-card emergency" onclick="setDemoPreset('emergency')">
-        <div>
-          <div class="scen-vis">18%</div>
-          <div class="scen-name">EMERGENCY NEAR</div>
-          <div class="scen-desc">
-            Visibility: 18% · Obstacle: 0.70m<br>
-            ↳ CRITICAL STOP · Emergency brake engaged
-          </div>
-        </div>
-        <div class="scen-link-txt">TEST IN CONSOLE →</div>
-      </a>
-
-    </div>
-  </section>
-
-  <!-- ════════ HARDWARE & SENSORS STACK ════════ -->
-  <section class="section-hardware" id="hardware">
-    <div class="section-header">
-      <span class="section-tag">HARDWARE SPECIFICATIONS</span>
-      <h2 class="section-title">Built on Industrial <em>Edge IoT</em></h2>
-      <p class="section-desc">
-        Complete prototype hardware schematic designed for tough, dust-heavy underground mining environments.
-      </p>
-    </div>
-
-    <div class="hw-grid">
-      
-      <div class="hw-card">
-        <div class="hw-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <div class="hw-meta">
-          <strong>ESP32 Microcontroller</strong>
-          <p>Dual-core 240MHz MCU executing real-time FreeRTOS safety threads with sub-100ms sensor processing cycles.</p>
-          <span>LOCAL ZERO-LATENCY EDGE LOOP</span>
-        </div>
-      </div>
-
-      <div class="hw-card">
-        <div class="hw-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>
-        </div>
-        <div class="hw-meta">
-          <strong>HC-SR04 Ultrasonic Array</strong>
-          <p>Multi-sensor proximity grid with running median filters to prevent echo noise and detect haul road hazards up to 4.0m.</p>
-          <span>DIGITAL 10Hz FILTERED SWEEP</span>
-        </div>
-      </div>
-
-      <div class="hw-card">
-        <div class="hw-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-        </div>
-        <div class="hw-meta">
-          <strong>LDR Optical Attenuation</strong>
-          <p>Calibrated ambient light photocell analyzing light scattering from underground dust and blasting smoke.</p>
-          <span>ANALOG VOLTAGE DIVIDER PIPELINE</span>
-        </div>
-      </div>
-
-      <div class="hw-card">
-        <div class="hw-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        </div>
-        <div class="hw-meta">
-          <strong>SSD1306 In-Cabin OLED HUD</strong>
-          <p>0.96" 128x64 I2C driver cockpit micro-display rendering live visibility %, distance meters, and risk warnings to the operator.</p>
-          <span>IN-CABIN DRIVER TELEMETRY</span>
-        </div>
-      </div>
-
-      <div class="hw-card">
-        <div class="hw-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
-        </div>
-        <div class="hw-meta">
-          <strong>MPU-6050 6-Axis IMU</strong>
-          <p>Detects haul road incline, vehicle pitch, roll, and tilt angles to dynamically recalculate gravitational braking resistance.</p>
-          <span>ROAD GRADE COMPENSATION</span>
-        </div>
-      </div>
-
-      <div class="hw-card">
-        <div class="hw-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-        </div>
-        <div class="hw-meta">
-          <strong>Dual TT Motors & Auto-Brake</strong>
-          <p>L298N motor driver with PWM speed regulation and instant emergency relay cutoff for automatic vehicle immobilization.</p>
-          <span>AUTONOMOUS BRAKING INTERVENTION</span>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ════════ FINAL CTA SECTION ════════ -->
-  <section class="section-cta">
-    <div class="cta-box">
-      <span class="section-tag">MINE VEHICLE ADAS DEPLOYMENT</span>
-      <h2 class="cta-heading">
-        Safety isn't reactive.
-        <em>Make it predictive.</em>
-      </h2>
-      <p class="cta-desc">
-        Experience the OREGUARD Mine Driving Assistance & Collision Prevention console. Test real-time scenario adaptations, live ESP32 telemetry streaming, and incident analytics.
-      </p>
-
-      <div class="cta-buttons">
-        <a href="index.html" class="btn-cta-dark">
-          <span>ENTER SAFETY CONSOLE</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        </a>
-        <a href="login.html" class="btn-cta-outline">
-          <span>SIGN IN TO CONSOLE</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════ FOOTER ════════ -->
-  <footer>
-    <a href="landing.html" class="footer-brand">
-      <div class="footer-mark">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          <path d="m9 12 2 2 4-4"/>
-        </svg>
-      </div>
+<!-- ═══ CHAPTER 1: THE PROBLEM ═══════════════════════════════════ -->
+<section id="ch-problem" class="chapter">
+  <div class="container">
+    <div class="chapter-tag"><span style="color:var(--crit-500)">▲</span> Chapter 01 — The Problem</div>
+    <div class="problem-grid">
       <div>
-        <strong>OREGUARD</strong>
-        <small>ADAS CONTROL · MV-07 · PIT 03</small>
+        <h2 class="t-h1" style="margin-bottom:var(--sp-6)">Underground.<br>60 tonnes.<br>Zero visibility.</h2>
+        <p class="t-body" style="margin-bottom:var(--sp-4)">
+          In underground coal and ore mines, dust clouds, methane gas, water mist and dense fog reduce visibility to near-zero. A driver of a 60-tonne ore hauler cannot see more than 1–2 metres ahead. At those conditions, standard distance sensors fail.
+        </p>
+        <p class="t-body" style="margin-bottom:var(--sp-8)">
+          Even if an obstacle is detected 2 metres away, the vehicle needs several more metres of braking distance if moving at speed. OREGUARD solves this by <strong style="color:white">dynamically fusing optical visibility, proximity, and velocity</strong> into a single real-time risk score every 500ms.
+        </p>
+
+        <div class="problem-stat">
+          <div class="problem-stat-number">1–2m</div>
+          <div class="problem-stat-text">Maximum visibility in dense underground fog.<br>Braking distance needed: up to 8+ metres.</div>
+        </div>
+        <div class="problem-stat">
+          <div class="problem-stat-number">60t</div>
+          <div class="problem-stat-text">Loaded mass of a CAT 777 ore hauler.<br>Momentum makes instant stopping impossible.</div>
+        </div>
+        <div class="problem-stat" style="border-left-color:var(--warn-500)">
+          <div class="problem-stat-number" style="color:var(--warn-500)">500ms</div>
+          <div class="problem-stat-text">OREGUARD risk calculation cycle.<br>Faster than human reaction time.</div>
+        </div>
       </div>
-    </a>
 
-    <div class="footer-links">
-      <a href="index.html">Live Dashboard</a>
-      <a href="login.html">Sign In</a>
-      <a href="#simulator">Simulator</a>
-      <a href="#how-it-works">How It Works</a>
-      <a href="#hardware">Hardware Stack</a>
+      <div>
+        <div class="problem-image-wrap">
+          <img src="ore_hauler.jpg" alt="60-tonne ore hauler in underground mine tunnel" loading="lazy">
+          <div class="problem-image-overlay">
+            <div class="t-label">MINE VEHICLE MV-07</div>
+            <div class="t-data" style="font-size:0.85rem; color:rgba(255,255,255,0.7)">CAT 777 · Sector 04 Ramp Decline</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:var(--sp-4); background:rgba(239,68,68,0.06); border-color:rgba(239,68,68,0.2)">
+          <div class="t-label" style="margin-bottom:var(--sp-2); color:var(--crit-500)">Without OREGUARD</div>
+          <div style="display:flex; flex-direction:column; gap:6px; font-family:var(--font-mono); font-size:0.7rem; color:rgba(255,255,255,0.6);">
+            <div><span style="color:var(--crit-500)">✕</span> Driver estimates stopping distance blindly in fog</div>
+            <div><span style="color:var(--crit-500)">✕</span> Alert at 2m is too late at speed</div>
+            <div><span style="color:var(--crit-500)">✕</span> No autonomous failsafe brake intervention</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:var(--sp-4); background:rgba(16,185,129,0.06); border-color:rgba(16,185,129,0.2)">
+          <div class="t-label" style="margin-bottom:var(--sp-2); color:var(--safe-500)">With OREGUARD</div>
+          <div style="display:flex; flex-direction:column; gap:6px; font-family:var(--font-mono); font-size:0.7rem; color:rgba(255,255,255,0.6);">
+            <div><span style="color:var(--safe-500)">✓</span> Real-time risk score calculated every 500ms</div>
+            <div><span style="color:var(--safe-500)">✓</span> Dynamic fog escalation multiplier (up to 1.8×)</div>
+            <div><span style="color:var(--safe-500)">✓</span> Autonomous hydraulic relay trips emergency brake</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CHAPTER 2: THE FOUR LEVELS ═══════════════════════════════ -->
+<section id="ch-levels" class="chapter">
+  <div class="container">
+    <div class="chapter-tag">Chapter 02 — ADAS Intervention Model</div>
+    <h2 class="t-h1" style="margin-bottom:var(--sp-8)">Four levels.<br>One cascade.</h2>
+
+    <div class="level-cards">
+      <div class="level-card">
+        <div class="level-card-top" style="background:var(--safe-500)"></div>
+        <div class="level-number" style="color:var(--safe-500)">01</div>
+        <div class="level-name" style="color:var(--safe-500)">SAFE</div>
+        <div class="level-range">RISK SCORE: 0–31</div>
+        <div class="level-desc">Full speed permitted. Green indicators. No intervention required. System nominal.</div>
+        <canvas class="audio-vis-canvas" data-type="flat" data-color="#10b981" width="200" height="35" style="margin-top:14px"></canvas>
+      </div>
+
+      <div class="level-card">
+        <div class="level-card-top" style="background:var(--warn-500)"></div>
+        <div class="level-number" style="color:var(--warn-500)">02</div>
+        <div class="level-name" style="color:var(--warn-500)">CAUTION</div>
+        <div class="level-range">RISK SCORE: 32–57</div>
+        <div class="level-desc">Amber visual alerts. 580 Hz sine wave tone emitted every 1.4s. Driver advised to slow down.</div>
+        <canvas class="audio-vis-canvas" data-type="sine" data-color="#f59e0b" width="200" height="35" style="margin-top:14px"></canvas>
+      </div>
+
+      <div class="level-card">
+        <div class="level-card-top" style="background:var(--high-500)"></div>
+        <div class="level-number" style="color:var(--high-500)">03</div>
+        <div class="level-name" style="color:var(--high-500)">HIGH RISK</div>
+        <div class="level-range">RISK SCORE: 58–81</div>
+        <div class="level-desc">Orange alerts. 750 Hz sawtooth wave every 0.6s. Speed governor engages and cuts PWM.</div>
+        <canvas class="audio-vis-canvas" data-type="sawtooth" data-color="#f97316" width="200" height="35" style="margin-top:14px"></canvas>
+      </div>
+
+      <div class="level-card">
+        <div class="level-card-top" style="background:var(--crit-500)"></div>
+        <div class="level-number" style="color:var(--crit-500)">04</div>
+        <div class="level-name" style="color:var(--crit-500)">CRITICAL</div>
+        <div class="level-range">RISK SCORE: 82–100</div>
+        <div class="level-desc">Red siren at 920 Hz every 0.3s. Failsafe relay trips 185 bar hydraulic brake automatically.</div>
+        <canvas class="audio-vis-canvas" data-type="square" data-color="#ef4444" width="200" height="35" style="margin-top:14px"></canvas>
+      </div>
     </div>
 
-    <div class="footer-copy">
-      © 2025 OREGUARD · SIH Mine Safety Shield
+    <!-- Intervention Image -->
+    <div style="margin-top:var(--sp-8); border-radius:14px; overflow:hidden; position:relative; height:380px; box-shadow:0 15px 35px -10px rgba(0,0,0,0.6)">
+      <img src="critical_emergency.jpg" alt="Critical emergency brake engaged inside mine hauler cab" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.7)">
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:var(--sp-8);background:linear-gradient(to top, rgba(5,8,16,0.95), transparent 60%)">
+        <div class="pill pill--crit" style="margin-bottom:var(--sp-3); width:fit-content">⚠ CRITICAL EMERGENCY STOP</div>
+        <h3 class="t-h2" style="color:white">AUTONOMOUS INTERVENTION</h3>
+        <p class="t-body" style="max-width:550px; font-size:0.85rem">When the human driver cannot react in time, the failsafe relay trips the secondary hydraulic line. 185 bar pressure engages the brake in 18ms.</p>
+      </div>
     </div>
-  </footer>
+  </div>
+</section>
 
-  <!-- ════════ JAVASCRIPT: HERO RADAR ANIMATION, TELEMETRY & SIMULATOR ════════ -->
-  <script>
-    /* ══════════════════════════════════════════════════════════════
-       1. 360° RADAR SWEEP & MINE DUST PARTICLE CANVAS ANIMATION
-       ══════════════════════════════════════════════════════════════ */
-    (function initHeroRadarCanvas() {
-      const canvas = document.getElementById('heroRadarCanvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      let animId = null;
-      let width = 0, height = 0;
-      let sweepAngle = 0;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+<!-- ═══ CHAPTER 3: AI NEURAL PERCEPTION & 3D LIDAR RADAR FUSION ═══ -->
+<section id="ch-perception" class="chapter" style="background: linear-gradient(to bottom, transparent, rgba(6,182,212,0.04) 50%, transparent);">
+  <div class="container">
+    <div class="chapter-tag"><span style="color:var(--cyan-400)">⚡</span> Chapter 03 — Multi-Modal Perception &amp; 3D LiDAR Fusion</div>
+    <div class="grid-2" style="gap:var(--sp-12); align-items:start">
+      <div>
+        <h2 class="t-h1" style="margin-bottom:var(--sp-6)">Subterranean<br>Neural Vision.</h2>
+        <p class="t-body" style="margin-bottom:var(--sp-4)">
+          When optical visibility drops to zero, standard cameras fail. OREGUARD fuses <strong style="color:white">77GHz Millimeter-Wave Radar, 3D LiDAR point clouds, and high-frequency Ultrasonic transducers</strong> into a unified real-time spatial awareness matrix.
+        </p>
+        <p class="t-body" style="margin-bottom:var(--sp-8)">
+          Our onboard neural inference model identifies miners, haul trucks, and rockfall hazards through dense methane dust clouds at up to <strong style="color:var(--cyan-400)">40 scans per second</strong> with 2cm ranging precision.
+        </p>
 
-      // Radar Obstacle Blips (polar coordinates: distance & angle)
-      const blips = [
-        { rRatio: 0.28, angle: 0.45,  size: 3.5, ping: 0 },
-        { rRatio: 0.52, angle: 1.85,  size: 4.0, ping: 0 },
-        { rRatio: 0.72, angle: 3.40,  size: 4.5, ping: 0 },
-        { rRatio: 0.38, angle: 4.60,  size: 3.0, ping: 0 },
-        { rRatio: 0.85, angle: 5.40,  size: 4.0, ping: 0 },
-        { rRatio: 0.64, angle: 0.95,  size: 3.5, ping: 0 }
-      ];
+        <!-- 4 Sensor Layer Badges -->
+        <div style="display:flex; flex-direction:column; gap:var(--sp-3)">
+          <div class="card" style="padding:var(--sp-3); border-color:rgba(6,182,212,0.25)">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-family:var(--font-mono); font-size:0.75rem; font-weight:700; color:var(--cyan-400)">3D SOLID-STATE LIDAR</span>
+              <span class="pill pill--cyan" style="font-size:0.6rem">40,000 PTS/SEC</span>
+            </div>
+            <div class="t-body" style="font-size:0.75rem; margin-top:4px">905nm pulsed laser array paints instant 3D voxel point clouds of cavern walls and blind turns.</div>
+          </div>
 
-      // Floating Mine Dust Particles
-      const particles = [];
-      const PARTICLE_COUNT = 45;
+          <div class="card" style="padding:var(--sp-3); border-color:rgba(16,185,129,0.25)">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-family:var(--font-mono); font-size:0.75rem; font-weight:700; color:var(--safe-400)">77GHz mmWAVE PENETRATIVE RADAR</span>
+              <span class="pill pill--safe" style="font-size:0.6rem">100% DUST PROOF</span>
+            </div>
+            <div class="t-body" style="font-size:0.75rem; margin-top:4px">Electromagnetic beams cut through 100% opaque dust, water mist, and steam without signal degradation.</div>
+          </div>
 
-      function resize() {
-        const rect = canvas.getBoundingClientRect();
-        width = rect.width;
-        height = rect.height;
-        canvas.width = width * dpr;
-        canvas.height = height * dpr;
-        ctx.scale(dpr, dpr);
+          <div class="card" style="padding:var(--sp-3); border-color:rgba(249,115,22,0.25)">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-family:var(--font-mono); font-size:0.75rem; font-weight:700; color:var(--high-400)">ESP32 PROXIMITY ACOUSTIC GRID</span>
+              <span class="pill pill--high" style="font-size:0.6rem">40kHz ULTRASONIC</span>
+            </div>
+            <div class="t-body" style="font-size:0.75rem; margin-top:4px">Dual-transducer acoustic echo timing creates an impenetrable 4-metre failsafe safety bubble.</div>
+          </div>
+        </div>
+      </div>
 
-        if (particles.length === 0) {
-          for (let i = 0; i < PARTICLE_COUNT; i++) {
-            particles.push({
-              x: Math.random() * width,
-              y: Math.random() * height,
-              vx: (Math.random() - 0.5) * 0.4,
-              vy: (Math.random() - 0.5) * 0.35,
-              radius: Math.random() * 2.0 + 0.8,
-              alpha: Math.random() * 0.55 + 0.25,
-              color: Math.random() > 0.4 ? '#00e5ff' : '#ffffff'
-            });
-          }
-        }
-      }
+      <!-- Right: Real-time Interactive 3D LiDAR & Radar Canvas Simulator -->
+      <div>
+        <div class="joystick-panel" style="border-color:rgba(6,182,212,0.3)">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px">
+            <div class="t-label" style="color:var(--cyan-400); opacity:1">360° LIDAR SPATIAL RADAR MATRIX</div>
+            <div class="pill pill--cyan" id="radarStatusPill">LIVE TRACKING · 3 TARGETS</div>
+          </div>
 
-      window.addEventListener('resize', () => {
-        resize();
+          <!-- The Canvas Radar -->
+          <div style="position:relative; width:100%; height:320px; background:#040711; border:1px solid rgba(6,182,212,0.25); border-radius:12px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+            <canvas id="lidarRadarCanvas" width="480" height="320" style="width:100%; height:100%"></canvas>
+            <div style="position:absolute; top:10px; left:12px; font-family:var(--font-mono); font-size:0.62rem; color:rgba(255,255,255,0.4)">
+              RANGE: 10.0m · FOV: 360°<br>
+              SWEEP: 40Hz · RES: 0.02m
+            </div>
+            <div style="position:absolute; bottom:10px; right:12px; font-family:var(--font-mono); font-size:0.62rem; color:var(--cyan-400)">
+              VEHICLE: CAT-777 (MV-07)
+            </div>
+          </div>
+
+          <!-- Interactive Scenario Injector Buttons -->
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-top:14px">
+            <button class="btn btn--ghost" style="padding:8px 6px; font-size:0.62rem; border-color:rgba(255,255,255,0.15)" onclick="injectRadarScenario('miner')">👷 Miner (3.2m)</button>
+            <button class="btn btn--ghost" style="padding:8px 6px; font-size:0.62rem; border-color:rgba(255,255,255,0.15)" onclick="injectRadarScenario('hauler')">🚛 CAT 777 (6.5m)</button>
+            <button class="btn btn--ghost" style="padding:8px 6px; font-size:0.62rem; border-color:rgba(239,68,68,0.3); color:var(--crit-400)" onclick="injectRadarScenario('rockfall')">⚠ Rockfall (1.2m)</button>
+          </div>
+
+          <div class="packet-ticker" style="margin-top:10px">
+            <div class="pulse-dot"></div>
+            <span id="lidar-feed-log">[LIDAR FUSION] Target #1 LOCKED: Miner (Dist: 3.2m · Velocity: 1.1m/s · Risk: NOMINAL)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CHAPTER 4: HARDWARE ═══════════════════════════════════════ -->
+<section id="ch-hardware" class="chapter">
+  <div class="container">
+    <div class="chapter-tag">Chapter 04 — Hardware Architecture</div>
+    <div class="grid-2" style="gap:var(--sp-12); align-items:center">
+      <div>
+        <h2 class="t-h1" style="margin-bottom:var(--sp-6)">One ESP32.<br>Six sensors.<br>Zero modifications.</h2>
+        <p class="t-body" style="margin-bottom:var(--sp-6)">
+          The OREGUARD MV-07 node is built around an ESP32 microcontroller with a dual-network stack: SoftAP for local operator low-latency control and Station Wi-Fi for telemetry streaming.
+        </p>
+
+        <div style="display:flex; flex-direction:column; gap:var(--sp-3)">
+          <div class="card" style="padding:var(--sp-3)">
+            <div style="font-family:var(--font-mono); font-size:0.7rem; font-weight:700; color:var(--safe-500)">SOFTAP DIRECT TCP (192.168.4.1:3333)</div>
+            <div class="t-body" style="font-size:0.75rem">Direct machine-to-cab communication without external network infrastructure.</div>
+          </div>
+          <div class="card" style="padding:var(--sp-3)">
+            <div style="font-family:var(--font-mono); font-size:0.7rem; font-weight:700; color:var(--warn-500)">NON-INVASIVE RETROFIT</div>
+            <div class="t-body" style="font-size:0.75rem">Failsafe electromagnetic relay splices in-line with standard machine electrical lines.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="hardware-image-wrap">
+          <img id="hw-main-img" src="esp32_hw.jpg" alt="ESP32 ADAS node mounted inside mining vehicle">
+          <div class="hw-annotation" id="hw-annot-1" style="top:18%; left:8%">HC-SR04 · Trig:5 Echo:18</div>
+          <div class="hw-annotation" id="hw-annot-2" style="bottom:25%; right:8%">ESP32 DevKit V1 · MV-07</div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:14px; overflow-x:auto">
+          <button class="btn btn--ghost" style="padding:6px 12px; font-size:0.65rem; border-color:var(--safe-500)" onclick="switchHwImage('esp32_hw.jpg', 'HC-SR04 · Trig:5 Echo:18', 'ESP32 DevKit V1 · MV-07', this)">ESP32 Node</button>
+          <button class="btn btn--ghost" style="padding:6px 12px; font-size:0.65rem" onclick="switchHwImage('sensor_hcsr04.jpg', 'Transducer 40kHz Pulse', 'Acoustic Mesh Grille', this)">Ultrasonic</button>
+          <button class="btn btn--ghost" style="padding:6px 12px; font-size:0.65rem" onclick="switchHwImage('critical_emergency.jpg', 'E-STOP Interlock Engaged', '185 Bar Hydraulic Relay', this)">E-Stop Cab</button>
+          <button class="btn btn--ghost" style="padding:6px 12px; font-size:0.65rem" onclick="switchHwImage('ore_hauler.jpg', '60t CAT 777 Hauler', 'Sector 04 Ramp Decline', this)">CAT 777</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CHAPTER 5: JOYSTICK CONTROLLER & TELEOPERATION ════════════ -->
+<section id="ch-controller" class="chapter" style="background:linear-gradient(to bottom, transparent, rgba(6,182,212,0.03) 50%, transparent)">
+  <div class="container">
+    <div class="chapter-tag"><span style="color:var(--cyan-400)">🕹</span> Chapter 05 — Teleoperation &amp; Wireless Controller</div>
+    
+    <div class="grid-2" style="gap:var(--sp-12); align-items:start">
+      <!-- Left Column: Interactive Virtual Joystick & Telemetry -->
+      <div>
+        <h2 class="t-h1" style="margin-bottom:var(--sp-4)">ESP32 Wireless<br>Joystick Node.</h2>
+        <p class="t-body" style="margin-bottom:var(--sp-6)">
+          Direct teleoperation module for hazardous subterranean extraction. The operator console reads dual-axis potentiometers (<strong style="color:white">VRX/VRY</strong>) and a tactile emergency button (<strong style="color:white">SW</strong>), transmitting single-byte stream commands at a high-speed <strong style="color:var(--cyan-400)">50ms cycle</strong> over low-latency TCP (<code style="color:var(--cyan-400)">192.168.4.1:3333</code>).
+        </p>
+
+        <!-- Interactive Virtual Joystick Simulator -->
+        <div class="joystick-panel">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--sp-3)">
+            <div class="t-label" style="color:var(--cyan-400); opacity:1">LIVE VIRTUAL JOYSTICK SIMULATOR</div>
+            <div id="ctrl-cmd-pill" class="pill pill--cyan">CMD: [S] STOP / NEUTRAL</div>
+          </div>
+
+          <div class="joystick-interactive-zone">
+            <!-- Analog Joystick Base -->
+            <div class="joystick-base" id="joystick-base" title="Drag knob or use WASD / Arrow keys">
+              <div class="joystick-crosshair-h"></div>
+              <div class="joystick-crosshair-v"></div>
+              <div class="joystick-deadzone-ring" title="Deadzone Threshold (±300)"></div>
+              <div class="joystick-knob" id="joystick-knob">CTRL</div>
+            </div>
+
+            <!-- Direction D-PAD & Emergency Interlock -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px">
+              <div class="t-label" style="font-size:0.6rem">KEYBOARD: WASD / ARROWS · SPACE FOR STOP</div>
+              <div class="joystick-dpad">
+                <div></div>
+                <button class="dpad-btn" id="dpad-f" onclick="triggerDpad('F')">▲</button>
+                <div></div>
+                <button class="dpad-btn" id="dpad-l" onclick="triggerDpad('L')">◄</button>
+                <button class="dpad-btn" id="dpad-s" onclick="triggerDpad('S')" style="background:rgba(239,68,68,0.2); border-color:var(--crit-500); color:var(--crit-400)">■</button>
+                <button class="dpad-btn" id="dpad-r" onclick="triggerDpad('R')">►</button>
+                <div></div>
+                <button class="dpad-btn" id="dpad-b" onclick="triggerDpad('B')">▼</button>
+                <div></div>
+              </div>
+              <button class="btn btn--ghost" id="sw-btn" style="padding:6px 14px; font-size:0.65rem; border-color:var(--crit-500); color:var(--crit-400); margin-top:4px" onclick="toggleSwitch()">
+                SW BUTTON (GPIO 32): <span id="sw-status-text" style="color:var(--safe-400); font-weight:700; margin-left:4px">HIGH (NORMAL)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Live Telemetry Readout Values -->
+          <div class="telemetry-row">
+            <div class="telemetry-cell">
+              <div class="t-label">VRX (GPIO 34)</div>
+              <div class="t-data" id="vrx-val" style="color:var(--cyan-400); font-size:1.1rem; margin-top:2px">2048</div>
+            </div>
+            <div class="telemetry-cell">
+              <div class="t-label">VRY (GPIO 35)</div>
+              <div class="t-data" id="vry-val" style="color:var(--cyan-400); font-size:1.1rem; margin-top:2px">2048</div>
+            </div>
+            <div class="telemetry-cell">
+              <div class="t-label">DEADZONE</div>
+              <div class="t-data" style="color:var(--warn-400); font-size:1.1rem; margin-top:2px">±300 ADC</div>
+            </div>
+          </div>
+
+          <!-- Live TCP Packet Ticker -->
+          <div class="packet-ticker">
+            <div class="pulse-dot"></div>
+            <span id="packet-stream-log">[TCP 192.168.4.1:3333] TX -> COMMAND='S' (X=2048, Y=2048, SW=1) · 50ms</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Hardware Image, Architecture Cards & Firmware Code -->
+      <div>
+        <div class="hardware-image-wrap" style="height:360px">
+          <img src="joystick_controller.jpg" alt="Industrial ESP32 Wireless Teleoperation Joystick Controller for Mine Vehicles">
+          <div class="hw-annotation" style="top:12%; left:8%; border-color:var(--cyan-400); color:var(--cyan-400)">ESP32-WROOM · 2.4GHz WiFi</div>
+          <div class="hw-annotation" style="bottom:18%; left:8%; border-color:var(--warn-500); color:var(--warn-500)">Dual-Axis VRX(34) · VRY(35)</div>
+          <div class="hw-annotation" style="bottom:18%; right:8%; border-color:var(--crit-500); color:var(--crit-500)">Tactile E-Stop SW(32)</div>
+        </div>
+
+        <!-- 3 Feature Specs Cards -->
+        <div style="display:flex; flex-direction:column; gap:var(--sp-3); margin-top:var(--sp-4)">
+          <div class="card" style="padding:var(--sp-3); border-color:rgba(6,182,212,0.2)">
+            <div style="font-family:var(--font-mono); font-size:0.7rem; font-weight:700; color:var(--cyan-400)">50ms RAPID NON-BLOCKING TRANSMISSION</div>
+            <div class="t-body" style="font-size:0.75rem">Continuous 20Hz byte stream (<code>F</code>/<code>B</code>/<code>L</code>/<code>R</code>/<code>S</code>) over persistent TCP socket minimizes round-trip latency to &lt;12ms.</div>
+          </div>
+          <div class="card" style="padding:var(--sp-3); border-color:rgba(245,158,11,0.2)">
+            <div style="font-family:var(--font-mono); font-size:0.7rem; font-weight:700; color:var(--warn-400)">AUTO-CENTER CALIBRATION &amp; DEADZONE (±300)</div>
+            <div class="t-body" style="font-size:0.75rem">Samples rest-state ADC voltages on boot, eliminating mechanical potentiometer drift and unintended motor creep.</div>
+          </div>
+          <div class="card" style="padding:var(--sp-3); border-color:rgba(239,68,68,0.2)">
+            <div style="font-family:var(--font-mono); font-size:0.7rem; font-weight:700; color:var(--crit-400)">FAILSAFE AUTO-RECONNECT &amp; EMERGENCY BRAKE</div>
+            <div class="t-body" style="font-size:0.75rem">If Wi-Fi beacon or TCP stream drops, vehicle receiver immediately commands full emergency neutral brake (<code>'S'</code>).</div>
+          </div>
+        </div>
+
+        <!-- Embedded Code Viewer with Copy Button -->
+        <div class="code-viewer-wrap">
+          <div class="code-header">
+            <span>esp32_joystick_controller.ino</span>
+            <button onclick="copyFirmwareCode()" id="copy-btn" class="btn btn--ghost" style="padding:2px 8px; font-size:0.6rem; border-color:rgba(255,255,255,0.2)">Copy Code</button>
+          </div>
+          <pre class="code-body" id="firmware-code-block"><code>// ESP32 Joystick Teleoperation Controller
+#include &lt;WiFi.h&gt;
+
+const char* ssid = "HelloESP32";
+const char* password = "12345678";
+const char* vehicleIP = "192.168.4.1";
+const int vehiclePort = 3333;
+
+#define VRX 34   // Joystick X-Axis (Left/Right)
+#define VRY 35   // Joystick Y-Axis (Forward/Back)
+#define SW  32   // Tactile Pushbutton (E-Stop)
+
+const int DEADZONE = 300;
+unsigned long lastSend = 0;
+
+void loop() {
+  if (!client.connected()) { connectVehicle(); return; }
+  
+  int x = analogRead(VRX);
+  int y = analogRead(VRY);
+  int button = digitalRead(SW);
+  char command = 'S';
+
+  if (button == LOW)               command = 'S';
+  else if (y > centerY + DEADZONE) command = 'F'; // Forward
+  else if (y < centerY - DEADZONE) command = 'B'; // Reverse
+  else if (x < centerX - DEADZONE) command = 'L'; // Turn Left
+  else if (x > centerX + DEADZONE) command = 'R'; // Turn Right
+  else                             command = 'S'; // Neutral Stop
+
+  if (millis() - lastSend >= 50) {
+    client.write(command);
+    lastSend = millis();
+  }
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ════════════════════════════════════════════════════ -->
+<footer id="site-footer">
+  <div class="footer-logo">ORE<span>GUARD</span></div>
+  <div class="footer-tagline">Mine Vehicle ADAS &amp; Safety Layer — SIH 2025</div>
+  <div style="font-family:var(--font-mono); font-size:0.65rem; color:rgba(255,255,255,0.4); margin-top:var(--sp-4)">
+    Built by Rahul J (@RAHUL3307-star) · Smart India Hackathon 2025
+  </div>
+  <div style="margin-top:var(--sp-4); display:flex; gap:12px; justify-content:center">
+    <a href="index.html" class="btn btn--primary" style="font-size:0.7rem; padding:8px 18px">Launch Live ADAS Dashboard →</a>
+    <a href="#ch-controller" class="btn btn--ghost" style="font-size:0.7rem; padding:8px 18px">Back To Controller ↑</a>
+  </div>
+</footer>
+
+<script>
+  // ─── HERO PARTICLES ───────────────────────────────────────────────
+  (function initHeroParticles() {
+    const canvas = document.getElementById('hero-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const COUNT = 70;
+
+    function resize() {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    for (let i = 0; i < COUNT; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: 0.5 + Math.random() * 1.5,
+        speed: 0.2 + Math.random() * 0.6,
+        drift: (Math.random() - 0.5) * 0.3,
+        opacity: Math.random() * 0.5
       });
-      resize();
+    }
 
-      function drawRadar(cx, cy, maxRadius) {
-        // 1. Concentric Range Rings
-        const rings = [0.2, 0.4, 0.6, 0.8, 1.0];
-        rings.forEach((ratio, idx) => {
-          const r = maxRadius * ratio;
-          ctx.beginPath();
-          ctx.arc(cx, cy, r, 0, Math.PI * 2);
-          ctx.strokeStyle = idx === rings.length - 1 
-            ? 'rgba(0, 229, 255, 0.28)' 
-            : 'rgba(0, 229, 255, 0.12)';
-          ctx.lineWidth = idx === rings.length - 1 ? 1.5 : 1;
-          ctx.stroke();
-
-          // Subtle range tick crosshairs
-          ctx.fillStyle = 'rgba(0, 229, 255, 0.35)';
-          ctx.font = '9px "JetBrains Mono", monospace';
-          if (idx > 0) {
-            ctx.fillText(`${(ratio * 4.0).toFixed(1)}m`, cx + r + 4, cy - 3);
-          }
-        });
-
-        // 2. Radial Axis Guide Lines
-        const spokes = 12;
-        for (let i = 0; i < spokes; i++) {
-          const angle = (i * Math.PI * 2) / spokes;
-          ctx.beginPath();
-          ctx.moveTo(cx, cy);
-          ctx.lineTo(cx + Math.cos(angle) * maxRadius, cy + Math.sin(angle) * maxRadius);
-          ctx.strokeStyle = 'rgba(0, 229, 255, 0.07)';
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-
-        // 3. Rotating 360° Radar Sweep Sector with Fading Trail
-        const trailAngle = Math.PI / 3.5; // ~50° sector trail
-        const steps = 30;
-        for (let i = 0; i < steps; i++) {
-          const a1 = sweepAngle - (trailAngle * (i / steps));
-          const a2 = sweepAngle - (trailAngle * ((i + 1) / steps));
-          const alpha = (1 - (i / steps)) * 0.18;
-
-          ctx.beginPath();
-          ctx.moveTo(cx, cy);
-          ctx.arc(cx, cy, maxRadius, a2, a1);
-          ctx.closePath();
-          ctx.fillStyle = `rgba(0, 229, 255, ${alpha})`;
-          ctx.fill();
-        }
-
-        // 4. Sharp Leading Sweep Line
+    function tick() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.y -= p.speed;
+        p.x += p.drift;
+        if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
         ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + Math.cos(sweepAngle) * maxRadius, cy + Math.sin(sweepAngle) * maxRadius);
-        ctx.strokeStyle = '#00e5ff';
-        ctx.lineWidth = 2;
-        ctx.shadowColor = '#00e5ff';
-        ctx.shadowBlur = 12;
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${p.opacity})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(tick);
+    }
+    tick();
+  })();
+
+  // ─── AUDIO WAVEFORM CANVASES ─────────────────────────────────────
+  (function drawWaveforms() {
+    document.querySelectorAll('.audio-vis-canvas').forEach(canvas => {
+      const type = canvas.dataset.type;
+      const color = canvas.dataset.color;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (let x = 0; x <= W; x++) {
+        const t = x / W;
+        let y = H / 2;
+        if (type === 'sine') y = H / 2 - Math.sin(t * Math.PI * 6) * (H / 2 - 4);
+        if (type === 'sawtooth') y = H / 2 - ((t * 3) % 1 - 0.5) * (H - 8);
+        if (type === 'square') y = H / 2 - (Math.sin(t * Math.PI * 8) > 0 ? 1 : -1) * (H / 2 - 4);
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    });
+  })();
+
+  // ─── HARDWARE IMAGE SWITCHER ─────────────────────────────────────
+  function switchHwImage(src, annot1, annot2, btn) {
+    const img = document.getElementById('hw-main-img');
+    const t1 = document.getElementById('hw-annot-1');
+    const t2 = document.getElementById('hw-annot-2');
+    if (img) {
+      img.style.opacity = '0.3';
+      setTimeout(() => { img.src = src; img.style.opacity = '1'; }, 150);
+    }
+    if (t1 && annot1) t1.textContent = annot1;
+    if (t2 && annot2) t2.textContent = annot2;
+    if (btn && btn.parentElement) {
+      btn.parentElement.querySelectorAll('button').forEach(b => b.style.borderColor = 'rgba(255,255,255,0.12)');
+      btn.style.borderColor = 'var(--safe-500)';
+    }
+  }
+
+  // ─── SIMULATED RISK SCORE PULSE ───────────────────────────────────
+  (function simRisk() {
+    let t = 0;
+    setInterval(() => {
+      t += 0.5;
+      const score = Math.round(18 + Math.sin(t * 0.5) * 4);
+      const counter = document.getElementById('hero-counter');
+      const badge = document.getElementById('nav-risk-score');
+      if (counter) counter.textContent = String(score).padStart(2, '0');
+      if (badge) badge.textContent = score;
+    }, 500);
+  })();
+
+  // ─── JOYSTICK SIMULATOR LOGIC ─────────────────────────────────────
+  let joystickState = {
+    centerX: 2048,
+    centerY: 2048,
+    deadzone: 300,
+    currentX: 2048,
+    currentY: 2048,
+    button: 1, // 1 = HIGH (normal), 0 = LOW (pressed)
+    command: 'S',
+    isDragging: false
+  };
+
+  const base = document.getElementById('joystick-base');
+  const knob = document.getElementById('joystick-knob');
+  const vrxVal = document.getElementById('vrx-val');
+  const vryVal = document.getElementById('vry-val');
+  const cmdPill = document.getElementById('ctrl-cmd-pill');
+  const packetLog = document.getElementById('packet-stream-log');
+
+  function updateJoystickUI() {
+    // Calculate command from firmware math
+    let cmd = 'S';
+    let label = 'CMD: [S] STOP / NEUTRAL';
+    let pillClass = 'pill pill--cyan';
+
+    if (joystickState.button === 0) {
+      cmd = 'S';
+      label = 'CMD: [S] E-STOP PRESSED (SW=LOW)';
+      pillClass = 'pill pill--crit';
+    } else if (joystickState.currentY > joystickState.centerY + joystickState.deadzone) {
+      cmd = 'F';
+      label = 'CMD: [F] FORWARD';
+      pillClass = 'pill pill--safe';
+    } else if (joystickState.currentY < joystickState.centerY - joystickState.deadzone) {
+      cmd = 'B';
+      label = 'CMD: [B] REVERSE';
+      pillClass = 'pill pill--high';
+    } else if (joystickState.currentX < joystickState.centerX - joystickState.deadzone) {
+      cmd = 'L';
+      label = 'CMD: [L] TURN LEFT';
+      pillClass = 'pill pill--warn';
+    } else if (joystickState.currentX > joystickState.centerX + joystickState.deadzone) {
+      cmd = 'R';
+      label = 'CMD: [R] TURN RIGHT';
+      pillClass = 'pill pill--warn';
+    } else {
+      cmd = 'S';
+      label = 'CMD: [S] CENTER / DEADZONE';
+      pillClass = 'pill pill--cyan';
+    }
+
+    joystickState.command = cmd;
+
+    if (vrxVal) vrxVal.textContent = Math.round(joystickState.currentX);
+    if (vryVal) vryVal.textContent = Math.round(joystickState.currentY);
+    if (cmdPill) {
+      cmdPill.textContent = label;
+      cmdPill.className = pillClass;
+    }
+    if (packetLog) {
+      packetLog.textContent = `[TCP 192.168.4.1:3333] TX -> COMMAND='${cmd}' (X=${Math.round(joystickState.currentX)}, Y=${Math.round(joystickState.currentY)}, SW=${joystickState.button}) · 50ms`;
+    }
+
+    // Highlight D-Pad buttons
+    ['f', 'b', 'l', 'r', 's'].forEach(k => {
+      const b = document.getElementById('dpad-' + k);
+      if (b) {
+        if (cmd.toLowerCase() === k) {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      }
+    });
+  }
+
+  function setJoystickKnobOffset(dx, dy) {
+    if (!knob) return;
+    const maxRadius = 70;
+    const dist = Math.hypot(dx, dy);
+    let clampedX = dx, clampedY = dy;
+    if (dist > maxRadius) {
+      clampedX = (dx / dist) * maxRadius;
+      clampedY = (dy / dist) * maxRadius;
+    }
+    knob.style.transform = `translate(${clampedX}px, ${clampedY}px)`;
+
+    // Map physical displacement to 0-4095 ADC
+    // Moving knob up -> Y increases (Forward) in firmware convention:
+    // y > centerY + DEADZONE => 'F'
+    joystickState.currentX = 2048 + (clampedX / maxRadius) * 2047;
+    joystickState.currentY = 2048 - (clampedY / maxRadius) * 2047; // invert so dragging UP makes Y higher
+    updateJoystickUI();
+  }
+
+  function resetJoystickKnob() {
+    if (!knob) return;
+    knob.style.transform = 'translate(0px, 0px)';
+    joystickState.currentX = 2048;
+    joystickState.currentY = 2048;
+    updateJoystickUI();
+  }
+
+  if (base) {
+    function handlePointer(e) {
+      const rect = base.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const dx = clientX - centerX;
+      const dy = clientY - centerY;
+      setJoystickKnobOffset(dx, dy);
+    }
+
+    base.addEventListener('pointerdown', (e) => {
+      joystickState.isDragging = true;
+      base.setPointerCapture(e.pointerId);
+      handlePointer(e);
+    });
+
+    base.addEventListener('pointermove', (e) => {
+      if (joystickState.isDragging) handlePointer(e);
+    });
+
+    base.addEventListener('pointerup', (e) => {
+      joystickState.isDragging = false;
+      resetJoystickKnob();
+    });
+
+    base.addEventListener('pointercancel', (e) => {
+      joystickState.isDragging = false;
+      resetJoystickKnob();
+    });
+  }
+
+  // Keyboard navigation for Joystick
+  window.addEventListener('keydown', (e) => {
+    const key = e.key.toLowerCase();
+    if (['w', 'arrowup'].includes(key)) {
+      setJoystickKnobOffset(0, -60);
+    } else if (['s', 'arrowdown'].includes(key) && !e.ctrlKey) {
+      setJoystickKnobOffset(0, 60);
+    } else if (['a', 'arrowleft'].includes(key)) {
+      setJoystickKnobOffset(-60, 0);
+    } else if (['d', 'arrowright'].includes(key)) {
+      setJoystickKnobOffset(60, 0);
+    } else if (key === ' ') {
+      resetJoystickKnob();
+    }
+  });
+
+  window.addEventListener('keyup', (e) => {
+    const key = e.key.toLowerCase();
+    if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(key)) {
+      resetJoystickKnob();
+    }
+  });
+
+  function triggerDpad(cmd) {
+    if (cmd === 'F') setJoystickKnobOffset(0, -60);
+    else if (cmd === 'B') setJoystickKnobOffset(0, 60);
+    else if (cmd === 'L') setJoystickKnobOffset(-60, 0);
+    else if (cmd === 'R') setJoystickKnobOffset(60, 0);
+    else resetJoystickKnob();
+  }
+
+  function toggleSwitch() {
+    joystickState.button = joystickState.button === 1 ? 0 : 1;
+    const txt = document.getElementById('sw-status-text');
+    if (txt) {
+      txt.textContent = joystickState.button === 1 ? 'HIGH (NORMAL)' : 'LOW (E-STOP ENGAGED)';
+      txt.style.color = joystickState.button === 1 ? 'var(--safe-400)' : 'var(--crit-400)';
+    }
+    updateJoystickUI();
+  }
+
+  function copyFirmwareCode() {
+    const code = document.getElementById('firmware-code-block').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = document.getElementById('copy-btn');
+      if (btn) {
+        btn.textContent = '✓ Copied!';
+        btn.style.borderColor = 'var(--safe-500)';
+        setTimeout(() => {
+          btn.textContent = 'Copy Code';
+          btn.style.borderColor = 'rgba(255,255,255,0.2)';
+        }, 2000);
+      }
+    });
+  }
+
+  // Periodic 50ms pulse simulation
+  setInterval(() => {
+    if (Math.random() > 0.6 && !joystickState.isDragging) {
+      // Tiny micro jitter in ADC read
+      const jitterX = Math.round((Math.random() - 0.5) * 8);
+      const jitterY = Math.round((Math.random() - 0.5) * 8);
+      if (vrxVal && joystickState.command === 'S') vrxVal.textContent = 2048 + jitterX;
+      if (vryVal && joystickState.command === 'S') vryVal.textContent = 2048 + jitterY;
+    }
+  }, 100);
+
+  // ─── 360° LIDAR & RADAR CANVAS SIMULATOR ────────────────────────
+  let radarTargets = [
+    { id: 1, name: 'MINER #04', angle: 0.8, dist: 0.32, vx: 0.002, vy: 0.001, type: 'miner', color: '#34d399' },
+    { id: 2, name: 'CAT-777 HAULER', angle: 3.4, dist: 0.65, vx: -0.001, vy: 0.002, type: 'hauler', color: '#38bdf8' },
+    { id: 3, name: 'ROCKFALL HAZARD', angle: 5.1, dist: 0.22, vx: 0, vy: 0, type: 'rockfall', color: '#f87171' }
+  ];
+
+  (function initLidarRadar() {
+    const canvas = document.getElementById('lidarRadarCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let sweepAngle = 0;
+
+    function draw() {
+      const W = canvas.width;
+      const H = canvas.height;
+      const cx = W / 2;
+      const cy = H / 2;
+      const maxR = Math.min(cx, cy) - 20;
+
+      // Dark fade clear
+      ctx.fillStyle = 'rgba(4, 7, 17, 0.25)';
+      ctx.fillRect(0, 0, W, H);
+
+      // Radar Concentric Rings
+      ctx.lineWidth = 1;
+      [0.25, 0.5, 0.75, 1.0].forEach((ratio, idx) => {
+        ctx.beginPath();
+        ctx.arc(cx, cy, maxR * ratio, 0, Math.PI * 2);
+        ctx.strokeStyle = idx === 3 ? 'rgba(6, 182, 212, 0.4)' : 'rgba(6, 182, 212, 0.15)';
         ctx.stroke();
-        ctx.shadowBlur = 0; // reset shadow
 
-        // 5. Radar Detection Blips
-        blips.forEach(blip => {
-          const bx = cx + Math.cos(blip.angle) * (maxRadius * blip.rRatio);
-          const by = cy + Math.sin(blip.angle) * (maxRadius * blip.rRatio);
+        ctx.fillStyle = 'rgba(6, 182, 212, 0.5)';
+        ctx.font = '9px JetBrains Mono';
+        ctx.fillText(`${(ratio * 10).toFixed(1)}m`, cx + 4, cy - maxR * ratio + 10);
+      });
 
-          // Check if sweep line just crossed blip angle
-          const angleDiff = Math.abs((sweepAngle % (Math.PI * 2)) - (blip.angle % (Math.PI * 2)));
-          if (angleDiff < 0.05) {
-            blip.ping = 1.0;
-          }
+      // Axis crosshairs
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.12)';
+      ctx.beginPath();
+      ctx.moveTo(cx - maxR, cy); ctx.lineTo(cx + maxR, cy);
+      ctx.moveTo(cx, cy - maxR); ctx.lineTo(cx, cy + maxR);
+      ctx.stroke();
 
-          // Base blip dot
-          ctx.beginPath();
-          ctx.arc(bx, by, blip.size, 0, Math.PI * 2);
-          ctx.fillStyle = blip.ping > 0.2 ? '#00e5ff' : 'rgba(0, 229, 255, 0.45)';
-          ctx.fill();
+      // Rotating Laser Sweep
+      sweepAngle = (sweepAngle + 0.045) % (Math.PI * 2);
+      const sweepX = cx + Math.cos(sweepAngle) * maxR;
+      const sweepY = cy + Math.sin(sweepAngle) * maxR;
 
-          // Expanding ping echo ring
-          if (blip.ping > 0.02) {
-            const rippleR = blip.size + (1.0 - blip.ping) * 22;
-            ctx.beginPath();
-            ctx.arc(bx, by, rippleR, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(0, 229, 255, ${blip.ping * 0.7})`;
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-            blip.ping *= 0.94; // Fade out
-          }
-        });
-      }
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
+      grad.addColorStop(0, 'rgba(6, 182, 212, 0.3)');
+      grad.addColorStop(1, 'rgba(6, 182, 212, 0)');
 
-      function drawParticles() {
-        for (let i = 0; i < particles.length; i++) {
-          const p = particles[i];
-          p.x += p.vx;
-          p.y += p.vy;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, maxR, sweepAngle - 0.4, sweepAngle);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(6, 182, 212, 0.08)';
+      ctx.fill();
 
-          // Wrap edges
-          if (p.x < 0) p.x = width;
-          if (p.x > width) p.x = 0;
-          if (p.y < 0) p.y = height;
-          if (p.y > height) p.y = 0;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(sweepX, sweepY);
+      ctx.strokeStyle = 'rgba(34, 211, 238, 0.85)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
 
-          // Draw particle
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fillStyle = p.color === '#00e5ff' 
-            ? `rgba(0, 229, 255, ${p.alpha})` 
-            : `rgba(255, 255, 255, ${p.alpha})`;
-          ctx.fill();
+      // Center Ego Vehicle
+      ctx.fillStyle = '#06b6d4';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+      ctx.fill();
 
-          // Subtle dynamic constellation lines between close particles
-          for (let j = i + 1; j < particles.length; j++) {
-            const p2 = particles[j];
-            const dx = p.x - p2.x;
-            const dy = p.y - p2.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 85) {
-              ctx.beginPath();
-              ctx.moveTo(p.x, p.y);
-              ctx.lineTo(p2.x, p2.y);
-              ctx.strokeStyle = `rgba(0, 229, 255, ${(1 - dist / 85) * 0.12})`;
-              ctx.lineWidth = 0.8;
-              ctx.stroke();
-            }
-          }
-        }
-      }
+      // Draw Targets with Bounding Boxes
+      radarTargets.forEach(t => {
+        t.angle += t.vx;
+        const tx = cx + Math.cos(t.angle) * (t.dist * maxR);
+        const ty = cy + Math.sin(t.angle) * (t.dist * maxR);
 
-      function renderLoop() {
-        ctx.clearRect(0, 0, width, height);
+        // Blip Glow
+        ctx.fillStyle = t.color;
+        ctx.beginPath();
+        ctx.arc(tx, ty, 4, 0, Math.PI * 2);
+        ctx.fill();
 
-        // Position radar center slightly to the right side (matching Figma layout)
-        const isMobile = width < 980;
-        const cx = isMobile ? width * 0.5 : width * 0.78;
-        const cy = isMobile ? height * 0.55 : height * 0.48;
-        const maxRadius = Math.min(width * 0.42, height * 0.52, 420);
+        // Bounding Box
+        ctx.strokeStyle = t.color;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(tx - 10, ty - 10, 20, 20);
 
-        // Draw radar and particles
-        drawRadar(cx, cy, maxRadius);
-        drawParticles();
+        // Target Tag
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.font = '8px JetBrains Mono';
+        ctx.fillText(`${t.name} [${(t.dist * 10).toFixed(1)}m]`, tx + 14, ty + 3);
+      });
 
-        // Increment continuous sweep angle
-        sweepAngle = (sweepAngle + 0.022) % (Math.PI * 2);
-
-        animId = requestAnimationFrame(renderLoop);
-      }
-
-      renderLoop();
-    })();
-
-    /* ══════════════════════════════════════════════════════════════
-       2. LIVE HERO RISK SCORE MICRO-FLUCTUATION (16 - 21)
-       ══════════════════════════════════════════════════════════════ */
-    (function initHeroRiskUpdater() {
-      const riskEl = document.getElementById('heroLiveRisk');
-      const badgeEl = document.getElementById('heroRiskBadge');
-      if (!riskEl) return;
-      let baseScore = 8;
-      let tick = 0;
-
-      setInterval(() => {
-        tick++;
-        const delta = Math.sin(tick * 0.5) * 1.5 + (Math.random() - 0.5) * 0.8;
-        const currentVal = Math.round(Math.max(6, Math.min(14, baseScore + delta)));
-        riskEl.textContent = currentVal;
-        if (badgeEl) {
-          badgeEl.textContent = currentVal > 50 ? 'WARNING' : 'SAFE';
-        }
-      }, 1600);
-    })();
-
-    /* ══════════════════════════════════════════════════════════════
-       3. INTERACTIVE SIMULATOR PLAYGROUND LOGIC
-       ══════════════════════════════════════════════════════════════ */
-    function runSimCalc() {
-      const vis = parseFloat(document.getElementById('simVisRange').value);
-      const dist = parseFloat(document.getElementById('simDistRange').value);
-      const speed = parseFloat(document.getElementById('simSpeedRange').value);
-
-      document.getElementById('simVisVal').textContent = `${vis}%`;
-      document.getElementById('simDistVal').textContent = `${dist.toFixed(2)} m`;
-      document.getElementById('simSpeedVal').textContent = `${speed.toFixed(1)} m/s`;
-
-      const visNorm = vis / 100;
-      const distNorm = Math.min(1, dist / 5.0);
-      const spdNorm = speed / 12.0;
-
-      const visHazard = 1.0 - visNorm;
-      const proxHazard = Math.pow(1.0 - distNorm, 2.3);
-      const rawRisk = (visHazard * 0.35) + (proxHazard * 0.50) + (spdNorm * 0.15);
-      const score = Math.round(Math.min(100, Math.max(0, rawRisk * 1.8 * 100)));
-
-      // Dynamic Stopping Distance Formula
-      const brakeBuffer = parseFloat((1.2 + (speed * 0.18) + (1.0 - visNorm) * 1.5).toFixed(2));
-
-      const scoreEl = document.getElementById('simScoreText');
-      const brakeEl = document.getElementById('simBrakeText');
-
-      if (scoreEl) {
-        scoreEl.textContent = `${score} / 100`;
-        if (score >= 80) scoreEl.style.color = 'var(--red)';
-        else if (score >= 50) scoreEl.style.color = 'var(--amber)';
-        else scoreEl.style.color = 'var(--emerald)';
-      }
-
-      if (brakeEl) {
-        brakeEl.textContent = `${brakeBuffer} m`;
-      }
+      requestAnimationFrame(draw);
     }
+    draw();
+  })();
 
-    function transferSimValues() {
-      const vis = document.getElementById('simVisRange').value;
-      const dist = document.getElementById('simDistRange').value;
-      const speed = document.getElementById('simSpeedRange').value;
-      localStorage.setItem('oreguard_custom_sim', JSON.stringify({ vis, dist, speed }));
+  function injectRadarScenario(type) {
+    const pill = document.getElementById('radarStatusPill');
+    const log = document.getElementById('lidar-feed-log');
+    if (type === 'miner') {
+      radarTargets[0].dist = 0.32;
+      radarTargets[0].angle = 0.9;
+      if (pill) { pill.textContent = 'TRACKING · MINER LOCKED'; pill.className = 'pill pill--safe'; }
+      if (log) log.textContent = '[LIDAR FUSION] Target #1 LOCKED: Miner (Dist: 3.2m · Velocity: 1.1m/s · Risk: NOMINAL)';
+    } else if (type === 'hauler') {
+      radarTargets[1].dist = 0.65;
+      radarTargets[1].angle = 3.2;
+      if (pill) { pill.textContent = 'TRACKING · CAT 777 HAULER'; pill.className = 'pill pill--cyan'; }
+      if (log) log.textContent = '[RADAR 77GHz] Heavy Unit #07 Detected (Dist: 6.5m · Speed: 14km/h · Sector: 04 Decline)';
+    } else if (type === 'rockfall') {
+      radarTargets[2].dist = 0.12;
+      radarTargets[2].angle = 1.5;
+      if (pill) { pill.textContent = 'CRITICAL · OBSTACLE 1.2M'; pill.className = 'pill pill--crit'; }
+      if (log) log.textContent = '[LIDAR ALERT] IMMINENT HAZARD: Rockfall obstacle at 1.2m — Secondary brake line armed!';
     }
+  }
 
-    function setDemoPreset(preset) {
-      localStorage.setItem('oreguard_preset', preset);
-    }
-  </script>
-
+  updateJoystickUI();
+</script>
 </body>
 </html>

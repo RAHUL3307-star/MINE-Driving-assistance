@@ -1,0 +1,13 @@
+{
+  "name": "oreguard-mine-vehicle",
+  "version": "1.0.0",
+  "description": "OreGuard ADAS Mine Vehicle Dashboard with ESP32 Bridge",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

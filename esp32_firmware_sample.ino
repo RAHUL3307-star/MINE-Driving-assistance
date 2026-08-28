@@ -1,178 +1,332 @@
 /*
- * ═════════════════════════════════════════════════════════════════
- * OREGUARD MINE VEHICLE ADAS — ESP32 HARDWARE FIRMWARE
- * ═════════════════════════════════════════════════════════════════
- * Hardware Target: ESP32 Dev Module
- * Sensors:
- *   - LDR Optical Light/Dust Sensor     (Pin 34 - ADC)
- *   - HC-SR04 Ultrasonic Distance       (Trig Pin 5, Echo Pin 18)
- *   - Hall-Effect / Encoder Speed       (Pin 36 - ADC, optional)
- *   - OLED Display                      (I2C: SDA Pin 21, SCL Pin 22)
- *   - ADAS Warning Buzzer               (Pin 19 - PWM)
- *
- * Cloud Destination: Supabase REST API (POST /rest/v1/telemetry_logs)
- *
- * FIXES v2:
- *   - Ultrasonic capped to 4m (HC-SR04 reliable range) with 5-sample median filter
- *   - Speed sensor pin added (PIN_SPEED_HALL) with fallback if not connected
- *   - LDR calibrated with mine-zero offset for dusty tunnel ambient baseline
+ * ═══════════════════════════════════════════════════════════════════════════
+ *  OREGUARD MV-07 — UNIFIED ALL-IN-ONE ESP32 FIRMWARE (I2C 16x2 LCD VERSION)
+ * ═══════════════════════════════════════════════════════════════════════════
+ *  Hardware Modules:
+ *    1. MPU6050 6-Axis IMU (Accelerometer & Gyro) -> I2C (SDA Pin 21, SCL Pin 22)
+ *    2. LDR Visibility Sensor                     -> Pin 34 (ADC1)
+ *    3. Active ADAS Alarm Buzzer                  -> Pin 19
+ *    4. HC-SR04 Ultrasonic Distance Sensor        -> Trig Pin 5, Echo Pin 18
+ *    5. L298N Dual Motor Driver                    -> IN1:25, IN2:26, IN3:27, IN4:14
+ *    6. 16x2 I2C LCD Display (0x27)               -> I2C (SDA Pin 21, SCL Pin 22)
+ *    7. Dual-Mode Wi-Fi:
+ *       - SoftAP ("HelloESP32", Port 3333) for Real-Time Direction Driving
+ *       - Station Mode (Home/Hotspot Wi-Fi) for Live Web Dashboard Cloud Sync
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
+#include <Wire.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
-#include <ArduinoJson.h> // Install "ArduinoJson" by Benoit Blanchon in Arduino Library Manager
+#include <ArduinoJson.h>          // Library: "ArduinoJson" by Benoit Blanchon
+#include <LiquidCrystal_I2C.h>    // Library: "LiquidCrystal I2C" by Frank de Brabander
 
-// ── 1. NETWORK CONFIGURATION ──
-const char* WIFI_SSID     = "YOUR_WIFI_SSID";
-const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
+// ─────────────────────────────────────────────────────────────
+// 1. PIN DEFINITIONS & HARDWARE ADDRESSES
+// ─────────────────────────────────────────────────────────────
+// I2C Pins (Shared between LCD & MPU6050)
+#define SDA_PIN 21
+#define SCL_PIN 22
+#define MPU_ADDR 0x68
 
-// ── 2. SUPABASE CREDENTIALS ──
+// 16x2 I2C LCD Object (Address 0x27, 16 columns, 2 rows)
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// LDR Visibility Sensor & Buzzer
+#define LDR_PIN 34
+#define BUZZER_PIN 19
+#define DARK_THRESHOLD 2000
+
+// Ultrasonic HC-SR04 Sensor
+#define TRIG_PIN 5
+#define ECHO_PIN 18
+
+// L298N Motor Driver Pins
+#define IN1 25
+#define IN2 26
+#define IN3 27
+#define IN4 14
+
+// ─────────────────────────────────────────────────────────────
+// 2. NETWORK & SUPABASE CLOUD CONFIGURATION
+// ─────────────────────────────────────────────────────────────
+// SoftAP Settings for Direction Joystick Controller
+const char* AP_SSID = "HelloESP32";
+const char* AP_PASS = "12345678";
+WiFiServer server(3333);
+
+// Station Wi-Fi Settings (Connects to Internet to stream real data to your website)
+// 👉 Enter your home Wi-Fi or Mobile Hotspot credentials here:
+const char* STA_SSID = "YOUR_WIFI_SSID";
+const char* STA_PASS = "YOUR_WIFI_PASSWORD";
+
+// Supabase Real-Time Database Endpoint
 const char* SUPABASE_URL = "https://rlwdrbpcnmqqejofdbbs.supabase.co/rest/v1/telemetry_logs";
 const char* SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsd2RyYnBjbm1xcWVqb2ZkYmJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NTMwODQsImV4cCI6MjEwMzIyOTA4NH0.VpwN9LISANX5VH3iNDOVB64h8DeSt2uvi6BJK3qi8Yg";
 
-// ── 3. PIN DEFINITIONS ──
-#define PIN_LDR_VISIBILITY  34   // ADC1 — LDR dust/light sensor
-#define PIN_TRIG             5   // HC-SR04 trigger
-#define PIN_ECHO            18   // HC-SR04 echo
-#define PIN_BUZZER          19   // PWM buzzer
-#define PIN_SPEED_HALL      36   // Hall-effect speed pulse (ADC1, input-only pin)
-                                 // Leave unconnected for fallback simulated speed
-
-// LDR Calibration — adjust ADC_ZERO for your mine tunnel ambient light baseline
-// (0 = pitch dark tunnel, measure raw analogRead value with lights off)
-#define LDR_ADC_ZERO   150       // ADC reading in complete darkness (calibrate this!)
-#define LDR_ADC_MAX   3900       // ADC reading in full light
-
-// Vehicle Identification
+// Vehicle Identifier
 const char* VEHICLE_ID = "MV-07";
 
-// Timing
-unsigned long lastTelemetryTime = 0;
-const unsigned long TELEMETRY_INTERVAL_MS = 2000; // Cloud push every 2 seconds
+// ─────────────────────────────────────────────────────────────
+// 3. GLOBAL VARIABLES & STATE
+// ─────────────────────────────────────────────────────────────
+// Sensor Variables
+int ldrValue = 0;
+String vis = "HIGH";
+String risk = "LOW";
+float visibilityPercent = 87.0;
+float distance = 4.0;
+float vehicleSpeed = 0.0;
+int riskScore = 17;
+String riskLevel = "SAFE";
+bool emergencyBrake = false;
 
-// Speed tracking (hall-effect pulse counting)
-volatile unsigned long pulseCount = 0;
-unsigned long lastSpeedCalcTime = 0;
-float lastCalculatedSpeed = 0.0;
-const float WHEEL_CIRCUMFERENCE_M = 1.57; // ~50cm diameter mine vehicle wheel (π × 0.5m)
-const int   PULSES_PER_REV = 1;           // Adjust if using multi-pole hall sensor
+// MPU6050 Accelerometer Variables
+int16_t ax = 0, ay = 0, az = 0;
 
-// ── 4. SENSOR READING FUNCTIONS ──
+// Motor state ('S'=Stop, 'F'=Forward, 'B'=Back, 'L'=Left, 'R'=Right)
+char currentCommand = 'S';
+unsigned long lastCommand = 0;
 
-// ── 4a. LDR Visibility (calibrated with mine zero offset) ──
-float readOpticalVisibility() {
-  // Average 4 ADC readings to reduce noise
-  long sum = 0;
-  for (int i = 0; i < 4; i++) {
-    sum += analogRead(PIN_LDR_VISIBILITY);
-    delay(2);
-  }
-  int rawADC = sum / 4;
+// Loop Timers
+unsigned long lastSensorRead = 0;
+unsigned long lastLCDUpdate = 0;
+unsigned long lastTelemetrySync = 0;
+const unsigned long TELEMETRY_INTERVAL = 2000; // Cloud sync every 2 seconds
 
-  // Map from calibrated dark-zero to full-light range → 0-100%
-  float visPercent = (float)(rawADC - LDR_ADC_ZERO) / (float)(LDR_ADC_MAX - LDR_ADC_ZERO) * 100.0;
-  visPercent = constrain(visPercent, 0.0, 100.0);
-  return visPercent;
+// ─────────────────────────────────────────────────────────────
+// 4. MOTOR CONTROL FUNCTIONS (L298N)
+// ─────────────────────────────────────────────────────────────
+void stopMotors() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+  currentCommand = 'S';
 }
 
-// ── 4b. Ultrasonic HC-SR04 with 5-sample median filter ──
-//    HC-SR04 reliable range: 0.02m – 4.0m (NOT 6m — beyond 4m readings are noisy)
-float readSingleUltrasonicPulse() {
-  digitalWrite(PIN_TRIG, LOW);
-  delayMicroseconds(2);
-  digitalWrite(PIN_TRIG, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(PIN_TRIG, LOW);
-  long dur = pulseIn(PIN_ECHO, HIGH, 24000); // 24ms timeout = 4.0m max range
-  if (dur == 0) return 4.50;                 // Nothing in range → report 4.5m (safe)
-  return (dur * 0.0343f) / 2.0f / 100.0f;
-}
-
-float readUltrasonicDistance() {
-  // 5-sample median filter — eliminates single-bounce noise spikes
-  float samples[5];
-  for (int i = 0; i < 5; i++) {
-    samples[i] = readSingleUltrasonicPulse();
-    delay(12); // min 12ms between HC-SR04 pings to avoid echo overlap
-  }
-  // Bubble sort to find median
-  for (int i = 0; i < 4; i++)
-    for (int j = i+1; j < 5; j++)
-      if (samples[j] < samples[i]) { float tmp = samples[i]; samples[i] = samples[j]; samples[j] = tmp; }
-  float median = samples[2];
-
-  // Clamp to HC-SR04 reliable operating range
-  median = constrain(median, 0.20f, 4.00f);
-  return median;
-}
-
-// ── 4c. Speed from Hall-Effect sensor (ISR-based pulse counting) ──
-void IRAM_ATTR onSpeedPulse() {
-  pulseCount++;
-}
-
-float readVehicleSpeed() {
-  unsigned long now = millis();
-  unsigned long elapsed = now - lastSpeedCalcTime;
-  if (elapsed < 500) return lastCalculatedSpeed; // Only recalculate every 500ms
-
-  // Read and reset pulse count atomically
-  noInterrupts();
-  unsigned long pulses = pulseCount;
-  pulseCount = 0;
-  interrupts();
-  lastSpeedCalcTime = now;
-
-  // Speed (m/s) = (pulses / PULSES_PER_REV) × WHEEL_CIRCUMFERENCE / elapsed_seconds
-  float revs = (float)pulses / (float)PULSES_PER_REV;
-  float speed = revs * WHEEL_CIRCUMFERENCE_M / ((float)elapsed / 1000.0f);
-  speed = constrain(speed, 0.0f, 15.0f);
-
-  // If no pulses detected at all (sensor not connected), use last known value
-  // Set fallback: 0 if no movement detected for >2s
-  if (pulses == 0 && elapsed > 2000) speed = 0.0f;
-
-  lastCalculatedSpeed = speed;
-  return speed;
-}
-
-// Risk calculation on board
-int calculateRiskScore(float visibility, float distance, float speed) {
-  float visNorm = max(0.01f, min(1.0f, visibility / 100.0f));
-  float distNorm = max(0.01f, min(1.0f, distance / 6.0f));
-  float spdNorm = max(0.0f, min(1.0f, speed / 12.0f));
-
-  float visHazard = 1.0f - visNorm;
-  float proxHazard = pow(1.0f - distNorm, 2.3f);
-  float speedHazard = spdNorm;
-
-  float rawRisk = (visHazard * 0.35f) + (proxHazard * 0.50f) + (speedHazard * 0.15f);
-  float multiplier = 1.0f + (visHazard * 0.8f);
-  int score = (int)constrain(rawRisk * multiplier * 100.0f, 0.0f, 100.0f);
-  return score;
-}
-
-const char* getRiskLevel(int score, float distance, float visibility) {
-  if (score >= 82 || (distance < 1.2 && visibility < 40.0) || distance < 0.6) {
-    return "CRITICAL";
-  } else if (score >= 58 || (distance < 2.0 && visibility < 50.0)) {
-    return "HIGH";
-  } else if (score >= 32 || distance < 3.0 || visibility < 40.0) {
-    return "WARNING";
-  }
-  return "SAFE";
-}
-
-// ── 5. SUPABASE POST TELEMETRY ──
-void sendTelemetryToSupabase(float vis, float dist, float spd, int risk, const char* level, bool eStop) {
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("[ESP32] WiFi Disconnected. Skipping cloud sync.");
+void forward() {
+  // Safety Stop if obstacle is too close (< 0.6m)
+  if (distance < 0.60 || emergencyBrake) {
+    stopMotors();
+    Serial.println("[SAFETY] Forward blocked - Obstacle in path!");
     return;
+  }
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  currentCommand = 'F';
+}
+
+void backward() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+  currentCommand = 'B';
+}
+
+void left() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  currentCommand = 'L';
+}
+
+void right() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+  currentCommand = 'R';
+}
+
+// ─────────────────────────────────────────────────────────────
+// 5. SENSOR DRIVERS
+// ─────────────────────────────────────────────────────────────
+
+// ── 5a. MPU6050 Driver ──
+void initMPU6050() {
+  Wire.beginTransmission(MPU_ADDR);
+  Wire.write(0x6B);
+  Wire.write(0); // Wake up MPU6050
+  byte err = Wire.endTransmission();
+  if (err == 0) {
+    Serial.println("MPU6050 Movement Sensor Ready");
+  } else {
+    Serial.printf("MPU6050 not responding at 0x%02X\n", MPU_ADDR);
+  }
+}
+
+void readMPU6050() {
+  Wire.beginTransmission(MPU_ADDR);
+  Wire.write(0x3B);
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU_ADDR, 6);
+
+  if (Wire.available() == 6) {
+    ax = Wire.read() << 8 | Wire.read();
+    ay = Wire.read() << 8 | Wire.read();
+    az = Wire.read() << 8 | Wire.read();
+
+    // Calculate dynamic vehicle speed based on movement
+    if (currentCommand == 'F') {
+      float accelMag = abs((float)ax / 16384.0);
+      vehicleSpeed = 6.0 + (accelMag * 3.5);
+    } else if (currentCommand == 'B' || currentCommand == 'L' || currentCommand == 'R') {
+      vehicleSpeed = 4.0;
+    } else {
+      vehicleSpeed = 0.0;
+    }
+  }
+}
+
+// ── 5b. LDR Visibility Sensor ──
+void readVisibilitySensor() {
+  ldrValue = analogRead(LDR_PIN);
+
+  // Exact logic from tested code:
+  // LOW ADC = BRIGHT LIGHT = HIGH VISIBILITY
+  if (ldrValue < 500) {
+    vis = "HIGH";
+    risk = "LOW";
+    visibilityPercent = map(ldrValue, 0, 500, 100, 75);
+  }
+  // MEDIUM ADC = MEDIUM VISIBILITY
+  else if (ldrValue < 2000) {
+    vis = "MED";
+    risk = "MED";
+    visibilityPercent = map(ldrValue, 500, 2000, 75, 40);
+  }
+  // HIGH ADC = DARK = LOW VISIBILITY
+  else {
+    vis = "LOW";
+    risk = "HIGH";
+    visibilityPercent = map(constrain(ldrValue, 2000, 4095), 2000, 4095, 40, 5);
+  }
+
+  // Active Buzzer on Low Visibility / Dark Threshold
+  if (ldrValue > DARK_THRESHOLD || risk == "HIGH") {
+    digitalWrite(BUZZER_PIN, HIGH);  // Buzzer ON
+  } else {
+    digitalWrite(BUZZER_PIN, LOW);   // Buzzer OFF
+  }
+}
+
+// ── 5c. Ultrasonic HC-SR04 Sensor ──
+void readUltrasonicSensor() {
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  long duration = pulseIn(ECHO_PIN, HIGH, 30000);
+
+  if (duration == 0) {
+    distance = 4.0; // Clear path / No obstacle
+  } else {
+    distance = (duration * 0.0343 / 2.0) / 100.0; // Distance in metres
+    distance = constrain(distance, 0.20, 4.00);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 6. ADAS RISK FUSION
+// ─────────────────────────────────────────────────────────────
+void computeADASRisk() {
+  readVisibilitySensor();
+  readUltrasonicSensor();
+  readMPU6050();
+
+  // Dynamic Risk Evaluation for Cloud & ADAS Safety
+  if (distance < 0.80 || (distance < 1.20 && vis == "LOW") || ldrValue > 3500) {
+    riskLevel = "CRITICAL";
+    riskScore = 85;
+    emergencyBrake = true;
+    digitalWrite(BUZZER_PIN, HIGH); // Alarm ON
+    stopMotors();                   // Emergency Brake
+  } else if (distance < 1.80 || vis == "LOW" || ldrValue > DARK_THRESHOLD) {
+    riskLevel = "HIGH";
+    riskScore = 65;
+    emergencyBrake = false;
+  } else if (distance < 2.80 || vis == "MED") {
+    riskLevel = "WARNING";
+    riskScore = 38;
+    emergencyBrake = false;
+  } else {
+    riskLevel = "SAFE";
+    riskScore = 17;
+    emergencyBrake = false;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 7. 16x2 LCD DISPLAY REFRESH
+// ─────────────────────────────────────────────────────────────
+void updateLCD() {
+  lcd.clear();
+
+  // Line 1: VIS status + Obstacle Distance
+  lcd.setCursor(0, 0);
+  lcd.print("VIS: ");
+  lcd.print(vis);
+  lcd.setCursor(9, 0);
+  lcd.print("D:");
+  lcd.print(distance, 1);
+  lcd.print("m");
+
+  // Line 2: RISK status + Vehicle Speed
+  lcd.setCursor(0, 1);
+  lcd.print("RISK:");
+  lcd.print(risk);
+  lcd.setCursor(9, 1);
+  lcd.print("S:");
+  lcd.print(vehicleSpeed, 1);
+  lcd.print("m/s");
+
+  // Serial Diagnostic Output
+  Serial.print("LDR = ");
+  Serial.print(ldrValue);
+  Serial.print(" | VIS = ");
+  Serial.print(vis);
+  Serial.print(" | RISK = ");
+  Serial.print(risk);
+  Serial.print(" | DIST = ");
+  Serial.print(distance);
+  Serial.println(" m");
+}
+
+// ─────────────────────────────────────────────────────────────
+// 8. TCP & CLOUD TELEMETRY SYNC (Sends Real Sensor Data to Website)
+// ─────────────────────────────────────────────────────────────
+unsigned long lastTCPTelemetry = 0;
+const unsigned long TCP_TELEMETRY_INTERVAL = 100; // 100ms (10Hz) ultra-responsive stream
+
+void sendTCPTelemetry(WiFiClient &tcpClient) {
+  if (!tcpClient || !tcpClient.connected()) return;
+
+  float brakingDist = 1.2 + (vehicleSpeed * 0.18) + (1.0 - (visibilityPercent / 100.0)) * 1.5;
+
+  // 1. JSON Payload for Web Dashboard & Bridge Server
+  tcpClient.printf("JSON:{\"operator_id\":\"ESP32-HARDWARE-NODE\",\"vehicle_id\":\"%s\",\"visibility\":%.1f,\"obstacle_distance\":%.2f,\"vehicle_speed\":%.1f,\"braking_distance\":%.2f,\"risk_score\":%d,\"risk_level\":\"%s\",\"emergency_brake\":%s,\"ldr\":%d,\"vis_str\":\"%s\"}\n",
+    VEHICLE_ID, visibilityPercent, distance, vehicleSpeed, brakingDist, riskScore, riskLevel.c_str(), emergencyBrake ? "true" : "false", ldrValue, vis.c_str());
+
+  // 2. Compact DATA Stream
+  tcpClient.printf("DATA:%d,%.2f,%.1f,%s,%s,%d,%.1f,%d\n",
+    ldrValue, distance, visibilityPercent, vis.c_str(), riskLevel.c_str(), riskScore, vehicleSpeed, emergencyBrake ? 1 : 0);
+}
+
+void syncTelemetryToWebsiteCloud() {
+  if (WiFi.status() != WL_CONNECTED) {
+    return; // Pushes automatically once Station Wi-Fi is connected
   }
 
   WiFiClientSecure client;
-  client.setInsecure(); // Skip certificate verification for speed
+  client.setInsecure(); // Fast TLS handshake for ESP32
 
   HTTPClient http;
   http.begin(client, SUPABASE_URL);
@@ -181,88 +335,173 @@ void sendTelemetryToSupabase(float vis, float dist, float spd, int risk, const c
   http.addHeader("Authorization", String("Bearer ") + SUPABASE_KEY);
   http.addHeader("Prefer", "return=minimal");
 
-  // Construct JSON Payload
-  StaticJsonDocument<256> doc;
+  // JSON payload structure matching OREGUARD web dashboard
+  StaticJsonDocument<300> doc;
   doc["vehicle_id"]        = VEHICLE_ID;
-  doc["operator_id"]       = "ESP32-HARDWARE-NODE";
-  doc["visibility"]        = vis;
-  doc["obstacle_distance"] = dist;
-  doc["vehicle_speed"]     = spd;
-  doc["braking_distance"]  = 1.2 + (spd * 0.18) + (1.0 - (vis / 100.0)) * 1.5;
-  doc["risk_score"]        = risk;
-  doc["risk_level"]        = level;
-  doc["emergency_brake"]   = eStop;
+  doc["operator_id"]       = "ESP32-HARDWARE-NODE"; // Tells website this is REAL hardware!
+  doc["visibility"]        = visibilityPercent;
+  doc["obstacle_distance"] = distance;
+  doc["vehicle_speed"]     = vehicleSpeed;
+  doc["braking_distance"]  = 1.2 + (vehicleSpeed * 0.18) + (1.0 - (visibilityPercent / 100.0)) * 1.5;
+  doc["risk_score"]        = riskScore;
+  doc["risk_level"]        = riskLevel;
+  doc["emergency_brake"]   = emergencyBrake;
 
   String requestBody;
   serializeJson(doc, requestBody);
 
   int httpCode = http.POST(requestBody);
   if (httpCode >= 200 && httpCode < 300) {
-    Serial.printf("[Cloud] Telemetry pushed to Supabase -> Vis: %.1f%%, Dist: %.2fm, Risk: %d (%s)\n", vis, dist, risk, level);
+    Serial.printf("☁️ [Website Cloud Sync] Vis: %.1f%% (%s) | Dist: %.2fm | Risk: %s (%d)\n",
+                  visibilityPercent, vis.c_str(), distance, riskLevel.c_str(), riskScore);
   } else {
-    Serial.printf("[Cloud Error] HTTP Status: %d, Response: %s\n", httpCode, http.getString().c_str());
+    Serial.printf("⚠️ [Cloud Push Failed] Code: %d\n", httpCode);
   }
 
   http.end();
 }
 
-// ── 6. SETUP & LOOP ──
+// ─────────────────────────────────────────────────────────────
+// 9. SETUP FUNCTION
+// ─────────────────────────────────────────────────────────────
 void setup() {
   Serial.begin(115200);
-  pinMode(PIN_LDR_VISIBILITY, INPUT);
-  pinMode(PIN_TRIG, OUTPUT);
-  pinMode(PIN_ECHO, INPUT);
-  pinMode(PIN_BUZZER, OUTPUT);
-  pinMode(PIN_SPEED_HALL, INPUT_PULLUP); // Hall-effect speed sensor
+  delay(500);
 
-  // Attach interrupt for speed pulse counting
-  attachInterrupt(digitalPinToInterrupt(PIN_SPEED_HALL), onSpeedPulse, RISING);
+  // 1. Motor Pins
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  stopMotors();
 
-  Serial.println("\n=================================");
-  Serial.println("OREGUARD MV-07 ADAS Node v2.0");
-  Serial.println("Sensors: LDR + HC-SR04 + Hall + Buzzer");
-  Serial.println("=================================");
+  // 2. Ultrasonic Pins
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  digitalWrite(TRIG_PIN, LOW);
 
-  // Connect to WiFi
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("Connecting to WiFi");
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
+  // 3. Buzzer Pin
+  pinMode(BUZZER_PIN, OUTPUT);
+  digitalWrite(BUZZER_PIN, LOW);
+
+  // 4. Initialize I2C Bus on SDA 21 & SCL 22
+  Wire.begin(SDA_PIN, SCL_PIN);
+
+  // 5. Initialize 16x2 I2C LCD Display
+  lcd.init();
+  lcd.backlight();
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("OREGUARD MV-07");
+  lcd.setCursor(0, 1);
+  lcd.print("SYSTEM READY...");
+  Serial.println("LCD 16x2 Initialized");
+
+  // 6. Initialize MPU6050
+  initMPU6050();
+
+  // 7. Initialize Dual WiFi: SoftAP for Joystick + STA for Website
+  WiFi.mode(WIFI_AP_STA);
+
+  // Start Vehicle Control SoftAP
+  WiFi.softAP(AP_SSID, AP_PASS);
+  Serial.println("Vehicle Wi-Fi started");
+  Serial.print("Vehicle IP: ");
+  Serial.println(WiFi.softAPIP());
+  server.begin();
+
+  // Connect to Router/Hotspot to stream real data to your website
+  if (String(STA_SSID) != "YOUR_WIFI_SSID") {
+    Serial.printf("Connecting to %s ...\n", STA_SSID);
+    WiFi.begin(STA_SSID, STA_PASS);
+  } else {
+    Serial.println("ℹ️ Enter your STA_SSID & STA_PASS to stream real data to the website.");
   }
-  Serial.println("\n[WiFi] Connected! IP: " + WiFi.localIP().toString());
 
-  // Warm up sensors (let HC-SR04 and LDR stabilize)
+  lastCommand = millis();
   delay(1000);
-  Serial.println("[Sensors] Warm-up complete. Starting ADAS loop.");
 }
 
+// ─────────────────────────────────────────────────────────────
+// 10. MAIN LOOP
+// ─────────────────────────────────────────────────────────────
 void loop() {
-  float visibility = readOpticalVisibility();
-  float distance   = readUltrasonicDistance();
-  float speed      = readVehicleSpeed(); // Real hall-effect speed (falls back to 0 if sensor absent)
-  
-  int riskScore = calculateRiskScore(visibility, distance, speed);
-  const char* riskLevel = getRiskLevel(riskScore, distance, visibility);
-  bool eStop = (strcmp(riskLevel, "CRITICAL") == 0);
+  unsigned long now = millis();
 
-  // Acoustic ADAS warning feedback on physical buzzer
-  if (strcmp(riskLevel, "CRITICAL") == 0) {
-    tone(PIN_BUZZER, 1000, 200);
-  } else if (strcmp(riskLevel, "HIGH") == 0) {
-    tone(PIN_BUZZER, 750, 100);
-  } else if (strcmp(riskLevel, "WARNING") == 0) {
-    tone(PIN_BUZZER, 500, 50);
-  } else {
-    noTone(PIN_BUZZER);
+  // 1. Handle Joystick TCP Client Commands & Live Telemetry Stream
+  WiFiClient client = server.available();
+  if (client) {
+    Serial.println("Bridge / Joystick connected!");
+
+    while (client.connected()) {
+      now = millis();
+
+      if (client.available()) {
+        char command = client.read();
+
+        if (command == 'F') forward();
+        else if (command == 'B') backward();
+        else if (command == 'L') left();
+        else if (command == 'R') right();
+        else if (command == 'S') stopMotors();
+
+        lastCommand = now;
+      }
+
+      // Safety: stop if communication is lost (> 500ms)
+      if (now - lastCommand > 500) {
+        stopMotors();
+      }
+
+      // Update Sensors & ADAS Risk while driving
+      if (now - lastSensorRead >= 80) {
+        lastSensorRead = now;
+        computeADASRisk();
+      }
+
+      // Update 16x2 LCD Display
+      if (now - lastLCDUpdate >= 300) {
+        lastLCDUpdate = now;
+        updateLCD();
+      }
+
+      // Stream Live Real-Time Telemetry over TCP (100ms / 10Hz)
+      if (now - lastTCPTelemetry >= TCP_TELEMETRY_INTERVAL) {
+        lastTCPTelemetry = now;
+        sendTCPTelemetry(client);
+      }
+
+      // Stream Real Data to Cloud Supabase (if STA internet is connected)
+      if (now - lastTelemetrySync >= TELEMETRY_INTERVAL) {
+        lastTelemetrySync = now;
+        syncTelemetryToWebsiteCloud();
+      }
+
+      delay(5);
+    }
+
+    stopMotors();
+    client.stop();
+    Serial.println("Bridge / Joystick disconnected - STOP");
   }
 
-  // Periodic Cloud Stream to Supabase
-  if (millis() - lastTelemetryTime >= TELEMETRY_INTERVAL_MS) {
-    lastTelemetryTime = millis();
-    sendTelemetryToSupabase(visibility, distance, speed, riskScore, riskLevel, eStop);
+  // 2. Autonomous Background Sensor Reading & ADAS Risk Loop (when no TCP client connected)
+  if (now - lastSensorRead >= 100) {
+    lastSensorRead = now;
+    computeADASRisk();
   }
 
-  delay(100);
+  // 3. Update 16x2 LCD Display (every 300ms)
+  if (now - lastLCDUpdate >= 300) {
+    lastLCDUpdate = now;
+    updateLCD();
+  }
+
+  // 4. Stream Real Data to Cloud Supabase (every 2000ms, if connected)
+  if (now - lastTelemetrySync >= TELEMETRY_INTERVAL) {
+    lastTelemetrySync = now;
+    syncTelemetryToWebsiteCloud();
+  }
+
+  delay(10);
 }

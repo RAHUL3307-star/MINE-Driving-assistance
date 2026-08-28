@@ -111,6 +111,10 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
           Live dashboard
         </a>
+        <a href="#controller" id="nav-controller" onclick="navigateTo('controller')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+          Teleop Controller 🕹️
+        </a>
         <a href="#weather" id="nav-weather" onclick="navigateTo('weather')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 2v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M2 12h2"/><path d="M19.07 4.93l-1.41 1.41"/></svg>
           Weather & predictions
@@ -220,7 +224,8 @@
               <div class="risk-icon" id="riskIconBox">
                 <svg id="riskIconSvg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
               </div>
-              <div>
+              <div class="risk-display-text">
+                <div class="risk-status-chip" id="riskStatusChip">● SAFE ZONE</div>
                 <h2 id="riskLevelHeading">LOW RISK</h2>
                 <p id="riskDetailText">All 6 sensors reporting nominal. Standard safety margins active.</p>
               </div>
@@ -231,6 +236,7 @@
                 <span>RISK SCORE</span>
                 <strong id="riskScoreNum">12<small>/100</small></strong>
               </div>
+              <div class="score-track-label">THREAT LEVEL BAR</div>
               <div class="score-track">
                 <span id="scoreTrackBar" style="width: 12%;"></span>
               </div>
@@ -287,7 +293,7 @@
         </div>
 
         <!-- Telemetry Gauges (6x Grid) -->
-        <div class="gauge-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        <div class="gauge-grid">
           <div class="gauge-card" data-testid="telemetry-visibility">
             <div class="gauge-head">
               <span>ATMOSPHERIC VISIBILITY</span>
@@ -349,7 +355,9 @@
           </div>
         </div>
 
+
         <!-- ════════ 6-SENSOR HARDWARE TELEMETRY BUS ════════ -->
+
         <div class="sensor-matrix-section">
           <div class="sensor-matrix-header">
             <div>
@@ -732,6 +740,36 @@
           </div>
         </div>
 
+        <!-- ════════ DASHBOARD TELEOPERATION OVERRIDE QUICK WIDGET ════════ -->
+        <div class="oled-container-card" style="border-color: rgba(6,182,212,0.3); background: #0c1322; color: #fff; margin-top: 14px;">
+          <div class="oled-meta-left">
+            <div class="oled-icon-square" style="background: rgba(6,182,212,0.15); color: #22d3ee;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+            </div>
+            <div>
+              <span class="section-label" style="color: #22d3ee;">WIRELESS TELEOPERATION OVERRIDE (ESP32-MV07)</span>
+              <h3 style="font:700 17px 'Barlow Condensed';letter-spacing:.4px;margin:2px 0 0; color:#fff;">Live Teleop Remote Link · 192.168.4.1:3333</h3>
+              <p style="font:500 11px 'JetBrains Mono';color:#94a3b8;margin-top:2px;">Single-byte TCP packet streaming (50ms rate) · Active Manual Override</p>
+            </div>
+          </div>
+
+          <!-- Quick Controls -->
+          <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+            <div style="display: grid; grid-template-columns: repeat(3, 36px); grid-template-rows: repeat(2, 32px); gap: 4px;">
+              <div></div>
+              <button type="button" class="dpad-btn" onclick="triggerDashDpad('F')" style="background:#1e293b; border:1px solid #334155; color:#fff; font-weight:700; border-radius:4px; font-size:11px; cursor:pointer;">▲</button>
+              <div></div>
+              <button type="button" class="dpad-btn" onclick="triggerDashDpad('L')" style="background:#1e293b; border:1px solid #334155; color:#fff; font-weight:700; border-radius:4px; font-size:11px; cursor:pointer;">◄</button>
+              <button type="button" class="dpad-btn" onclick="triggerDashDpad('S')" style="background:rgba(239,68,68,0.25); border:1px solid #ef4444; color:#f87171; font-weight:700; border-radius:4px; font-size:11px; cursor:pointer;">■</button>
+              <button type="button" class="dpad-btn" onclick="triggerDashDpad('R')" style="background:#1e293b; border:1px solid #334155; color:#fff; font-weight:700; border-radius:4px; font-size:11px; cursor:pointer;">►</button>
+            </div>
+            
+            <a href="#controller" class="save-button" onclick="navigateTo('controller')" style="width:auto; padding:8px 16px; font-size:11px; text-decoration:none; background:#06b6d4; color:#000; font-weight:700; border-radius:6px; box-shadow:0 0 15px rgba(6,182,212,0.3);">
+              Open Full Joystick Cockpit 🕹️ →
+            </a>
+          </div>
+        </div>
+
         <!-- Lower Grid: Recent Incidents & Risk Trend Chart -->
         <div class="lower-grid">
           
@@ -807,7 +845,157 @@
 
       </main>
 
-      <!-- ════════ VIEW: MINE WEATHER & PREDICTIONS CONSOLE ════════ -->
+      <!-- ════════ VIEW: TELEOPERATION & JOYSTICK CONTROLLER ════════ -->
+      <main class="page view-section" id="view-controller">
+        <!-- Header & Connection Info -->
+        <div class="weather-header-row" style="margin-bottom: 20px;">
+          <div>
+            <span class="section-label" style="color: #06b6d4;">MINE VEHICLE TELEOPERATION &amp; WIRELESS JOYSTICK</span>
+            <h2>Remote Teleop Cockpit (ESP32-MV07)</h2>
+            <p>Direct low-latency 2-axis teleoperation link. Transmits directional packets (F/B/L/R/S) over direct TCP socket (192.168.4.1:3333) at 50ms pulse rate with automatic failsafe brake interlock.</p>
+          </div>
+          <div class="weather-header-actions">
+            <div class="connection-badge" style="background:#042f2e; color:#2dd4bf; border-color:#0f766e;">
+              <span class="live-dot" style="background:#2dd4bf;"></span>
+              <span>TCP: 192.168.4.1:3333 [50ms Rate]</span>
+            </div>
+            <div class="connection-badge" id="dashTeleopModeBadge" style="background:#0f172a; color:#38bdf8; border-color:#0284c7;">
+              <span class="live-dot" style="background:#38bdf8;"></span>
+              <span>JOYSTICK ACTIVE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Teleop Grid -->
+        <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px; margin-bottom: 24px;">
+          
+          <!-- Left: Virtual Joystick Console -->
+          <div class="weather-metric-box" style="padding: 24px; background: #0c1322; border-color: rgba(6,182,212,0.3); border-radius: 12px; color: #fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 18px;">
+              <span style="font: 700 12px 'JetBrains Mono'; color: #22d3ee; letter-spacing: 1px;">2-AXIS ANALOG JOYSTICK EMULATOR</span>
+              <span id="dashCtrlCmdPill" class="pill" style="background: rgba(6,182,212,0.15); color: #22d3ee; border: 1px solid #06b6d4; font-family:'JetBrains Mono'; font-size:11px; padding:4px 10px; border-radius:100px;">CMD: [S] STOP / NEUTRAL</span>
+            </div>
+
+            <!-- Interactive Joystick Pad -->
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+              <div id="dash-joystick-base" style="width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, #1e293b 0%, #090d16 100%); border: 3px solid rgba(6,182,212,0.4); position: relative; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 0 25px rgba(6,182,212,0.15); cursor: grab; user-select: none; touch-action: none;">
+                <div style="position: absolute; width: 100%; height: 1px; background: rgba(255,255,255,0.08); pointer-events: none;"></div>
+                <div style="position: absolute; height: 100%; width: 1px; background: rgba(255,255,255,0.08); pointer-events: none;"></div>
+                <div style="position: absolute; width: 60px; height: 60px; border-radius: 50%; border: 1px dashed rgba(255,255,255,0.2); pointer-events: none;" title="Deadzone ±300"></div>
+                <div id="dash-joystick-knob" style="width: 75px; height: 75px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #22d3ee, #0369a1); border: 2px solid #fff; position: absolute; box-shadow: 0 8px 20px rgba(0,0,0,0.8), 0 0 15px rgba(6,182,212,0.6); display: flex; align-items: center; justify-content: center; font: 800 11px 'JetBrains Mono'; color: #000; pointer-events: none; transition: transform 0.05s ease-out;">
+                  CTRL
+                </div>
+              </div>
+
+              <!-- D-PAD & Emergency Button -->
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                <span style="font: 500 10px 'JetBrains Mono'; color: #64748b;">KEYBOARD: WASD / ARROWS · SPACE FOR EMERGENCY STOP</span>
+                <div style="display: grid; grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 38px); gap: 6px;">
+                  <div></div>
+                  <button type="button" class="dpad-btn" id="dash-dpad-f" onclick="triggerDashDpad('F')" style="background:#1e293b; border:1px solid #334155; color:#fff; font-weight:700; border-radius:6px; cursor:pointer;">▲</button>
+                  <div></div>
+                  <button type="button" class="dpad-btn" id="dash-dpad-l" onclick="triggerDashDpad('L')" style="background:#1e293b; border:1px solid #334155; color:#fff; font-weight:700; border-radius:6px; cursor:pointer;">◄</button>
+                  <button type="button" class="dpad-btn" id="dash-dpad-s" onclick="triggerDashDpad('S')" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#f87171; font-weight:700; border-radius:6px; cursor:pointer;">■</button>
+                  <button type="button" class="dpad-btn" id="dash-dpad-r" onclick="triggerDashDpad('R')" style="background:#1e293b; border:1px solid #334155; color:#fff; font-weight:700; border-radius:6px; cursor:pointer;">►</button>
+                  <div></div>
+                  <button type="button" class="dpad-btn" id="dash-dpad-b" onclick="triggerDashDpad('B')" style="background:#1e293b; border:1px solid #334155; color:#fff; font-weight:700; border-radius:6px; cursor:pointer;">▼</button>
+                  <div></div>
+                </div>
+                
+                <button type="button" class="outline-button" id="dash-sw-btn" onclick="toggleDashSwitch()" style="padding: 6px 16px; font-size: 11px; margin-top: 6px; border-color: #ef4444; color: #f87171; background:transparent;">
+                  SW PUSHBUTTON (GPIO 32): <strong id="dash-sw-text" style="color:#10b981; margin-left:4px;">HIGH (NORMAL)</strong>
+                </button>
+              </div>
+            </div>
+
+            <!-- Telemetry Gauges -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 18px;">
+              <div style="background: #060b16; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font: 600 10px 'JetBrains Mono'; color: #64748b;">VRX (ADC 34)</div>
+                <div id="dash-vrx-val" style="font: 700 16px 'JetBrains Mono'; color: #22d3ee; margin-top: 4px;">2048</div>
+              </div>
+              <div style="background: #060b16; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font: 600 10px 'JetBrains Mono'; color: #64748b;">VRY (ADC 35)</div>
+                <div id="dash-vry-val" style="font: 700 16px 'JetBrains Mono'; color: #22d3ee; margin-top: 4px;">2048</div>
+              </div>
+              <div style="background: #060b16; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font: 600 10px 'JetBrains Mono'; color: #64748b;">DEADZONE</div>
+                <div style="font: 700 16px 'JetBrains Mono'; color: #fbbf24; margin-top: 4px;">±300 ADC</div>
+              </div>
+            </div>
+
+            <!-- Live TCP Stream Log -->
+            <div style="background: #04060c; border: 1px solid rgba(6,182,212,0.25); border-radius: 8px; padding: 10px 14px; margin-top: 14px; font: 11px 'JetBrains Mono'; color: #22d3ee; display: flex; align-items: center; gap: 8px; overflow: hidden; white-space: nowrap;">
+              <span class="live-dot" style="background:#22d3ee;"></span>
+              <span id="dash-packet-stream-log">[TCP 192.168.4.1:3333] TX -> COMMAND='S' (X=2048, Y=2048, SW=1) · 50ms</span>
+            </div>
+          </div>
+
+          <!-- Right Column: Vehicle Live ADAS Feedback & Hardware Node Specs -->
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            
+            <!-- Real-time Vehicle Kinematics Card -->
+            <div class="weather-metric-box" style="padding: 18px; border-radius: 12px; background: #fff; border: 1px solid #dfe5e8;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="section-label">VEHICLE KINEMATICS RESPONSE</span>
+                <span id="teleopSpeedBadge" style="font: 700 11px 'JetBrains Mono'; color: #07865d; background: #e4f7ef; padding: 3px 8px; border-radius: 4px;">NOMINAL SPEED</span>
+              </div>
+              
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px;">
+                  <span style="font: 500 10px 'JetBrains Mono'; color: #64748b;">LIVE MOTOR SPEED</span>
+                  <div style="font: 700 18px 'JetBrains Mono'; color: #0f172a; margin-top: 2px;">
+                    <span id="teleopLiveSpeed">8.2</span> <small style="font-size:11px; color:#64748b;">m/s</small>
+                  </div>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px;">
+                  <span style="font: 500 10px 'JetBrains Mono'; color: #64748b;">ADAS RISK SCORE</span>
+                  <div style="font: 700 18px 'JetBrains Mono'; color: #10b981; margin-top: 2px;">
+                    <span id="teleopRiskScore">18</span><small style="font-size:11px; color:#64748b;">/100</small>
+                  </div>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px;">
+                  <span style="font: 500 10px 'JetBrains Mono'; color: #64748b;">FAILSAFE BRAKE LINE</span>
+                  <div id="teleopBrakeStatus" style="font: 700 13px 'JetBrains Mono'; color: #10b981; margin-top: 4px;">
+                    ● 185 BAR DISENGAGED
+                  </div>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px;">
+                  <span style="font: 500 10px 'JetBrains Mono'; color: #64748b;">STEERING DIRECTION</span>
+                  <div id="teleopSteerDir" style="font: 700 13px 'JetBrains Mono'; color: #0284c7; margin-top: 4px;">
+                    STRAIGHT (CENTER)
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Remote Hardware Node Card -->
+            <div style="border-radius: 12px; overflow: hidden; border: 1px solid #dfe5e8; position: relative; height: 180px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+              <img src="joystick_controller.jpg" alt="ESP32 Joystick Controller" style="width: 100%; height: 100%; object-fit: cover;">
+              <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(5,8,16,0.95) 0%, transparent 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 14px;">
+                <div style="font: 700 10px 'JetBrains Mono'; color: #22d3ee; margin-bottom: 2px;">ESP32 TELEOP TRANSMITTER NODE</div>
+                <div style="font: 600 12px 'Barlow Condensed'; color: #fff; text-transform: uppercase;">Direct Wi-Fi Station · SoftAP 192.168.4.1</div>
+              </div>
+            </div>
+
+            <!-- Firmware & Pinout Box -->
+            <div class="weather-metric-box" style="padding: 14px; border-radius: 12px; background: #fff; border: 1px solid #dfe5e8;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="section-label">FIRMWARE CONFIGURATION</span>
+                <a href="esp32_joystick_controller.ino" download class="w-config-link" style="color: #0284c7; font-weight: 700;">Download .INO ↓</a>
+              </div>
+              <div style="font: 11px 'JetBrains Mono'; color: #53636b; line-height: 1.6;">
+                <strong>Pins:</strong> VRX -&gt; GPIO 34 · VRY -&gt; GPIO 35 · SW -&gt; GPIO 32 (Pullup)<br>
+                <strong>Network:</strong> SSID: <code>HelloESP32</code> · Port: <code>3333</code> · Loop: <code>50ms</code>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </main>
+
+      <!-- ════════ VIEW: MINE WEATHER &amp; PREDICTIONS CONSOLE ════════ -->
       <main class="page view-section" id="view-weather">
         <!-- Header & Action Row -->
         <div class="weather-header-row">
@@ -1342,5 +1530,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-client.js"></script>
   <script src="app.js"></script>
+  <script src="esp32-bridge.js"></script>
 </body>
 </html>

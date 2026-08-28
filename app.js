@@ -251,14 +251,15 @@ function simulationTick() {
 }
 
 // ─────────────────────────────────────────────────────────────
-// LIVE HARDWARE DATA INJECTION (called by Supabase realtime or polling)
+// LIVE HARDWARE DATA INJECTION (called by WebSocket bridge or Supabase)
 // ─────────────────────────────────────────────────────────────
 function handleRemoteHardwareData(row) {
-  // Only process rows from the physical ESP32 node (not web simulation)
-  if (!row || row.operator_id !== 'ESP32-HARDWARE-NODE') return;
+  if (!row) return;
+  // Accept packets from hardware node
+  if (row.operator_id && row.operator_id !== 'ESP32-HARDWARE-NODE' && row.operator_id !== 'HARDWARE-NODE') return;
 
   // Switch to hardware mode on first real packet
-  if (!state.hardwareConnected) {
+  if (!state.hardwareConnected || state.feedMode !== 'hardware') {
     state.hardwareConnected = true;
     state.feedMode = 'hardware';
     updateHardwareBadge(true);
@@ -266,18 +267,34 @@ function handleRemoteHardwareData(row) {
   }
 
   state.lastHardwareTs = Date.now();
-  state.visibility     = parseFloat(row.visibility)   || state.visibility;
-  state.distance       = parseFloat(row.obstacle_distance) || state.distance;
-  state.speed          = parseFloat(row.vehicle_speed) || state.speed;
-  state.riskScore      = parseInt(row.risk_score)      || state.riskScore;
-  state.riskLevel      = row.risk_level                || state.riskLevel;
-  state.brakingDist    = parseFloat(row.braking_distance) || state.brakingDist;
 
-  if (row.emergency_brake) {
-    state.emergencyEngaged = true;
+  if (row.visibility !== undefined && !isNaN(parseFloat(row.visibility))) {
+    state.visibility = parseFloat(row.visibility);
+  }
+  if (row.obstacle_distance !== undefined && !isNaN(parseFloat(row.obstacle_distance))) {
+    state.distance = parseFloat(row.obstacle_distance);
+  } else if (row.distance !== undefined && !isNaN(parseFloat(row.distance))) {
+    state.distance = parseFloat(row.distance);
+  }
+  if (row.vehicle_speed !== undefined && !isNaN(parseFloat(row.vehicle_speed))) {
+    state.speed = parseFloat(row.vehicle_speed);
+  } else if (row.speed !== undefined && !isNaN(parseFloat(row.speed))) {
+    state.speed = parseFloat(row.speed);
+  }
+  if (row.risk_score !== undefined && !isNaN(parseInt(row.risk_score))) {
+    state.riskScore = parseInt(row.risk_score);
+  }
+  if (row.risk_level) {
+    state.riskLevel = row.risk_level;
+  }
+  if (row.braking_distance !== undefined && !isNaN(parseFloat(row.braking_distance))) {
+    state.brakingDist = parseFloat(row.braking_distance);
+  }
+  if (row.emergency_brake !== undefined) {
+    state.emergencyEngaged = Boolean(row.emergency_brake);
   }
 
-  updateApp();
+  updateApp(true);
 }
 
 // Hardware connection status badge
@@ -321,20 +338,27 @@ window.handleRemoteHardwareData = handleRemoteHardwareData;
 // ─────────────────────────────────────────────────────────────
 // UPDATE ALL UI COMPONENTS
 // ─────────────────────────────────────────────────────────────
-function updateApp() {
-  const { score, level, calculatedBrake } = calculateRisk(state.visibility, state.distance, state.speed);
-  state.riskScore = score;
-  state.riskLevel = level;
-  state.brakingDist = calculatedBrake;
+function updateApp(isHardwarePacket = false) {
+  if (state.feedMode !== 'hardware') {
+    const { score, level, calculatedBrake } = calculateRisk(state.visibility, state.distance, state.speed);
+    state.riskScore = score;
+    state.riskLevel = level;
+    state.brakingDist = calculatedBrake;
+  } else if (!isHardwarePacket && (state.riskScore === undefined || !state.riskLevel)) {
+    const { score, level, calculatedBrake } = calculateRisk(state.visibility, state.distance, state.speed);
+    state.riskScore = score;
+    state.riskLevel = level;
+    state.brakingDist = calculatedBrake;
+  }
 
-  updateRiskPanel(score, level);
-  updateRadar(level);
-  updateGauges(level);
-  updateSensorMatrix(level);
-  updatePitOperations(score, level);
-  updateOLED(level, score);
-  updateMiniTrend(score);
-  processAudioBeeps(level);
+  updateRiskPanel(state.riskScore, state.riskLevel);
+  updateRadar(state.riskLevel);
+  updateGauges(state.riskLevel);
+  updateSensorMatrix(state.riskLevel);
+  updatePitOperations(state.riskScore, state.riskLevel);
+  updateOLED(state.riskLevel, state.riskScore);
+  updateMiniTrend(state.riskScore);
+  processAudioBeeps(state.riskLevel);
 
   // Stream live telemetry to Supabase if linked
   if (window.streamTelemetryToSupabase) {
@@ -361,6 +385,7 @@ function updateRiskPanel(score, level) {
   const scoreNum = document.getElementById('riskScoreNum');
   const scoreBar = document.getElementById('scoreTrackBar');
   const iconSvg = document.getElementById('riskIconSvg');
+  const chip = document.getElementById('riskStatusChip');
 
   // Reset classes
   panel.className = `risk-panel ${level.toLowerCase()}`;
@@ -370,18 +395,22 @@ function updateRiskPanel(score, level) {
   if (level === 'CRITICAL') {
     heading.textContent = 'EMERGENCY STOP';
     detail.textContent = 'Vehicle immobilized · manual reset required';
+    if (chip) chip.textContent = '⚠ CRITICAL ALERT';
     iconSvg.innerHTML = '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>';
   } else if (level === 'HIGH') {
     heading.textContent = 'HIGH RISK';
     detail.textContent = 'Reduced visibility · adaptive speed cut applied';
+    if (chip) chip.textContent = '▲ HIGH RISK ZONE';
     iconSvg.innerHTML = '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>';
   } else if (level === 'WARNING') {
-    heading.textContent = 'WARNING';
-    detail.textContent = 'Obstacle closing in low visibility conditions';
+    heading.textContent = 'CAUTION';
+    detail.textContent = 'Obstacle closing in low visibility · reduce speed';
+    if (chip) chip.textContent = '● WARNING ACTIVE';
     iconSvg.innerHTML = '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>';
   } else {
-    heading.textContent = 'LOW RISK';
-    detail.textContent = 'All 6 sensors reporting nominal. Clear corridor.';
+    heading.textContent = 'ALL CLEAR';
+    detail.textContent = 'All 6 sensors nominal. Safe corridor ahead.';
+    if (chip) chip.textContent = '✓ SAFE ZONE';
     iconSvg.innerHTML = '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>';
   }
 
@@ -841,6 +870,7 @@ function navigateTo(viewId) {
   // Update topbar title
   const titles = {
     dashboard: 'Live operations',
+    controller: 'Wireless Teleoperation & Joystick Cockpit',
     weather: 'Mine Meteorology & Predictions',
     analytics: 'Analytics & history',
     settings: 'System settings',
@@ -2029,5 +2059,185 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Start Real-Time Simulation loop
   setInterval(simulationTick, 700);
+
+  // Initialize Dashboard Joystick
+  initDashboardJoystick();
 });
+
+// ─────────────────────────────────────────────────────────────
+// TELEOPERATION JOYSTICK HANDLER (DASHBOARD)
+// ─────────────────────────────────────────────────────────────
+let dashJoystickState = {
+  centerX: 2048,
+  centerY: 2048,
+  deadzone: 300,
+  currentX: 2048,
+  currentY: 2048,
+  button: 1,
+  command: 'S',
+  isDragging: false
+};
+
+function updateDashJoystickUI() {
+  let cmd = 'S';
+  let label = 'CMD: [S] STOP / NEUTRAL';
+  let pillBg = 'rgba(6,182,212,0.15)';
+  let pillColor = '#22d3ee';
+  let steerDir = 'STRAIGHT (CENTER)';
+
+  if (dashJoystickState.button === 0) {
+    cmd = 'S';
+    label = 'CMD: [S] E-STOP PRESSED';
+    pillBg = 'rgba(239,68,68,0.2)';
+    pillColor = '#f87171';
+  } else if (dashJoystickState.currentY > dashJoystickState.centerY + dashJoystickState.deadzone) {
+    cmd = 'F';
+    label = 'CMD: [F] FORWARD DRIVE';
+    pillBg = 'rgba(16,185,129,0.2)';
+    pillColor = '#34d399';
+    state.speed = Math.min(12.0, state.speed + 0.3);
+  } else if (dashJoystickState.currentY < dashJoystickState.centerY - dashJoystickState.deadzone) {
+    cmd = 'B';
+    label = 'CMD: [B] REVERSE DRIVE';
+    pillBg = 'rgba(249,115,22,0.2)';
+    pillColor = '#fb923c';
+    state.speed = Math.max(0.0, state.speed - 0.2);
+  } else if (dashJoystickState.currentX < dashJoystickState.centerX - dashJoystickState.deadzone) {
+    cmd = 'L';
+    label = 'CMD: [L] STEER LEFT';
+    pillBg = 'rgba(245,158,11,0.2)';
+    pillColor = '#fbbf24';
+    steerDir = 'TURNING LEFT (◄)';
+  } else if (dashJoystickState.currentX > dashJoystickState.centerX + dashJoystickState.deadzone) {
+    cmd = 'R';
+    label = 'CMD: [R] STEER RIGHT';
+    pillBg = 'rgba(245,158,11,0.2)';
+    pillColor = '#fbbf24';
+    steerDir = 'TURNING RIGHT (►)';
+  } else {
+    cmd = 'S';
+    label = 'CMD: [S] NEUTRAL / BRAKE';
+  }
+
+  dashJoystickState.command = cmd;
+
+  const vrxEl = document.getElementById('dash-vrx-val');
+  const vryEl = document.getElementById('dash-vry-val');
+  const cmdPill = document.getElementById('dashCtrlCmdPill');
+  const packetLog = document.getElementById('dash-packet-stream-log');
+  const steerEl = document.getElementById('teleopSteerDir');
+  const speedEl = document.getElementById('teleopLiveSpeed');
+  const riskEl = document.getElementById('teleopRiskScore');
+  const brakeEl = document.getElementById('teleopBrakeStatus');
+
+  if (vrxEl) vrxEl.textContent = Math.round(dashJoystickState.currentX);
+  if (vryEl) vryEl.textContent = Math.round(dashJoystickState.currentY);
+  if (cmdPill) {
+    cmdPill.textContent = label;
+    cmdPill.style.background = pillBg;
+    cmdPill.style.color = pillColor;
+  }
+  if (packetLog) {
+    packetLog.textContent = `[TCP 192.168.4.1:3333] TX -> COMMAND='${cmd}' (X=${Math.round(dashJoystickState.currentX)}, Y=${Math.round(dashJoystickState.currentY)}, SW=${dashJoystickState.button}) · 50ms`;
+  }
+  if (steerEl) steerEl.textContent = steerDir;
+  if (speedEl) speedEl.textContent = state.speed.toFixed(1);
+  if (riskEl) {
+    riskEl.textContent = state.riskScore;
+    riskEl.style.color = state.riskLevel === 'SAFE' ? '#10b981' : state.riskLevel === 'CAUTION' ? '#f59e0b' : '#ef4444';
+  }
+  if (brakeEl) {
+    if (cmd === 'S' || state.riskLevel === 'CRITICAL') {
+      brakeEl.textContent = '● 185 BAR ENGAGED';
+      brakeEl.style.color = '#ef4444';
+    } else {
+      brakeEl.textContent = '● 185 BAR DISENGAGED';
+      brakeEl.style.color = '#10b981';
+    }
+  }
+
+  // Send command to ESP32 websocket bridge if connected
+  if (window.esp32Bridge && typeof window.esp32Bridge.sendJoystickCommand === 'function') {
+    window.esp32Bridge.sendJoystickCommand(cmd);
+  }
+}
+
+function setDashJoystickKnobOffset(dx, dy) {
+  const knob = document.getElementById('dash-joystick-knob');
+  if (!knob) return;
+  const maxRadius = 70;
+  const dist = Math.hypot(dx, dy);
+  let clampedX = dx, clampedY = dy;
+  if (dist > maxRadius) {
+    clampedX = (dx / dist) * maxRadius;
+    clampedY = (dy / dist) * maxRadius;
+  }
+  knob.style.transform = `translate(${clampedX}px, ${clampedY}px)`;
+  dashJoystickState.currentX = 2048 + (clampedX / maxRadius) * 2047;
+  dashJoystickState.currentY = 2048 - (clampedY / maxRadius) * 2047;
+  updateDashJoystickUI();
+}
+
+function resetDashJoystickKnob() {
+  const knob = document.getElementById('dash-joystick-knob');
+  if (knob) knob.style.transform = 'translate(0px, 0px)';
+  dashJoystickState.currentX = 2048;
+  dashJoystickState.currentY = 2048;
+  updateDashJoystickUI();
+}
+
+function triggerDashDpad(cmd) {
+  if (cmd === 'F') setDashJoystickKnobOffset(0, -60);
+  else if (cmd === 'B') setDashJoystickKnobOffset(0, 60);
+  else if (cmd === 'L') setDashJoystickKnobOffset(-60, 0);
+  else if (cmd === 'R') setDashJoystickKnobOffset(60, 0);
+  else resetDashJoystickKnob();
+}
+
+function toggleDashSwitch() {
+  dashJoystickState.button = dashJoystickState.button === 1 ? 0 : 1;
+  const txt = document.getElementById('dash-sw-text');
+  if (txt) {
+    txt.textContent = dashJoystickState.button === 1 ? 'HIGH (NORMAL)' : 'LOW (E-STOP ENGAGED)';
+    txt.style.color = dashJoystickState.button === 1 ? '#10b981' : '#ef4444';
+  }
+  updateDashJoystickUI();
+}
+
+function initDashboardJoystick() {
+  const base = document.getElementById('dash-joystick-base');
+  if (!base) return;
+
+  function handlePointer(e) {
+    const rect = base.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const dx = clientX - centerX;
+    const dy = clientY - centerY;
+    setDashJoystickKnobOffset(dx, dy);
+  }
+
+  base.addEventListener('pointerdown', (e) => {
+    dashJoystickState.isDragging = true;
+    base.setPointerCapture(e.pointerId);
+    handlePointer(e);
+  });
+
+  base.addEventListener('pointermove', (e) => {
+    if (dashJoystickState.isDragging) handlePointer(e);
+  });
+
+  base.addEventListener('pointerup', () => {
+    dashJoystickState.isDragging = false;
+    resetDashJoystickKnob();
+  });
+
+  base.addEventListener('pointercancel', () => {
+    dashJoystickState.isDragging = false;
+    resetDashJoystickKnob();
+  });
+}
+
 
